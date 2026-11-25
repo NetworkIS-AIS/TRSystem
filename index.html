@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบส่งซ่อมเครื่องมือ</title>
+  <title>Tool repair system</title>
   <!-- Google Fonts: Sarabun, Kanit, Prompt, Mali, Bai Jamjuree, IBM Plex Sans Thai & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
   <style>
     /* ================= HOPE UI DESIGN SYSTEM TOKENS ================= */
     :root {
-      --app-font: 'Sarabun', 'Inter', sans-serif;
+      --app-font: 'Sarabun', sans-serif;
       --hope-primary: #3A57E8;
       --hope-primary-hover: #2A45D0;
       --hope-primary-soft: rgba(58, 87, 232, 0.12);
@@ -2209,11 +2209,11 @@
                     <input type="text" id="f-rep-dept" class="form-control" readonly placeholder="สังกัด / แผนก">
                   </div>
                   <div class="form-group">
-                    <label>location_id</label>
+                    <label>รหัสสถานที่ตั้ง</label>
                     <input type="text" id="f-emp-loc-id" class="form-control" readonly placeholder="location_id">
                   </div>
                   <div class="form-group">
-                    <label>location_name</label>
+                    <label>ชื่อสถานที่ตั้ง</label>
                     <input type="text" id="f-emp-loc-name" class="form-control" readonly placeholder="location_name">
                   </div>
                 </div>
@@ -2225,7 +2225,6 @@
                 <div class="side-table-panel">
                   <div class="side-table-header">
                     <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
-                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
