@@ -1832,44 +1832,39 @@
 
 
     /* ================= CREATE REPAIR THEME ADAPTATION ================= */
-#sec-create-repair .form-section-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-left: 4px solid var(--hope-primary);
-}
+    #sec-create-repair .form-section-box {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      border-left-color: var(--hope-primary);
+    }
 
-#sec-create-repair .form-section-title,
-#sec-create-repair .form-section-title i {
-  color: var(--hope-primary) !important;
-}
+    #sec-create-repair .side-table-panel {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+    }
 
-#sec-create-repair .side-table-panel {
-  background: var(--bg-card);
-  border-color: var(--border-color);
-}
+    #sec-create-repair .side-kv-table th {
+      background: var(--hope-primary-soft);
+      color: var(--text-main);
+    }
 
-#sec-create-repair .side-table-header,
-#sec-create-repair .side-table-header.holder-header {
-  background: var(--hope-primary-soft);
-  color: var(--hope-primary);
-}
+    #sec-create-repair .form-control[readonly] {
+      background: var(--bg-body);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
 
-#sec-create-repair .side-kv-table th {
-  background: var(--bg-body);
-  color: var(--text-main);
-}
+    #sec-create-repair .remark-check-item {
+      background: var(--bg-body);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
 
-#sec-create-repair .form-control[readonly] {
-  background: var(--hope-primary-soft);
-  border-color: var(--border-color);
-  color: var(--text-main);
-}
-
-#sec-create-repair .remark-check-item:has(input:checked) {
-  background: var(--hope-primary-soft);
-  border-color: var(--hope-primary);
-  color: var(--hope-primary);
-}
+    #sec-create-repair .remark-check-item:has(input:checked) {
+      background: var(--hope-primary-soft);
+      border-color: var(--hope-primary);
+      color: var(--hope-primary);
+    }
 
     #sec-create-repair .validation-hint {
       color: var(--hope-primary);
@@ -1951,6 +1946,41 @@
       margin: 0;
       cursor: pointer;
     }
+
+    /* ================= CREATE REPAIR RED-BOX FIXES ================= */
+    #sec-create-repair .form-section-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--hope-primary);
+    }
+    #sec-create-repair .form-section-title,
+    #sec-create-repair .form-section-title i {
+      color: var(--hope-primary) !important;
+    }
+    #sec-create-repair .side-table-panel {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    #sec-create-repair .side-table-header,
+    #sec-create-repair .side-table-header.holder-header {
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+    }
+    #sec-create-repair .side-kv-table th {
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+    #sec-create-repair .form-control[readonly] {
+      background: var(--hope-primary-soft);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    #sec-create-repair .remark-check-item:has(input:checked) {
+      background: var(--hope-primary-soft);
+      border-color: var(--hope-primary);
+      color: var(--hope-primary);
+    }
+
   </style>
 </head>
 <body>
@@ -2311,6 +2341,7 @@
                 <div class="side-table-panel">
                   <div class="side-table-header">
                     <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
+                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
