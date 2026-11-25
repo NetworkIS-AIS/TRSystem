@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบส่งซ่อมเครื่องมือ</title>
+  <!-- Google Fonts: Sarabun, Kanit, Prompt, Mali, Bai Jamjuree, IBM Plex Sans Thai & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&family=Mali:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Bulma & DataTables (Bulma Styling) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bulma.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bulma.min.js"></script>
+
+  <style>
+    /* ================= HOPE UI DESIGN SYSTEM TOKENS ================= */
+    :root {
+      --app-font: 'Sarabun', 'Inter', sans-serif;
+      --hope-primary: #3A57E8;
+      --hope-primary-hover: #2A45D0;
+      --hope-primary-soft: rgba(58, 87, 232, 0.12);
+      --hope-primary-shadow: 0 4px 12px rgba(58, 87, 232, 0.35);
+      --hope-hero-gradient: linear-gradient(115deg, #3A57E8 0%, #2B46D4 55%, #08B1BA 100%);
+      --hope-info: #08B1BA;
+      --hope-info-soft: rgba(8, 177, 186, 0.12);
+      --hope-success: #1AA053;
+      --hope-success-soft: rgba(26, 160, 83, 0.12);
+      --hope-warning: #F16A1B;
+      --hope-warning-soft: rgba(241, 106, 27, 0.12);
+      --hope-danger: #C03221;
+      --hope-danger-soft: rgba(192, 50, 33, 0.12);
+
+      --sidebar-width: 225px;
+      --sidebar-collapsed-width: 74px;
+      --bg-body: #F5F6FA;
+      --bg-card: #FFFFFF;
+      --bg-sidebar: #FFFFFF;
+      --text-main: #232D42;
+      --text-muted: #8A92A6;
+      --border-color: #E9ECEF;
+      --input-bg: #FFFFFF;
+      --shadow: 0 10px 30px 0 rgba(17, 38, 146, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --hope-primary: #4D69FA;
+      --hope-primary-hover: #3A57E8;
+      --hope-primary-soft: rgba(77, 105, 250, 0.18);
+      --hope-primary-shadow: 0 4px 14px rgba(77, 105, 250, 0.35);
+      --bg-body: #151824;
+      --bg-card: #222738;
+      --bg-sidebar: #222738;
+      --text-main: #E2E8F0;
+      --text-muted: #94A3B8;
+      --border-color: #2E3446;
+      --input-bg: #1B1F2E;
+      --shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: var(--app-font);
+    }
+
+    body,
+    input,
+    textarea,
+    select,
+    button,
+    .form-control,
+    .btn,
+    .swal2-popup,
+    .swal2-input,
+    .swal2-textarea,
+    .swal2-select {
+      font-family: var(--app-font) !important;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* ================= LOGIN SCREEN ================= */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--hope-hero-gradient);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #login-screen::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      top: -120px;
+      left: -100px;
+      pointer-events: none;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 34px;
+      border-radius: 16px;
+      box-shadow: 0 20px 45px rgba(17, 38, 146, 0.25);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    /* ================= LAYOUT & SIDEBAR ================= */
+    #app-container {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      color: var(--text-main);
+      border-right: 1px solid var(--border-color);
+      box-shadow: 0 0 30px rgba(17, 38, 146, 0.04);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 120;
+      font-size: 13.5px;
+      transition: width 0.25s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: visible;
+    }
+
+    .sidebar-header {
+      padding: 16px 16px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      border-bottom: 1px solid var(--border-color);
+      min-height: 66px;
+    }
+
+    .sidebar-header .brand-badge {
+      color: var(--hope-primary);
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-header .brand-text {
+      white-space: nowrap;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .sidebar-header .brand-title {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-main);
+      line-height: 1.2;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-header .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      padding: 14px 18px 6px 18px;
+      white-space: nowrap;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 6px 12px;
+      margin: 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      position: relative;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      min-width: 20px;
+      text-align: center;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .nav-item .nav-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .nav-item:hover {
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+    }
+
+    .nav-item:hover i {
+      color: var(--hope-primary);
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      background: var(--hope-primary);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: var(--hope-primary-shadow);
+    }
+
+    .nav-item.active i {
+      color: #FFFFFF;
+    }
+
+    .sidebar-footer {
+      position: relative;
+      padding: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .sidebar-footer .btn {
+      position: relative;
+      font-size: 13px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: margin-left 0.25s ease;
+    }
+
+    #app-container.sidebar-collapsed .sidebar {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    #app-container.sidebar-collapsed .main-wrapper {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+
+    #app-container.sidebar-collapsed .sidebar-header {
+      justify-content: center;
+      padding: 16px 8px;
+    }
+
+    #app-container.sidebar-collapsed .sidebar-header .brand-text,
+    #app-container.sidebar-collapsed .sidebar-section-label,
+    #app-container.sidebar-collapsed .nav-item .nav-label,
+    #app-container.sidebar-collapsed .sidebar-footer .logout-label {
+      display: none;
+    }
+
+    #app-container.sidebar-collapsed .nav-item {
+      justify-content: center;
+      padding: 11px 0;
+      gap: 0;
+    }
+
+    #app-container.sidebar-collapsed .sidebar-footer .btn {
+      justify-content: center;
+      padding: 9px 0;
+    }
+
+    /* ================= FLOATING TOOLTIP WHEN SIDEBAR IS COLLAPSED ================= */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    #app-container.sidebar-collapsed [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: fixed;
+      left: calc(var(--sidebar-collapsed-width) + 12px);
+      top: var(--tooltip-top, 50%);
+      transform: translateY(-50%) translateX(-6px);
+      background: #232D42;
+      color: #ffffff;
+      border: 1px solid var(--hope-primary);
+      box-shadow: 0 10px 24px rgba(17, 38, 146, 0.22);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 9999;
+      transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+    }
+
+    #app-container.sidebar-collapsed [data-tooltip]::before {
+      content: "";
+      position: fixed;
+      left: calc(var(--sidebar-collapsed-width) + 6px);
+      top: var(--tooltip-top, 50%);
+      transform: translateY(-50%) translateX(-6px);
+      border-width: 6px 6px 6px 0;
+      border-style: solid;
+      border-color: transparent #232D42 transparent transparent;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 9999;
+      transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+    }
+
+    #app-container.sidebar-collapsed [data-tooltip]:hover::after,
+    #app-container.sidebar-collapsed [data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    /* ================= MOBILE DRAWER SIDEBAR (< 768px) ================= */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 110;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .sidebar-backdrop.show {
+      display: block;
+      opacity: 1;
+    }
+
+    @media (max-width: 767.98px) {
+      .sidebar {
+        width: 235px !important;
+        transform: translateX(-100%);
+        box-shadow: 8px 0 28px rgba(17, 38, 146, 0.18);
+      }
+
+      #app-container.mobile-sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+
+      #app-container.sidebar-collapsed .sidebar-header {
+        justify-content: flex-start;
+        padding: 16px;
+      }
+
+      #app-container.sidebar-collapsed .sidebar-header .brand-text,
+      #app-container.sidebar-collapsed .sidebar-section-label,
+      #app-container.sidebar-collapsed .nav-item .nav-label,
+      #app-container.sidebar-collapsed .sidebar-footer .logout-label {
+        display: inline-block;
+      }
+
+      #app-container.sidebar-collapsed .nav-item {
+        justify-content: flex-start;
+        padding: 10px 14px;
+        gap: 11px;
+      }
+
+      #app-container.sidebar-collapsed .sidebar-footer .btn {
+        justify-content: center;
+        padding: 9px 12px;
+      }
+
+      #app-container.sidebar-collapsed [data-tooltip]::after,
+      #app-container.sidebar-collapsed [data-tooltip]::before {
+        display: none !important;
+      }
+
+      .main-wrapper,
+      #app-container.sidebar-collapsed .main-wrapper {
+        margin-left: 0 !important;
+      }
+
+      .user-pill span {
+        display: none;
+      }
+
+      .top-nav {
+        padding: 0 14px;
+      }
+    }
+
+    /* ================= TOP NAVBAR & REFINED ICONS ================= */
+    .top-nav {
+      height: 66px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 95;
+    }
+
+    .top-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .sidebar-toggle-btn {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--hope-primary);
+      color: #FFFFFF;
+      box-shadow: var(--hope-primary-shadow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13.5px;
+      transition: 0.2s;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: var(--hope-primary-hover);
+      transform: scale(1.05);
+    }
+
+    .top-nav-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .top-nav-page-icon {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      border-radius: 10px;
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15.5px;
+    }
+
+    .top-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.18s ease;
+    }
+
+    .icon-btn:hover,
+    .icon-btn.active-btn {
+      border-color: var(--hope-primary);
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+    }
+
+    .icon-btn.logout-btn:hover {
+      border-color: rgba(192, 50, 33, 0.35);
+      background: var(--hope-danger-soft);
+      color: var(--hope-danger);
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 13px;
+      border-radius: 20px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .user-pill i {
+      color: var(--hope-primary);
+      font-size: 15px;
+    }
+
+    /* Palette & Font Customizer Popover */
+    .customizer-wrap {
+      position: relative;
+    }
+
+    .customizer-panel {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: 310px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+      padding: 16px;
+      z-index: 999;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .customizer-panel.open {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      .customizer-panel {
+        right: -55px;
+        width: 285px;
+      }
+    }
+
+    .customizer-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .color-swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .color-swatch-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 4px;
+      border-radius: 9px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .color-swatch-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--swatch-color);
+    }
+
+    .color-swatch-btn.active {
+      border-color: var(--swatch-color);
+      background: var(--hope-primary-soft);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .swatch-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--swatch-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .font-option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+
+    .font-option-btn {
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.18s ease;
+    }
+
+    .font-option-btn:hover {
+      border-color: var(--hope-primary);
+      color: var(--hope-primary);
+    }
+
+    .font-option-btn.active {
+      border-color: var(--hope-primary);
+      background: var(--hope-primary);
+      color: #FFFFFF;
+    }
+
+    /* Hero Banner */
+    .hope-hero-banner {
+      background: var(--hope-hero-gradient);
+      color: #FFFFFF;
+      padding: 22px 24px 52px 24px;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+
+    .hope-hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -60px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .hope-hero-title {
+      font-size: 21px;
+      font-weight: 700;
+      margin: 0;
+      color: #FFFFFF;
+    }
+
+    .hope-hero-sub {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.88);
+      margin-top: 2px;
+    }
+
+    .btn-hero-glass {
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #FFFFFF;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-hero-glass:hover {
+      background: #FFFFFF;
+      color: var(--hope-primary);
+    }
+
+    /* ================= CONTENT AREA & CARDS ================= */
+    .main-wrapper .content-area {
+      max-width: 100%;
+      width: 100%;
+      padding: 0 20px 22px 20px;
+      margin-top: -34px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .main-wrapper .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 767.98px) {
+      .hope-hero-banner {
+        padding: 16px 14px 44px 14px;
+      }
+      .main-wrapper .content-area {
+        padding: 0 12px 16px 12px;
+        margin-top: -28px;
+      }
+      .main-wrapper .card-box {
+        padding: 14px;
+      }
+    }
+
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+      animation: fadeIn 0.22s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 14px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    /* ================= FORM & LABELS ================= */
+    .form-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .vendor-sub-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .vendor-sub-row label {
+      color: var(--hope-primary);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .doc-meta-box {
+      background: var(--hope-primary-soft);
+      border: 1px solid var(--hope-primary);
+      border-radius: 10px;
+      padding: 9px 15px;
+      min-width: 220px;
+      text-align: right;
+    }
+
+    .doc-no-line {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--hope-primary);
+    }
+
+    .doc-date-line {
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .doc-date-line input[type="date"] {
+      height: 29px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .form-section-box {
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--hope-primary);
+      background: var(--bg-body);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .form-section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 7px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .form-section-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--hope-primary);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .auto-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--hope-info-soft);
+      color: var(--hope-info);
+      border: 1px solid rgba(8, 177, 186, 0.3);
+      font-weight: 600;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .span-2 {
+        grid-column: span 1 !important;
+      }
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .form-group label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding-left: 7px;
+      border-left: 3px solid var(--hope-primary);
+      line-height: 1.25;
+    }
+
+    .req-star {
+      color: var(--hope-danger);
+      font-weight: 800;
+    }
+
+    .form-control {
+      width: 100%;
+      min-width: 0;
+      height: 33px;
+      padding: 5px 11px;
+      border-radius: 7px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 13px;
+      line-height: 1.3;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    textarea.form-control {
+      height: auto;
+      min-height: 56px;
+      padding: 7px 11px;
+      line-height: 1.35;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
+      font-size: 12.2px;
+      font-weight: 400;
+    }
+
+    .form-control:focus {
+      border-color: var(--hope-primary);
+      box-shadow: 0 0 0 3px var(--hope-primary-soft);
+    }
+
+    .form-control[readonly] {
+      background: var(--hope-primary-soft);
+      border-color: var(--border-color);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .input-group .form-control {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .input-group .btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      height: 33px;
+      padding: 0 13px;
+      font-size: 12.5px;
+      border-radius: 7px;
+    }
+
+    /* ================= SENDER BLOCK & SPLIT ASSETS / HOLDER ================= */
+    .sender-row-1 {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(260px, 1.4fr);
+      gap: 10px 14px;
+      margin-bottom: 8px;
+    }
+
+    .sender-row-2,
+    .sender-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 14px;
+      margin-bottom: 8px;
+    }
+
+    .sender-row-3 {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 820px) {
+      .sender-row-1,
+      .sender-row-2,
+      .sender-row-3 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .split-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .split-info-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .side-table-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-table-header {
+      padding: 10px 13px;
+      background: var(--hope-primary-soft);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--hope-primary);
+    }
+
+    .side-kv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .side-kv-table th {
+      width: 36%;
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .side-kv-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    .side-kv-table tr:last-child th,
+    .side-kv-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .side-kv-table .form-control {
+      height: 30px;
+      padding: 3px 8px;
+      font-size: 12.5px;
+    }
+
+    .side-kv-table .input-group .btn {
+      height: 30px;
+      padding: 0 11px;
+      font-size: 12px;
+    }
+
+    /* ================= BUTTONS ================= */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    .btn-ais {
+      background: var(--hope-primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+    }
+
+    .btn-ais:hover:not(:disabled) {
+      background: var(--hope-primary-hover);
+      box-shadow: var(--hope-primary-shadow);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      border-color: var(--hope-primary);
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+    }
+
+    .btn-sm {
+      padding: 5px 11px;
+      font-size: 12.5px;
+    }
+
+    .submit-footer-bar {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .validation-hint {
+      font-size: 12.5px;
+      color: var(--hope-warning);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .validation-hint.ready {
+      color: var(--hope-success);
+      font-weight: 700;
+    }
+
+    /* ================= TABLES & BADGES ================= */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: var(--bg-body);
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-repair { background: var(--hope-warning-soft); color: var(--hope-warning); }
+    .badge-return { background: var(--hope-success-soft); color: var(--hope-success); }
+    .badge-scrap  { background: var(--hope-danger-soft);  color: var(--hope-danger); }
+    .badge-ready  { background: var(--hope-info-soft);    color: var(--hope-info); }
+
+    /* ================= COMPACT FULL-WIDTH ASSET DATATABLE ================= */
+    #sec-asset-list .table-responsive {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    #sec-asset-list .table {
+      width: 100% !important;
+      table-layout: fixed;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      margin-bottom: 0;
+      font-size: 12.5px;
+    }
+
+    #sec-asset-list .table th:nth-child(1),
+    #sec-asset-list .table td:nth-child(1) { width: 12%; }
+    #sec-asset-list .table th:nth-child(2),
+    #sec-asset-list .table td:nth-child(2) { width: 28%; }
+    #sec-asset-list .table th:nth-child(3),
+    #sec-asset-list .table td:nth-child(3) { width: 15%; }
+    #sec-asset-list .table th:nth-child(4),
+    #sec-asset-list .table td:nth-child(4) { width: 15%; }
+    #sec-asset-list .table th:nth-child(5),
+    #sec-asset-list .table td:nth-child(5) { width: 11%; }
+    #sec-asset-list .table th:nth-child(6),
+    #sec-asset-list .table td:nth-child(6) { width: 11%; }
+    #sec-asset-list .table th:nth-child(7),
+    #sec-asset-list .table td:nth-child(7) { width: 8%; text-align: center; }
+
+    #sec-asset-list .table thead th {
+      background-color: var(--bg-body);
+      color: var(--text-muted);
+      border-bottom-color: var(--border-color);
+      font-weight: 700;
+      padding: 8px 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #sec-asset-list .table tbody td {
+      border-bottom-color: var(--border-color);
+      padding: 7px 8px;
+      line-height: 1.3;
+      vertical-align: middle;
+      word-break: break-word;
+    }
+
+    #sec-asset-list .dt-container table.dataTable thead th > .dt-column-header {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 4px !important;
+      width: auto !important;
+    }
+
+    #sec-asset-list .dt-container table.dataTable thead th .dt-column-title {
+      flex: 0 1 auto !important;
+    }
+
+    #sec-asset-list .dt-container table.dataTable thead th .dt-column-order {
+      position: static !important;
+      display: inline-flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin-left: 2px !important;
+      flex: 0 0 auto !important;
+      opacity: 0.6;
+    }
+
+    #sec-asset-list .dt-container th.dt-orderable-asc:hover .dt-column-order,
+    #sec-asset-list .dt-container th.dt-orderable-desc:hover .dt-column-order,
+    #sec-asset-list .dt-container th.dt-ordering-asc .dt-column-order,
+    #sec-asset-list .dt-container th.dt-ordering-desc .dt-column-order {
+      opacity: 1;
+      color: var(--hope-primary);
+    }
+
+    #sec-asset-list .table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.015);
+    }
+
+    #sec-asset-list .table.is-hoverable tbody tr:not(.is-selected):hover {
+      background-color: var(--hope-primary-soft);
+    }
+
+    #sec-asset-list .dt-container {
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    #sec-asset-list .dt-container .dt-layout-row {
+      margin: 6px 0 !important;
+    }
+
+    #sec-asset-list .dt-container .dt-input {
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 4px 10px;
+      min-height: 32px;
+    }
+
+    #sec-asset-list .dt-container .dt-length select {
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      min-width: 68px !important;
+      width: auto !important;
+      min-height: 32px;
+      padding: 4px 28px 4px 10px !important;
+      text-align: left;
+      background-position: right 8px center !important;
+    }
+
+    #sec-asset-list .dt-container .dt-paging .dt-paging-button.current,
+    #sec-asset-list .dt-container .dt-paging .dt-paging-button.current:hover {
+      background: var(--hope-primary) !important;
+      border-color: var(--hope-primary) !important;
+      color: #fff !important;
+      border-radius: 8px;
+    }
+
+    #sec-asset-list .dt-container .dt-paging .dt-paging-button:hover {
+      background: var(--hope-primary-soft) !important;
+      border-color: var(--hope-primary) !important;
+      color: var(--hope-primary) !important;
+      border-radius: 8px;
+    }
+
+    /* ================= TOAST NOTIFICATION ================= */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast-item {
+      min-width: 280px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-left: 5px solid var(--hope-primary);
+      box-shadow: 0 10px 25px rgba(17, 38, 146, 0.16);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast-item.error { border-left-color: var(--hope-danger); }
+    .toast-item.warning { border-left-color: var(--hope-warning); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ================= A4 PRINT TEMPLATE ================= */
+    #print-area {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+      html, body {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+      #login-screen, #app-container, #toast-container, .swal2-container {
+        display: none !important;
+      }
+      #print-area {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .a4-half {
+        width: 190mm;
+        min-height: 132mm;
+        margin: 0 auto;
+        border: 1.5px solid #222;
+        border-radius: 6px;
+        padding: 10px 14px;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+      }
+      .cut-line {
+        width: 190mm;
+        margin: 5mm auto;
+        border-top: 1px dashed #666;
+        text-align: center;
+        font-size: 11px;
+        color: #666;
+        line-height: 0.1em;
+      }
+      .cut-line span {
+        background: #fff;
+        padding: 0 10px;
+      }
+      .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #3A57E8;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
+      }
+      .doc-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .ais-logo-badge {
+        background: #3A57E8;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        line-height: 1.1;
+        text-align: center;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .doc-badge {
+        border: 1.5px solid #000;
+        padding: 2px 10px;
+        font-weight: 700;
+        font-size: 12.5px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+      .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+        font-size: 12.5px;
+      }
+      .doc-table th, .doc-table td {
+        border: 1px solid #444;
+        padding: 5px 8px;
+        color: #000 !important;
+        background: transparent !important;
+        vertical-align: top;
+      }
+      .doc-table th {
+        background: #EEF2FF !important;
+        font-weight: 700;
+        white-space: nowrap;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .transfer-party-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0 10px 0;
+      }
+      .transfer-party-card {
+        border: 1px solid #cbd5e1;
+        background: #f8fafc !important;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 12px;
+        line-height: 1.4;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .transfer-party-card.new-holder {
+        border-color: #93c5fd;
+        background: #EEF2FF !important;
+      }
+      .transfer-party-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #475569;
+        margin-bottom: 2px;
+      }
+      .transfer-party-card.new-holder .transfer-party-label {
+        color: #2A45D0;
+      }
+      .transfer-arrow-badge {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #3A57E8 !important;
+        color: #ffffff !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .pretty-doc-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #94a3b8;
+        border-radius: 6px;
+        overflow: hidden;
+        font-size: 12.2px;
+        margin-top: 6px;
+      }
+      .pretty-doc-table th,
+      .pretty-doc-table td {
+        border-right: 1px solid #cbd5e1;
+        border-bottom: 1px solid #cbd5e1;
+        padding: 6px 9px;
+        vertical-align: middle;
+        line-height: 1.35;
+      }
+      .pretty-doc-table tr:last-child th,
+      .pretty-doc-table tr:last-child td {
+        border-bottom: none;
+      }
+      .pretty-doc-table th:last-child,
+      .pretty-doc-table td:last-child {
+        border-right: none;
+      }
+      .pretty-doc-table th {
+        background: #EEF2FF !important;
+        color: #1E2E8A !important;
+        font-weight: 700;
+        width: 19%;
+        white-space: nowrap;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .pretty-doc-table td {
+        background: #ffffff !important;
+        color: #111827 !important;
+        width: 31%;
+      }
+      .code-mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: 0.2px;
+      }
+      .doc-remark-box {
+        margin-top: 7px;
+        padding: 5px 9px;
+        background: #f8fafc !important;
+        border-left: 3px solid #3A57E8;
+        border-radius: 0 4px 4px 0;
+        font-size: 11.5px;
+        color: #334155;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .sign-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 22px;
+        text-align: center;
+        font-size: 11.5px;
+      }
+      .sign-line {
+        border-bottom: 1px dotted #000;
+        height: 24px;
+        margin-bottom: 5px;
+      }
+      .sign-date {
+        margin-top: 4px;
+        color: #222;
+      }
+    }
+
+    /* ================= REPAIR LOCK BANNER ================= */
+    .asset-lock-alert {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background: #FFF4EC;
+      border: 1px solid #FDBA74;
+      color: #9A3412;
+      font-size: 12.8px;
+      font-weight: 600;
+    }
+
+    .asset-lock-alert.show {
+      display: flex;
+    }
+
+    [data-theme="dark"] .asset-lock-alert {
+      background: rgba(241, 106, 27, 0.16);
+      border-color: rgba(241, 106, 27, 0.45);
+      color: #FDBA74;
+    }
+
+    /* ================= REMARK ACCESSORY CHECKBOXES ================= */
+    .remark-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      margin-bottom: 4px;
+    }
+
+    .remark-check-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .remark-check-item:hover {
+      border-color: var(--hope-primary);
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+    }
+
+    .remark-check-item input[type="checkbox"] {
+      accent-color: var(--hope-primary);
+      width: 13px;
+      height: 13px;
+      margin: 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== 1. LOGIN SCREEN ==================== -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg width="32" height="32" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
+          <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
+          <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
+          <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
+        </svg>
+      </div>
+      <h2 style="margin:0 0 6px 0; font-weight:700; font-size:22px;">ระบบส่งซ่อมเครื่องมือ</h2>
+      <p style="margin:0 0 24px 0; color:var(--text-muted); font-size:13.5px;">Sign in to Tool Repair & Asset Management</p>
+
+      <form id="login-form" style="text-align:left; display:flex; flex-direction:column; gap:14px;">
+        <div class="form-group">
+          <label>ชื่อผู้ใช้งาน (Username)</label>
+          <input type="text" id="login-user" class="form-control" style="height:40px; font-size:14px;" placeholder="ระบุ Username" required>
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน (Password)</label>
+          <input type="password" id="login-pass" class="form-control" style="height:40px; font-size:14px;" placeholder="ระบุรหัสผ่าน" required>
+        </div>
+        <button type="submit" class="btn btn-ais" style="margin-top:8px; width:100%; padding:11px; font-size:14.5px;">
+          <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== 2. MAIN APP ==================== -->
+  <div id="app-container">
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
+    <aside class="sidebar" id="main-sidebar">
+      <div class="sidebar-header" data-tooltip="TOOL REPAIR • ระบบบริหารงานส่งซ่อม">
+        <div class="brand-badge">
+          <svg width="26" height="26" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
+            <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
+            <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
+            <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">TOOL REPAIR</div>
+          <div class="brand-subtitle">ระบบบริหารงานส่งซ่อม</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section-label">เมนูหลัก</div>
+      <ul class="nav-menu">
+        <li class="nav-item active" onclick="switchPage('dashboard', this)" data-tooltip="แดชบอร์ดรายงาน">
+          <i class="bi bi-grid-1x2-fill"></i>
+          <span class="nav-label">แดชบอร์ดรายงาน</span>
+        </li>
+        <li class="nav-item" onclick="switchPage('create-repair', this)" data-tooltip="สร้างใบส่งซ่อมใหม่">
+          <i class="bi bi-file-earmark-plus-fill"></i>
+          <span class="nav-label">สร้างใบส่งซ่อมใหม่</span>
+        </li>
+        <li class="nav-item" onclick="switchPage('manage-repair', this)" data-tooltip="ติดตาม / รับคืน / ตัดจำหน่าย">
+          <i class="bi bi-arrow-repeat"></i>
+          <span class="nav-label">ติดตาม / รับคืน / ตัดจำหน่าย</span>
+        </li>
+        <li class="nav-item" onclick="switchPage('change-holder', this)" data-tooltip="เปลี่ยนแปลงผู้ถือครอง">
+          <i class="bi bi-person-lines-fill"></i>
+          <span class="nav-label">เปลี่ยนแปลงผู้ถือครอง</span>
+        </li>
+        <li class="nav-item" onclick="switchPage('asset-list', this)" data-tooltip="ทะเบียนเครื่องมือ">
+          <i class="bi bi-box-seam-fill"></i>
+          <span class="nav-label">ทะเบียนเครื่องมือ</span>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <button class="btn" onclick="confirmLogout()" data-tooltip="ออกจากระบบ" style="width:100%; background:var(--hope-danger-soft); color:var(--hope-danger);">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="logout-label">ออกจากระบบ</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-nav">
+        <div class="top-nav-left">
+          <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebar()" title="ย่อ/ขยายแถบเมนูด้านข้าง">
+            <i class="bi bi-chevron-left" id="sidebar-toggle-icon"></i>
+          </button>
+          <div class="top-nav-title-wrap">
+            <span class="top-nav-page-icon" id="top-nav-page-icon">
+              <i class="bi bi-grid-1x2-fill" id="page-title-icon"></i>
+            </span>
+            <div style="font-weight:700; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="page-title">แดชบอร์ดรายงานภาพรวม</div>
+          </div>
+        </div>
+        <div class="top-nav-actions">
+          <div class="user-pill">
+            <i class="bi bi-person-circle"></i>
+            <span id="display-username">ผู้ใช้งาน</span>
+          </div>
+
+          <div class="customizer-wrap" id="customizer-wrap">
+            <button type="button" class="icon-btn" id="palette-toggle-btn" onclick="toggleCustomizer(event)" title="เปลี่ยนธีมสีและฟอนต์">
+              <i class="bi bi-palette"></i>
+            </button>
+
+            <div class="customizer-panel" id="customizer-panel" onclick="event.stopPropagation()">
+              <div class="customizer-section-title">
+                <span><i class="bi bi-droplet"></i> ธีมสีระบบ (Theme Color)</span>
+                <span id="current-color-label" style="color:var(--hope-primary); font-weight:700;">Blue</span>
+              </div>
+              <div class="color-swatch-grid">
+                <button type="button" class="color-swatch-btn active" data-color="blue" style="--swatch-color:#3A57E8;" onclick="setColorTheme('blue')">
+                  <span class="swatch-dot"><i class="bi bi-check-lg"></i></span>
+                  <span>Blue</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="green" style="--swatch-color:#1AA053;" onclick="setColorTheme('green')">
+                  <span class="swatch-dot"></span>
+                  <span>Green</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="orange" style="--swatch-color:#F16A1B;" onclick="setColorTheme('orange')">
+                  <span class="swatch-dot"></span>
+                  <span>Orange</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="red" style="--swatch-color:#D92D20;" onclick="setColorTheme('red')">
+                  <span class="swatch-dot"></span>
+                  <span>Red</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="yellow" style="--swatch-color:#EAB308;" onclick="setColorTheme('yellow')">
+                  <span class="swatch-dot"></span>
+                  <span>Yellow</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="purple" style="--swatch-color:#7C3AED;" onclick="setColorTheme('purple')">
+                  <span class="swatch-dot"></span>
+                  <span>Purple</span>
+                </button>
+                <button type="button" class="color-swatch-btn" data-color="pink" style="--swatch-color:#EC4899;" onclick="setColorTheme('pink')">
+                  <span class="swatch-dot"></span>
+                  <span>Pink</span>
+                </button>
+              </div>
+
+              <div class="customizer-section-title">
+                <span><i class="bi bi-fonts"></i> รูปแบบฟอนต์ (Font Family)</span>
+              </div>
+              <div class="font-option-grid">
+                <button type="button" class="font-option-btn active" data-font="Sarabun" style="font-family:'Sarabun',sans-serif;" onclick="setFontTheme('Sarabun')">
+                  <span>Sarabun</span>
+                  <i class="bi bi-check2"></i>
+                </button>
+                <button type="button" class="font-option-btn" data-font="Kanit" style="font-family:'Kanit',sans-serif;" onclick="setFontTheme('Kanit')">
+                  <span>Kanit</span>
+                </button>
+                <button type="button" class="font-option-btn" data-font="Prompt" style="font-family:'Prompt',sans-serif;" onclick="setFontTheme('Prompt')">
+                  <span>Prompt</span>
+                </button>
+                <button type="button" class="font-option-btn" data-font="Mali" style="font-family:'Mali',sans-serif;" onclick="setFontTheme('Mali')">
+                  <span>Mali</span>
+                </button>
+                <button type="button" class="font-option-btn" data-font="Bai Jamjuree" style="font-family:'Bai Jamjuree',sans-serif;" onclick="setFontTheme('Bai Jamjuree')">
+                  <span>Bai Jamjuree</span>
+                </button>
+                <button type="button" class="font-option-btn" data-font="IBM Plex Sans Thai" style="font-family:'IBM Plex Sans Thai',sans-serif;" onclick="setFontTheme('IBM Plex Sans Thai')">
+                  <span>IBM</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="icon-btn" onclick="toggleTheme()" title="สลับโหมดมืด/สว่าง">
+            <i class="bi bi-moon" id="theme-icon"></i>
+          </button>
+          <button class="icon-btn" onclick="toggleFullScreen()" title="เต็มหน้าจอ (Full Screen)">
+            <i class="bi bi-arrows-angle-expand" id="fullscreen-icon"></i>
+          </button>
+          <button class="icon-btn logout-btn" onclick="confirmLogout()" title="ออกจากระบบ">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="hope-hero-banner">
+        <div>
+          <h1 class="hope-hero-title" id="hero-title">สวัสดี! ระบบบริหารงานส่งซ่อมเครื่องมือ</h1>
+          <div class="hope-hero-sub" id="hero-subtitle">ติดตามสถานะการส่งซ่อม การรับคืน และการโอนย้ายผู้ถือครองทรัพย์สินแบบเรียลไทม์</div>
+        </div>
+        <button type="button" class="btn-hero-glass" onclick="document.querySelectorAll('.nav-item')[1].click()">
+          <i class="bi bi-plus-lg"></i> สร้างใบส่งซ่อมใหม่
+        </button>
+      </div>
+
+      <main class="content-area">
+        <!-- SECTION 1: DASHBOARD -->
+        <section id="sec-dashboard" class="page-section active">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div>
+                <div style="color:var(--text-muted); font-size:13px; font-weight:500;">รายการส่งซ่อมทั้งหมด</div>
+                <div style="font-size:26px; font-weight:700; margin-top:2px;" id="kpi-total">0</div>
+              </div>
+              <div class="kpi-icon" style="background:var(--hope-primary-soft); color:var(--hope-primary);">
+                <i class="bi bi-clipboard-data"></i>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div>
+                <div style="color:var(--text-muted); font-size:13px; font-weight:500;">กำลังส่งซ่อม</div>
+                <div style="font-size:26px; font-weight:700; color:var(--hope-warning); margin-top:2px;" id="kpi-repairing">0</div>
+              </div>
+              <div class="kpi-icon" style="background:var(--hope-warning-soft); color:var(--hope-warning);">
+                <i class="bi bi-wrench-adjustable"></i>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div>
+                <div style="color:var(--text-muted); font-size:13px; font-weight:500;">ได้รับคืนแล้ว</div>
+                <div style="font-size:26px; font-weight:700; color:var(--hope-success); margin-top:2px;" id="kpi-returned">0</div>
+              </div>
+              <div class="kpi-icon" style="background:var(--hope-success-soft); color:var(--hope-success);">
+                <i class="bi bi-check-circle"></i>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div>
+                <div style="color:var(--text-muted); font-size:13px; font-weight:500;">ตัดจำหน่าย</div>
+                <div style="font-size:26px; font-weight:700; color:var(--hope-danger); margin-top:2px;" id="kpi-scrapped">0</div>
+              </div>
+              <div class="kpi-icon" style="background:var(--hope-danger-soft); color:var(--hope-danger);">
+                <i class="bi bi-trash3"></i>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;">
+            <div class="card-box">
+              <h3 class="card-title"><i class="bi bi-clock-history" style="color:var(--hope-primary);"></i> รายการส่งซ่อมล่าสุด</h3>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>เลขที่เอกสาร</th>
+                      <th>วันที่แจ้ง</th>
+                      <th>รหัสเครื่องมือ</th>
+                      <th>รายละเอียดเครื่องมือ</th>
+                      <th>สถานะ</th>
+                      <th>พิมพ์</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-table"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-box">
+              <h3 class="card-title"><i class="bi bi-pie-chart" style="color:var(--hope-primary);"></i> สัดส่วนสถานะงานซ่อม</h3>
+              <canvas id="statusChart" height="240"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: CREATE REPAIR FORM -->
+        <section id="sec-create-repair" class="page-section">
+          <div class="card-box">
+            <div class="form-top-bar">
+              <div>
+                <h3 class="card-title" style="margin:0;">
+                  <i class="bi bi-file-earmark-plus" style="color:var(--hope-primary);"></i> สร้างใบส่งซ่อมเครื่องมือ
+                </h3>
+                <div class="vendor-sub-row">
+                  <label for="f-vendor-select" style="margin:0;">
+                    <i class="bi bi-building-gear" style="color:var(--hope-primary);"></i> ศูนย์ซ่อม / ผู้รับซ่อม <span class="req-star">*</span> :
+                  </label>
+                  <select id="f-vendor-select" class="form-control" style="width:auto; min-width:210px;" onchange="handleVendorChange(); validateRepairForm();" required>
+                    <option value="Repair Center">Repair Center</option>
+                    <option value="NPE Technology PLC.">NPE Technology PLC.</option>
+                    <option value="Others">Others</option>
+                  </select>
+                  <input type="text" id="f-vendor-other" class="form-control" placeholder="ระบุชื่อศูนย์ซ่อมเพิ่มเติม..." style="width:auto; min-width:210px; display:none;" oninput="validateRepairForm()">
+                </div>
+              </div>
+
+              <div class="doc-meta-box">
+                <div class="doc-no-line">เลขที่เอกสาร: <span id="preview-doc-no">กำลังโหลด...</span></div>
+                <div class="doc-date-line">
+                  <span>วันที่แจ้งซ่อม:</span>
+                  <input type="date" id="f-date" onchange="validateRepairForm()" required>
+                </div>
+              </div>
+            </div>
+
+            <form id="repair-form">
+              <div class="form-section-box">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-person-check"></i> ข้อมูลผู้ส่งซ่อม</div>
+                </div>
+
+                <div class="sender-row-1">
+                  <div class="form-group">
+                    <label>รหัสพนักงาน <span class="req-star">*</span></label>
+                    <div class="input-group">
+                      <input type="text" id="f-reporter-id" class="form-control" placeholder="เช่น 560827" oninput="validateRepairForm()" required>
+                      <button type="button" class="btn btn-ais" onclick="lookupReporter()"><i class="bi bi-search"></i> ค้นหา</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อพนักงาน</label>
+                    <input type="text" id="f-rep-fullname" class="form-control" readonly placeholder="ชื่อ-นามสกุลผู้ส่งซ่อม">
+                  </div>
+                </div>
+
+                <div class="sender-row-2">
+                  <div class="form-group">
+                    <label>ตำแหน่ง</label>
+                    <input type="text" id="f-rep-pos" class="form-control" readonly placeholder="ตำแหน่ง">
+                  </div>
+                  <div class="form-group">
+                    <label>เบอร์โทร</label>
+                    <input type="text" id="f-emp-phone" class="form-control" readonly placeholder="เบอร์โทรศัพท์">
+                  </div>
+                  <div class="form-group">
+                    <label>ส่วนงาน</label>
+                    <input type="text" id="f-emp-section" class="form-control" readonly placeholder="ส่วนงาน">
+                  </div>
+                </div>
+
+                <div class="sender-row-3">
+                  <div class="form-group">
+                    <label>สังกัด</label>
+                    <input type="text" id="f-rep-dept" class="form-control" readonly placeholder="สังกัด / แผนก">
+                  </div>
+                  <div class="form-group">
+                    <label>location_id</label>
+                    <input type="text" id="f-emp-loc-id" class="form-control" readonly placeholder="location_id">
+                  </div>
+                  <div class="form-group">
+                    <label>location_name</label>
+                    <input type="text" id="f-emp-loc-name" class="form-control" readonly placeholder="location_name">
+                  </div>
+                </div>
+              </div>
+
+              <div id="repair-asset-lock-alert" class="asset-lock-alert"></div>
+
+              <div class="split-info-grid">
+                <div class="side-table-panel">
+                  <div class="side-table-header">
+                    <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
+                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
+                  </div>
+                  <table class="side-kv-table">
+                    <tbody>
+                      <tr>
+                        <th>รหัสเครื่องมือ <span class="req-star">*</span></th>
+                        <td>
+                          <div class="input-group">
+                            <input type="text" id="f-asset-id" class="form-control" placeholder="เช่น T10044" oninput="validateRepairForm()" required>
+                            <button type="button" class="btn btn-ais" onclick="lookupAsset()"><i class="bi bi-search"></i> ค้นหา</button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>หมายเลขประจำเครื่อง (S/N)</th>
+                        <td><input type="text" id="f-serial-no" class="form-control" readonly placeholder="Serial Number"></td>
+                      </tr>
+                      <tr>
+                        <th>ประเภท</th>
+                        <td><input type="text" id="f-asset-category" class="form-control" readonly placeholder="ประเภทเครื่องมือ"></td>
+                      </tr>
+                      <tr>
+                        <th>ยี่ห้อ</th>
+                        <td><input type="text" id="f-asset-brand" class="form-control" readonly placeholder="ยี่ห้อ"></td>
+                      </tr>
+                      <tr>
+                        <th>รุ่น</th>
+                        <td><input type="text" id="f-asset-model" class="form-control" readonly placeholder="รุ่น"></td>
+                      </tr>
+                      <tr>
+                        <th>ประเภท - ยี่ห้อ - รุ่น</th>
+                        <td><input type="text" id="f-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="side-table-panel">
+                  <div class="side-table-header">
+                    <span><i class="bi bi-person-badge"></i> ข้อมูลผู้ถือครอง</span>
+                  </div>
+                  <table class="side-kv-table">
+                    <tbody>
+                      <tr>
+                        <th>รหัสผู้ถือครอง</th>
+                        <td><input type="text" id="f-holder-id" class="form-control" readonly placeholder="ดึงอัตโนมัติจากรหัสเครื่องมือ"></td>
+                      </tr>
+                      <tr>
+                        <th>ชื่อผู้ถือครอง</th>
+                        <td><input type="text" id="f-holder-name" class="form-control" readonly placeholder="ชื่อ-นามสกุลผู้ถือครอง"></td>
+                      </tr>
+                      <tr>
+                        <th>ตำแหน่ง</th>
+                        <td><input type="text" id="f-holder-pos" class="form-control" readonly placeholder="ตำแหน่ง"></td>
+                      </tr>
+                      <tr>
+                        <th>เบอร์โทร</th>
+                        <td><input type="text" id="f-holder-phone" class="form-control" readonly placeholder="เบอร์โทรศัพท์"></td>
+                      </tr>
+                      <tr>
+                        <th>ส่วนงาน / สังกัด</th>
+                        <td><input type="text" id="f-holder-dept" class="form-control" readonly placeholder="ส่วนงาน / สังกัด"></td>
+                      </tr>
+                      <tr>
+                        <th>สถานที่ (location_name)</th>
+                        <td><input type="text" id="f-holder-loc" class="form-control" readonly placeholder="สถานที่ปฏิบัติงาน"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="form-section-box">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-tools"></i> อาการชำรุดและหมายเหตุประกอบการซ่อม</div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>อาการชำรุด / สาเหตุที่ส่งซ่อม <span class="req-star">*</span></label>
+                    <textarea id="f-symptom" class="form-control" rows="2" placeholder="ระบุอาการชำรุด เช่น ยิงทดสอบ Core Fiber ไม่ได้" oninput="validateRepairForm()" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเหตุ / อุปกรณ์ที่ติดไปด้วย</label>
+                    <div class="remark-presets" id="remark-preset-group">
+                      <label class="remark-check-item">
+                        <input type="checkbox" class="remark-preset-cb" value="เฉพาะตัวเครื่อง" onchange="syncRemarkFromPresets(this)">
+                        <span>เฉพาะตัวเครื่อง</span>
+                      </label>
+                      <label class="remark-check-item">
+                        <input type="checkbox" class="remark-preset-cb" value="แบตเตอรี่" onchange="syncRemarkFromPresets(this)">
+                        <span>แบตเตอรี่</span>
+                      </label>
+                      <label class="remark-check-item">
+                        <input type="checkbox" class="remark-preset-cb" value="ที่ชาร์จ" onchange="syncRemarkFromPresets(this)">
+                        <span>ที่ชาร์จ</span>
+                      </label>
+                      <label class="remark-check-item">
+                        <input type="checkbox" class="remark-preset-cb" value="กระเป๋า/กล่อง" onchange="syncRemarkFromPresets(this)">
+                        <span>กระเป๋า/กล่อง</span>
+                      </label>
+                    </div>
+                    <textarea id="f-remark" class="form-control" rows="2" placeholder="ติ๊กเลือกอุปกรณ์ด้านบน หรือพิมพ์ระบุเพิ่มเติม เช่น เฉพาะตัวเครื่อง, แบตเตอรี่"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="submit-footer-bar">
+                <div class="validation-hint" id="form-validation-msg">
+                  <i class="bi bi-exclamation-circle"></i>
+                  <span>กรุณากรอกและค้นหาข้อมูลให้ครบถ้วนก่อนบันทึกและพิมพ์</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <button type="reset" class="btn btn-outline" onclick="resetFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
+                  <button type="submit" class="btn btn-ais" id="btn-save-repair" disabled>
+                    <i class="bi bi-printer"></i> บันทึกข้อมูลส่งซ่อมและพิมพ์เอกสาร A4
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- SECTION 3: MANAGE & UPDATE STATUS -->
+        <section id="sec-manage-repair" class="page-section">
+          <div class="card-box">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
+              <h3 class="card-title" style="margin:0;"><i class="bi bi-list-check" style="color:var(--hope-primary);"></i> รายการส่งซ่อมและอัปเดตสถานะ</h3>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="search-repair" class="form-control" style="min-width:240px;" placeholder="ค้นหาเลขที่เอกสาร, รหัสเครื่องมือ, ผู้แจ้ง..." oninput="renderRepairTable()">
+                <select id="filter-status" class="form-control" style="width:auto; min-width:150px;" onchange="renderRepairTable()">
+                  <option value="ALL">ทุกสถานะ</option>
+                  <option value="กำลังส่งซ่อม">กำลังส่งซ่อม</option>
+                  <option value="ได้รับคืนแล้ว">ได้รับคืนแล้ว</option>
+                  <option value="ตัดจำหน่าย">ตัดจำหน่าย</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>เลขที่เอกสาร</th>
+                    <th>วันที่แจ้ง</th>
+                    <th>รหัสเครื่องมือ</th>
+                    <th>ประเภท-ยี่ห้อ-รุ่น / S/N</th>
+                    <th>ผู้แจ้ง / ผู้ถือครอง</th>
+                    <th>อาการชำรุด</th>
+                    <th>สถานะ</th>
+                    <th>จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="manage-repair-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 4: CHANGE HOLDER & PRINT TRANSFER DOC -->
+        <section id="sec-change-holder" class="page-section">
+          <div class="card-box">
+            <div class="form-top-bar">
+              <div>
+                <h3 class="card-title" style="margin:0;">
+                  <i class="bi bi-person-lines-fill" style="color:var(--hope-primary);"></i> เปลี่ยนแปลงผู้ถือครองทรัพย์สิน
+                </h3>
+                <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">
+                  ค้นหารหัสทรัพย์สินเพื่อดูผู้ถือครองเดิม และระบุผู้ถือครองใหม่เพื่อสร้างเอกสารเปลี่ยนแปลง
+                </div>
+              </div>
+
+              <div class="doc-meta-box">
+                <div class="doc-no-line">เลขที่เอกสาร: <span id="preview-transfer-doc-no">กำลังโหลด...</span></div>
+                <div class="doc-date-line">
+                  <span>วันที่เปลี่ยนแปลง:</span>
+                  <input type="date" id="t-date" onchange="validateTransferForm()" required>
+                </div>
+              </div>
+            </div>
+
+            <form id="transfer-form">
+              <div id="transfer-asset-lock-alert" class="asset-lock-alert"></div>
+              <div class="form-section-box">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-1-circle"></i> ข้อมูลทรัพย์สินและผู้ถือครองเดิม</div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>รหัสทรัพย์สิน / เครื่องมือ (asset_id) <span class="req-star">*</span></label>
+                    <div class="input-group">
+                      <input type="text" id="t-asset-id" class="form-control" placeholder="เช่น BBC1001234" oninput="validateTransferForm()" required>
+                      <button type="button" class="btn btn-ais" onclick="lookupTransferAsset()"><i class="bi bi-search"></i> ค้นหา</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเลขประจำเครื่อง (Serial No.)</label>
+                    <input type="text" id="t-serial-no" class="form-control" readonly placeholder="Serial Number">
+                  </div>
+                  <div class="form-group span-2">
+                    <label>ประเภท - ยี่ห้อ - รุ่น</label>
+                    <input type="text" id="t-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา asset_id">
+                  </div>
+                </div>
+
+                <div class="form-grid" style="margin-top:10px;">
+                  <div class="form-group">
+                    <label>รหัสผู้ถือครองเดิม (old_holder_id)</label>
+                    <input type="text" id="t-old-holder-id" class="form-control" readonly placeholder="รหัสผู้ถือครองเดิม">
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อ-สกุล / แผนก (ผู้ถือครองเดิม)</label>
+                    <input type="text" id="t-old-holder-name" class="form-control" readonly placeholder="ข้อมูลผู้ถือครองเดิม">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section-box">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-2-circle"></i> ข้อมูลผู้ถือครองใหม่และเหตุผลการเปลี่ยนแปลง</div>
+                  <span class="auto-badge">ค้นหารหัสผู้ถือครองใหม่จาก Employees</span>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>รหัสผู้ถือครองใหม่ (new_holder_id) <span class="req-star">*</span></label>
+                    <div class="input-group">
+                      <input type="text" id="t-new-holder-id" class="form-control" placeholder="ระบุรหัสพนักงานผู้ถือครองใหม่" oninput="validateTransferForm()" required>
+                      <button type="button" class="btn btn-ais" onclick="lookupNewHolder()"><i class="bi bi-search"></i> ค้นหา</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อ-สกุล / แผนก (ผู้ถือครองใหม่)</label>
+                    <input type="text" id="t-new-holder-name" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา">
+                  </div>
+                </div>
+
+                <div class="form-grid" style="margin-top:10px;">
+                  <div class="form-group">
+                    <label>เหตุผลในการเปลี่ยนแปลงผู้ถือครอง <span class="req-star">*</span></label>
+                    <input type="text" id="t-reason" class="form-control" placeholder="เช่น โอนย้ายสายงาน / สับเปลี่ยนอุปกรณ์ปฏิบัติงาน" oninput="validateTransferForm()" required>
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเหตุเพิ่มเติม</label>
+                    <input type="text" id="t-remark" class="form-control" placeholder="ระบุหมายเหตุ (ถ้ามี)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="submit-footer-bar">
+                <div class="validation-hint" id="transfer-validation-msg">
+                  <i class="bi bi-exclamation-circle"></i>
+                  <span>กรุณากรอกและค้นหาข้อมูลทรัพย์สิน ผู้ถือครองใหม่ และเหตุผลให้ครบถ้วน</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <button type="reset" class="btn btn-outline" onclick="resetTransferFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
+                  <button type="submit" class="btn btn-ais" id="btn-save-transfer" disabled>
+                    <i class="bi bi-printer"></i> บันทึกการเปลี่ยนแปลงและพิมพ์เอกสาร A4
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-box">
+            <h3 class="card-title"><i class="bi bi-clock-history" style="color:var(--hope-primary);"></i> ประวัติการเปลี่ยนแปลงผู้ถือครองทรัพย์สิน</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>เลขที่เอกสาร</th>
+                    <th>วันที่เปลี่ยน</th>
+                    <th>รหัสทรัพย์สิน</th>
+                    <th>รายละเอียดเครื่องมือ</th>
+                    <th>ผู้ถือครองเดิม</th>
+                    <th>ผู้ถือครองใหม่</th>
+                    <th>เหตุผล</th>
+                    <th>พิมพ์</th>
+                  </tr>
+                </thead>
+                <tbody id="transfer-history-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: ASSET LIST -->
+        <section id="sec-asset-list" class="page-section">
+          <div class="card-box">
+            <h3 class="card-title"><i class="bi bi-box-seam" style="color:var(--hope-primary);"></i> ทะเบียนเครื่องมือทั้งหมด</h3>
+            <div class="table-responsive">
+              <table id="asset-master-table" class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>Asset ID</th>
+                    <th>ประเภท</th>
+                    <th>ยี่ห้อ</th>
+                    <th>รุ่น</th>
+                    <th>Serial No.</th>
+                    <th>ผู้ถือครอง (holder_id)</th>
+                    <th>สถานะปัจจุบัน</th>
+                  </tr>
+                </thead>
+                <tbody id="asset-master-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <div id="print-area"></div>
+
+  <script>
+    let MASTER_DATA = { employees: [], assets: [], repairs: [], transfers: [] };
+    let SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
+    let SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
+    let CURRENT_USER = null;
+    let statusChartInstance = null;
+    let assetDataTable = null;
+    let isLoadingData = false;
+
+    const COLOR_THEMES = {
+      blue: { label: 'Blue', primary: '#3A57E8', hover: '#2A45D0', soft: 'rgba(58, 87, 232, 0.12)', shadow: '0 4px 12px rgba(58, 87, 232, 0.35)', gradient: 'linear-gradient(115deg, #3A57E8 0%, #2B46D4 55%, #08B1BA 100%)' },
+      green: { label: 'Green', primary: '#1AA053', hover: '#138242', soft: 'rgba(26, 160, 83, 0.13)', shadow: '0 4px 12px rgba(26, 160, 83, 0.35)', gradient: 'linear-gradient(115deg, #1AA053 0%, #148344 55%, #0D9488 100%)' },
+      orange: { label: 'Orange', primary: '#F16A1B', hover: '#D6560D', soft: 'rgba(241, 106, 27, 0.13)', shadow: '0 4px 12px rgba(241, 106, 27, 0.35)', gradient: 'linear-gradient(115deg, #F16A1B 0%, #DC580E 55%, #F59E0B 100%)' },
+      red: { label: 'Red', primary: '#D92D20', hover: '#B42318', soft: 'rgba(217, 45, 32, 0.12)', shadow: '0 4px 12px rgba(217, 45, 32, 0.35)', gradient: 'linear-gradient(115deg, #D92D20 0%, #B42318 55%, #F97316 100%)' },
+      yellow: { label: 'Yellow', primary: '#D97706', hover: '#B45309', soft: 'rgba(234, 179, 8, 0.15)', shadow: '0 4px 12px rgba(217, 119, 6, 0.35)', gradient: 'linear-gradient(115deg, #EAB308 0%, #D97706 58%, #EA580C 100%)' },
+      purple: { label: 'Purple', primary: '#7C3AED', hover: '#6D28D9', soft: 'rgba(124, 58, 237, 0.13)', shadow: '0 4px 12px rgba(124, 58, 237, 0.35)', gradient: 'linear-gradient(115deg, #7C3AED 0%, #6D28D9 55%, #A855F7 100%)' },
+      pink: { label: 'Pink', primary: '#EC4899', hover: '#DB2777', soft: 'rgba(236, 72, 153, 0.13)', shadow: '0 4px 12px rgba(236, 72, 153, 0.35)', gradient: 'linear-gradient(115deg, #EC4899 0%, #DB2777 55%, #F43F5E 100%)' }
+    };
+
+    let CURRENT_COLOR_KEY = 'blue';
+    let CURRENT_FONT_FAMILY = 'Sarabun';
+
+    function toggleCustomizer(e) {
+      if (e) e.stopPropagation();
+      const panel = document.getElementById('customizer-panel');
+      const btn = document.getElementById('palette-toggle-btn');
+      const isOpen = panel.classList.toggle('open');
+      btn.classList.toggle('active-btn', isOpen);
+    }
+
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('customizer-wrap');
+      const panel = document.getElementById('customizer-panel');
+      const btn = document.getElementById('palette-toggle-btn');
+      if (wrap && panel && !wrap.contains(e.target)) {
+        panel.classList.remove('open');
+        if (btn) btn.classList.remove('active-btn');
+      }
+    });
+
+    function setColorTheme(colorKey, silent = false) {
+      const theme = COLOR_THEMES[colorKey] || COLOR_THEMES.blue;
+      CURRENT_COLOR_KEY = colorKey;
+      const root = document.documentElement;
+      root.style.setProperty('--hope-primary', theme.primary);
+      root.style.setProperty('--hope-primary-hover', theme.hover);
+      root.style.setProperty('--hope-primary-soft', theme.soft);
+      root.style.setProperty('--hope-primary-shadow', theme.shadow);
+      root.style.setProperty('--hope-hero-gradient', theme.gradient);
+
+      const labelEl = document.getElementById('current-color-label');
+      if (labelEl) labelEl.innerText = theme.label;
+
+      document.querySelectorAll('.color-swatch-btn').forEach(btn => {
+        const isMatch = btn.dataset.color === colorKey;
+        btn.classList.toggle('active', isMatch);
+        const dot = btn.querySelector('.swatch-dot');
+        if (dot) dot.innerHTML = isMatch ? '<i class="bi bi-check-lg"></i>' : '';
+      });
+
+      try { localStorage.setItem('tool_repair_color_theme', colorKey); } catch (e) {}
+
+      if (statusChartInstance) {
+        statusChartInstance.data.datasets[0].backgroundColor = ['#F16A1B', theme.primary, '#C03221'];
+        statusChartInstance.update();
+      }
+      if (!silent) showToast(`เปลี่ยนธีมสีเป็น ${theme.label} แล้ว`);
+    }
+
+    function setFontTheme(fontName, silent = false) {
+      CURRENT_FONT_FAMILY = fontName;
+      document.documentElement.style.setProperty('--app-font', `'${fontName}', 'Inter', sans-serif`);
+
+      document.querySelectorAll('.font-option-btn').forEach(btn => {
+        const isMatch = btn.dataset.font === fontName;
+        btn.classList.toggle('active', isMatch);
+        const existingIcon = btn.querySelector('i');
+        if (existingIcon) existingIcon.remove();
+        if (isMatch) btn.insertAdjacentHTML('beforeend', '<i class="bi bi-check2"></i>');
+      });
+
+      try { localStorage.setItem('tool_repair_font_family', fontName); } catch (e) {}
+      adjustAssetDataTable(100);
+      if (!silent) showToast(`เปลี่ยนฟอนต์เป็น ${fontName === 'IBM Plex Sans Thai' ? 'IBM' : fontName} แล้ว`);
+    }
+
+    (function restoreSavedAppearance() {
+      try {
+        const savedColor = localStorage.getItem('tool_repair_color_theme');
+        if (savedColor && COLOR_THEMES[savedColor]) setColorTheme(savedColor, true);
+        const savedFont = localStorage.getItem('tool_repair_font_family');
+        if (savedFont) setFontTheme(savedFont, true);
+      } catch (e) {}
+    })();
+
+    document.getElementById('f-date').valueAsDate = new Date();
+    document.getElementById('t-date').valueAsDate = new Date();
+
+    function syncRemarkFromPresets(changedCb) {
+      const remarkEl = document.getElementById('f-remark');
+      if (!remarkEl) return;
+
+      const allCbs = Array.from(document.querySelectorAll('.remark-preset-cb'));
+      const deviceOnlyCb = allCbs.find(cb => cb.value.trim() === 'เฉพาะตัวเครื่อง');
+      const accessoryCbs = allCbs.filter(cb => cb.value.trim() !== 'เฉพาะตัวเครื่อง');
+
+      if (changedCb) {
+        if (changedCb.value.trim() === 'เฉพาะตัวเครื่อง' && changedCb.checked) {
+          accessoryCbs.forEach(cb => { cb.checked = false; });
+        } else if (changedCb.value.trim() !== 'เฉพาะตัวเครื่อง' && changedCb.checked) {
+          if (deviceOnlyCb) deviceOnlyCb.checked = false;
+        }
+      }
+
+      const selected = allCbs.filter(cb => cb.checked).map(cb => cb.value.trim());
+      const presetValues = allCbs.map(cb => cb.value.trim());
+      const customParts = remarkEl.value.split(',').map(s => s.trim()).filter(part => part && !presetValues.includes(part));
+      remarkEl.value = [...selected, ...customParts].join(', ');
+    }
+
+    function clearRemarkPresets() {
+      document.querySelectorAll('.remark-preset-cb').forEach(cb => { cb.checked = false; });
+    }
+
+    function checkAssetUnderRepair(assetId) {
+      const cleanId = String(assetId || '').trim().toUpperCase();
+      if (!cleanId) return { locked: false, reason: '' };
+
+      const activeRepair = (MASTER_DATA.repairs || []).find(
+        r => String(r.asset_id || '').trim().toUpperCase() === cleanId && String(r.status || '').trim() === 'กำลังส่งซ่อม'
+      );
+      if (activeRepair) {
+        return { locked: true, doc_no: activeRepair.doc_no || '', reason: `เครื่องมือรหัส ${cleanId} กำลังส่งซ่อมอยู่ (เลขที่เอกสาร ${activeRepair.doc_no}) ไม่สามารถส่งซ่อมซ้ำหรือโอนย้ายได้จนกว่าจะรับคืนเสร็จสิ้น` };
+      }
+
+      const scrappedRepair = (MASTER_DATA.repairs || []).find(
+        r => String(r.asset_id || '').trim().toUpperCase() === cleanId && String(r.status || '').trim() === 'ตัดจำหน่าย'
+      );
+      const asset = (MASTER_DATA.assets || []).find(a => String(a.asset_id || '').trim().toUpperCase() === cleanId);
+      const assetStatus = String(asset?.status || '').trim();
+
+      if (assetStatus === 'ตัดจำหน่าย' || scrappedRepair) {
+        const docText = scrappedRepair?.doc_no ? ` (อ้างอิงเอกสาร ${scrappedRepair.doc_no})` : '';
+        return { locked: true, doc_no: scrappedRepair?.doc_no || '', reason: `เครื่องมือรหัส ${cleanId} ถูกตัดจำหน่ายแล้ว${docText} ไม่สามารถส่งซ่อมหรือโอนย้ายผู้ถือครองได้` };
+      }
+
+      if (assetStatus === 'ส่งซ่อม' || assetStatus === 'กำลังส่งซ่อม') {
+        return { locked: true, doc_no: '', reason: `เครื่องมือรหัส ${cleanId} มีสถานะ "${assetStatus}" ไม่สามารถส่งซ่อมซ้ำหรือโอนย้ายได้จนกว่าจะซ่อมเสร็จ` };
+      }
+
+      return { locked: false, reason: '' };
+    }
+
+    function updateAssetLockBanner(bannerId, lockInfo) {
+      const banner = document.getElementById(bannerId);
+      if (!banner) return;
+      if (lockInfo && lockInfo.locked) {
+        banner.classList.add('show');
+        banner.innerHTML = `<i class="bi bi-exclamation-triangle" style="font-size:16px;"></i><span>${lockInfo.reason}</span>`;
+      } else {
+        banner.classList.remove('show');
+        banner.innerHTML = '';
+      }
+    }
+
+    function isMobileViewport() { return window.innerWidth < 768; }
+
+    function adjustAssetDataTable(delay = 260) {
+      if (!assetDataTable) return;
+      setTimeout(() => { if (assetDataTable) assetDataTable.columns.adjust(); }, delay);
+    }
+
+    function syncSidebarToggleIcon() {
+      const appContainer = document.getElementById('app-container');
+      const icon = document.getElementById('sidebar-toggle-icon');
+      if (!icon) return;
+      if (isMobileViewport()) {
+        icon.className = appContainer.classList.contains('mobile-sidebar-open') ? 'bi bi-chevron-left' : 'bi bi-chevron-right';
+      } else {
+        icon.className = appContainer.classList.contains('sidebar-collapsed') ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+      }
+    }
+
+    function openMobileSidebar() {
+      document.getElementById('app-container').classList.add('mobile-sidebar-open');
+      document.getElementById('sidebar-backdrop').classList.add('show');
+      syncSidebarToggleIcon();
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('app-container').classList.remove('mobile-sidebar-open');
+      document.getElementById('sidebar-backdrop').classList.remove('show');
+      syncSidebarToggleIcon();
+      adjustAssetDataTable(280);
+    }
+
+    function toggleSidebar() {
+      const appContainer = document.getElementById('app-container');
+      if (isMobileViewport()) {
+        if (appContainer.classList.contains('mobile-sidebar-open')) closeMobileSidebar();
+        else openMobileSidebar();
+        return;
+      }
+      appContainer.classList.toggle('sidebar-collapsed');
+      syncSidebarToggleIcon();
+      adjustAssetDataTable(260);
+    }
+
+    function initCollapsedTooltips() {
+      document.querySelectorAll('#main-sidebar [data-tooltip]').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          if (isMobileViewport()) return;
+          const appContainer = document.getElementById('app-container');
+          if (!appContainer.classList.contains('sidebar-collapsed')) return;
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty('--tooltip-top', `${rect.top + rect.height / 2}px`);
+        });
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (!isMobileViewport()) {
+        document.getElementById('app-container').classList.remove('mobile-sidebar-open');
+        document.getElementById('sidebar-backdrop').classList.remove('show');
+      }
+      syncSidebarToggleIcon();
+      adjustAssetDataTable(180);
+    });
+    initCollapsedTooltips();
+
+    function validateRepairForm() {
+      const btn = document.getElementById('btn-save-repair');
+      const hint = document.getElementById('form-validation-msg');
+      const missing = [];
+
+      const dateVal = document.getElementById('f-date').value.trim();
+      const vendorSelect = document.getElementById('f-vendor-select').value;
+      const vendorOther = document.getElementById('f-vendor-other').value.trim();
+      const reporterId = document.getElementById('f-reporter-id').value.trim();
+      const repFullname = document.getElementById('f-rep-fullname').value.trim();
+      const assetId = document.getElementById('f-asset-id').value.trim();
+      const assetDetail = document.getElementById('f-asset-detail').value.trim();
+      const symptom = document.getElementById('f-symptom').value.trim();
+
+      const lockInfo = checkAssetUnderRepair(assetId);
+      updateAssetLockBanner('repair-asset-lock-alert', lockInfo);
+
+      if (!dateVal) missing.push('วันที่แจ้งซ่อม');
+      if (vendorSelect === 'Others' && !vendorOther) missing.push('ชื่อศูนย์ซ่อม (Others)');
+      if (!reporterId || !repFullname) missing.push('ข้อมูลผู้ส่งซ่อม (กดค้นหา emp_id)');
+      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน (กดค้นหา asset_id)');
+      if (lockInfo.locked) missing.push('เครื่องมือไม่สามารถส่งซ่อมได้ในขณะนี้');
+      if (!symptom) missing.push('อาการชำรุด');
+
+      const isComplete = missing.length === 0;
+      btn.disabled = !isComplete;
+
+      if (lockInfo.locked) {
+        hint.className = 'validation-hint';
+        hint.innerHTML = `<i class="bi bi-lock"></i><span>${lockInfo.reason}</span>`;
+      } else if (isComplete) {
+        hint.className = 'validation-hint ready';
+        hint.innerHTML = `<i class="bi bi-check-circle"></i><span>ข้อมูลครบถ้วน พร้อมบันทึกและพิมพ์เอกสาร</span>`;
+      } else {
+        hint.className = 'validation-hint';
+        hint.innerHTML = `<i class="bi bi-exclamation-circle"></i><span>รอข้อมูล: ${missing.join(' • ')}</span>`;
+      }
+      return isComplete;
+    }
+
+    function validateTransferForm() {
+      const btn = document.getElementById('btn-save-transfer');
+      const hint = document.getElementById('transfer-validation-msg');
+      const missing = [];
+
+      const dateVal = document.getElementById('t-date').value.trim();
+      const assetId = document.getElementById('t-asset-id').value.trim();
+      const assetDetail = document.getElementById('t-asset-detail').value.trim();
+      const newHolderId = document.getElementById('t-new-holder-id').value.trim();
+      const newHolderName = document.getElementById('t-new-holder-name').value.trim();
+      const reason = document.getElementById('t-reason').value.trim();
+
+      const lockInfo = checkAssetUnderRepair(assetId);
+      updateAssetLockBanner('transfer-asset-lock-alert', lockInfo);
+
+      if (!dateVal) missing.push('วันที่เปลี่ยนแปลง');
+      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน (กดค้นหา asset_id)');
+      if (lockInfo.locked) missing.push('เครื่องมือไม่สามารถโอนย้ายได้ในขณะนี้');
+      if (!newHolderId || !newHolderName) missing.push('ข้อมูลผู้ถือครองใหม่ (กดค้นหา emp_id)');
+      if (!reason) missing.push('เหตุผลในการเปลี่ยนแปลง');
+
+      const isComplete = missing.length === 0;
+      btn.disabled = !isComplete;
+
+      if (lockInfo.locked) {
+        hint.className = 'validation-hint';
+        hint.innerHTML = `<i class="bi bi-lock"></i><span>${lockInfo.reason}</span>`;
+      } else if (isComplete) {
+        hint.className = 'validation-hint ready';
+        hint.innerHTML = `<i class="bi bi-check-circle"></i><span>ข้อมูลครบถ้วน พร้อมบันทึกการเปลี่ยนแปลงและพิมพ์เอกสาร</span>`;
+      } else {
+        hint.className = 'validation-hint';
+        hint.innerHTML = `<i class="bi bi-exclamation-circle"></i><span>รอข้อมูล: ${missing.join(' • ')}</span>`;
+      }
+      return isComplete;
+    }
+
+    function handleVendorChange() {
+      const sel = document.getElementById('f-vendor-select').value;
+      const otherInput = document.getElementById('f-vendor-other');
+      if (sel === 'Others') {
+        otherInput.style.display = 'inline-block';
+        otherInput.required = true;
+        otherInput.focus();
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+      validateRepairForm();
+    }
+
+    function getSelectedVendor() {
+      const sel = document.getElementById('f-vendor-select').value;
+      return sel === 'Others' ? (document.getElementById('f-vendor-other').value.trim() || 'Others') : sel;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast-item ${type}`;
+      let icon = 'bi-check-circle', iconColor = 'var(--hope-primary)';
+      if (type === 'error') { icon = 'bi-x-circle'; iconColor = 'var(--hope-danger)'; }
+      if (type === 'warning') { icon = 'bi-exclamation-triangle'; iconColor = 'var(--hope-warning)'; }
+      toast.innerHTML = `<i class="bi ${icon}" style="font-size:19px; color:${iconColor};"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = '0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+      Swal.fire({ title: 'กำลังตรวจสอบสิทธิ์...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success) {
+            CURRENT_USER = res.user;
+            document.getElementById('display-username').innerText = `${res.user.fullname} (${res.user.emp_id})`;
+            document.getElementById('hero-title').innerText = `สวัสดีคุณ ${res.user.fullname}!`;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            syncSidebarToggleIcon();
+            showToast(`ยินดีต้อนรับคุณ ${res.user.fullname}`, 'success');
+            loadAllData();
+          } else {
+            Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
+          }
+        })
+        .withFailureHandler(err => {
+          Swal.close();
+          Swal.fire('เกิดข้อผิดพลาด', err.message, 'error');
+        })
+        .checkLogin(user, pass);
+    });
+
+    function confirmLogout() {
+      const primaryColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
+      Swal.fire({
+        title: 'ยืนยันการออกจากระบบ?',
+        text: 'คุณต้องการออกจากระบบบริหารงานส่งซ่อมใช่หรือไม่',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: primaryColor,
+        cancelButtonColor: '#8A92A6',
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          CURRENT_USER = null;
+          MASTER_DATA = { employees: [], assets: [], repairs: [], transfers: [] };
+          closeMobileSidebar();
+          document.getElementById('login-form').reset();
+          document.getElementById('app-container').style.display = 'none';
+          document.getElementById('login-screen').style.display = 'flex';
+          showToast('ออกจากระบบเรียบร้อยแล้ว', 'warning');
+        }
+      });
+    }
+
+    function switchPage(pageId, el) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('sec-' + pageId).classList.add('active');
+      el.classList.add('active');
+
+      const pageMeta = {
+        'dashboard': { title: 'แดชบอร์ดรายงานภาพรวม', icon: 'bi-grid-1x2-fill' },
+        'create-repair': { title: 'สร้างใบส่งซ่อมเครื่องมือใหม่', icon: 'bi-file-earmark-plus-fill' },
+        'manage-repair': { title: 'ติดตามสถานะ / รับคืน / ตัดจำหน่าย', icon: 'bi-arrow-repeat' },
+        'change-holder': { title: 'เปลี่ยนแปลงผู้ถือครองทรัพย์สิน', icon: 'bi-person-lines-fill' },
+        'asset-list': { title: 'ทะเบียนเครื่องมือในระบบ', icon: 'bi bi-box-seam-fill' }
+      };
+      const meta = pageMeta[pageId] || pageMeta.dashboard;
+      document.getElementById('page-title').innerText = meta.title;
+      const titleIconEl = document.getElementById('page-title-icon');
+      if (titleIconEl) titleIconEl.className = `bi ${meta.icon}`;
+
+      if (pageId === 'create-repair') { refreshNextDocNo(); validateRepairForm(); }
+      else if (pageId === 'change-holder') { refreshNextTransferDocNo(); validateTransferForm(); }
+      else if (pageId === 'asset-list') { adjustAssetDataTable(60); }
+
+      if (isMobileViewport()) closeMobileSidebar();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (html.getAttribute('data-theme') === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        icon.className = 'bi bi-sun';
+        showToast('เปลี่ยนเป็นโหมดมืด (Dark Mode)');
+      } else {
+        html.setAttribute('data-theme', 'light');
+        icon.className = 'bi bi-moon';
+        showToast('เปลี่ยนเป็นโหมดสว่าง (Light Mode)');
+      }
+    }
+
+    function toggleFullScreen() {
+      const icon = document.getElementById('fullscreen-icon');
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        icon.className = 'bi bi-fullscreen-exit';
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+        icon.className = 'bi bi-arrows-angle-expand';
+      }
+    }
+
+    function loadAllData() {
+      if (!CURRENT_USER || isLoadingData) return;
+      isLoadingData = true;
+      google.script.run
+        .withSuccessHandler(data => {
+          isLoadingData = false;
+          MASTER_DATA = data || { employees: [], assets: [], repairs: [], transfers: [] };
+          updateDashboard();
+          renderRepairTable();
+          renderAssetTable();
+          renderTransferHistoryTable();
+          refreshNextDocNo();
+          refreshNextTransferDocNo();
+        })
+        .withFailureHandler(err => {
+          isLoadingData = false;
+          showToast('โหลดข้อมูลจากชีตไม่สำเร็จ: ' + err.message, 'error');
+        })
+        .getInitialData();
+    }
+
+    function refreshNextDocNo() {
+      if (!CURRENT_USER) return;
+      google.script.run.withSuccessHandler(docNo => { document.getElementById('preview-doc-no').innerText = docNo; }).generateDocNo();
+    }
+
+    function refreshNextTransferDocNo() {
+      if (!CURRENT_USER) return;
+      google.script.run.withSuccessHandler(docNo => { document.getElementById('preview-transfer-doc-no').innerText = docNo; }).generateTransferDocNo();
+    }
+
+    function updateDashboard() {
+      const repairs = MASTER_DATA.repairs || [];
+      const total = repairs.length;
+      const repairing = repairs.filter(r => r.status === 'กำลังส่งซ่อม').length;
+      const returned = repairs.filter(r => r.status === 'ได้รับคืนแล้ว').length;
+      const scrapped = repairs.filter(r => r.status === 'ตัดจำหน่าย').length;
+
+      document.getElementById('kpi-total').innerText = total;
+      document.getElementById('kpi-repairing').innerText = repairing;
+      document.getElementById('kpi-returned').innerText = returned;
+      document.getElementById('kpi-scrapped').innerText = scrapped;
+
+      document.getElementById('dashboard-recent-table').innerHTML = repairs.slice(0, 6).map(r => `
+        <tr>
+          <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
+          <td>${r.repair_date}</td>
+          <td>${r.asset_id}</td>
+          <td>${r.asset_detail}</td>
+          <td>${getStatusBadge(r.status)}</td>
+          <td><button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})'><i class="bi bi-printer"></i></button></td>
+        </tr>
+      `).join('');
+
+      const activeThemeColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
+      const ctx = document.getElementById('statusChart').getContext('2d');
+      if (statusChartInstance) statusChartInstance.destroy();
+      statusChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['กำลังส่งซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
+          datasets: [{ data: [repairing, returned, scrapped], backgroundColor: ['#F16A1B', activeThemeColor, '#C03221'], borderWidth: 0 }]
+        },
+        options: { responsive: true, cutout: '68%', plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    function getStatusBadge(status) {
+      const s = String(status || '').trim();
+      if (s === 'กำลังส่งซ่อม' || s === 'ส่งซ่อม') return `<span class="badge badge-repair">${s}</span>`;
+      if (s === 'ได้รับคืนแล้ว') return `<span class="badge badge-return">${s}</span>`;
+      if (s === 'ตัดจำหน่าย') return `<span class="badge badge-scrap">${s}</span>`;
+      return `<span class="badge badge-ready">${s || 'พร้อมใช้งาน'}</span>`;
+    }
+
+    function clearReporterDetails() {
+      ['f-rep-fullname', 'f-rep-pos', 'f-emp-phone', 'f-emp-section', 'f-rep-dept', 'f-emp-loc-id', 'f-emp-loc-name'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+    function clearHolderDetails() {
+      ['f-holder-id', 'f-holder-name', 'f-holder-pos', 'f-holder-phone', 'f-holder-dept', 'f-holder-loc'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+    function lookupAsset() {
+      const assetId = document.getElementById('f-asset-id').value.trim().toUpperCase();
+      const asset = (MASTER_DATA.assets || []).find(a => String(a.asset_id || '').trim().toUpperCase() === assetId);
+
+      if (asset) {
+        SELECTED_ASSET = { category: asset.category || '', brand: asset.brand || '', model: asset.model || '', holder_id: asset.holder_id || '' };
+        document.getElementById('f-asset-id').value = assetId;
+        document.getElementById('f-asset-category').value = asset.category || '';
+        document.getElementById('f-asset-brand').value = asset.brand || '';
+        document.getElementById('f-asset-model').value = asset.model || '';
+        document.getElementById('f-asset-detail').value = `${asset.category || '-'} - ${asset.brand || '-'} - ${asset.model || '-'}`;
+        document.getElementById('f-serial-no').value = asset.serial_no || '';
+
+        if (asset.holder_id) {
+          const holderEmp = fillHolderFromAsset(asset.holder_id);
+          if (holderEmp) {
+            document.getElementById('holder-source-badge').innerText = `อิงจาก ${asset.asset_id}`;
+            showToast(`พบทรัพย์สินและผู้ถือครอง (${holderEmp.fullname})`);
+          } else {
+            document.getElementById('holder-source-badge').innerText = 'ไม่พบผู้ถือครองใน Employees';
+            showToast(`พบทรัพย์สิน แต่ไม่พบรหัสผู้ถือครอง ${asset.holder_id} ในชีต Employees`, 'warning');
+          }
+        } else {
+          clearHolderDetails();
+          document.getElementById('holder-source-badge').innerText = 'ไม่มี holder_id ใน Assets';
+          showToast(`พบทรัพย์สิน: ${asset.category || ''} ${asset.brand || ''}`, 'warning');
+        }
+
+        const lockInfo = checkAssetUnderRepair(assetId);
+        if (lockInfo.locked) {
+          Swal.fire({ icon: 'warning', title: 'ไม่สามารถส่งซ่อมเครื่องมือนี้ได้', text: lockInfo.reason, confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+        }
+      } else {
+        SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
+        ['f-asset-category', 'f-asset-brand', 'f-asset-model', 'f-asset-detail', 'f-serial-no'].forEach(id => { document.getElementById(id).value = ''; });
+        clearHolderDetails();
+        document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+        showToast(`ไม่พบรหัสทรัพย์สิน ${assetId}`, 'error');
+      }
+      validateRepairForm();
+    }
+
+    document.getElementById('f-reporter-id').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lookupReporter(); } });
+    document.getElementById('f-asset-id').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lookupAsset(); } });
+
+    function lookupTransferAsset() {
+      const assetId = document.getElementById('t-asset-id').value.trim().toUpperCase();
+      if (!assetId) { showToast('กรุณาระบุรหัสทรัพย์สิน (asset_id) ก่อนค้นหา', 'warning'); return; }
+      if (!Array.isArray(MASTER_DATA.assets) || MASTER_DATA.assets.length === 0) {
+        showToast('ไม่พบข้อมูลทะเบียนทรัพย์สินในหน่วยความจำ กรุณาเข้าสู่ระบบใหม่อีกครั้ง', 'warning');
+        return;
+      }
+
+      const asset = MASTER_DATA.assets.find(a => String(a.asset_id || '').trim().toUpperCase() === assetId);
+      if (asset) {
+        SELECTED_TRANSFER_ASSET = { category: asset.category || '', brand: asset.brand || '', model: asset.model || '', old_holder_id: asset.holder_id || '' };
+        document.getElementById('t-asset-id').value = assetId;
+        document.getElementById('t-asset-detail').value = `${asset.category || '-'} - ${asset.brand || '-'} - ${asset.model || '-'}`;
+        document.getElementById('t-serial-no').value = asset.serial_no || '-';
+        document.getElementById('t-old-holder-id').value = asset.holder_id || '-';
+
+        if (asset.holder_id) {
+          const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id || '').trim().toUpperCase() === String(asset.holder_id).trim().toUpperCase());
+          document.getElementById('t-old-holder-name').value = emp ? `${emp.fullname} (${emp.department})` : 'ไม่พบข้อมูลพนักงานในชีต Employees';
+        } else {
+          document.getElementById('t-old-holder-name').value = 'ยังไม่ได้ระบุผู้ถือครองเดิม';
+        }
+        showToast(`พบทรัพย์สิน: ${asset.asset_id}`);
+
+        const lockInfo = checkAssetUnderRepair(assetId);
+        if (lockInfo.locked) {
+          Swal.fire({ icon: 'warning', title: 'ไม่สามารถโอนย้ายเครื่องมือนี้ได้', text: lockInfo.reason, confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+        }
+      } else {
+        SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
+        ['t-asset-detail', 't-serial-no', 't-old-holder-id', 't-old-holder-name'].forEach(id => { document.getElementById(id).value = ''; });
+        showToast(`ไม่พบรหัสทรัพย์สิน ${assetId} ในทะเบียน Assets`, 'error');
+      }
+      validateTransferForm();
+    }
+
+    function lookupReporter() {
+      const empId = document.getElementById('f-reporter-id').value.trim().toUpperCase();
+      if (!empId) { clearReporterDetails(); validateRepairForm(); return; }
+      const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id || '').trim().toUpperCase() === empId);
+      if (emp) {
+        document.getElementById('f-reporter-id').value = empId;
+        document.getElementById('f-rep-fullname').value = emp.fullname || '';
+        document.getElementById('f-rep-pos').value = emp.position || '';
+        document.getElementById('f-emp-phone').value = emp.phone || '';
+        document.getElementById('f-emp-section').value = emp.section || '';
+        document.getElementById('f-rep-dept').value = emp.department || '';
+        document.getElementById('f-emp-loc-id').value = emp.location_id || '';
+        document.getElementById('f-emp-loc-name').value = emp.location_name || '';
+        showToast(`พบข้อมูลผู้ส่งซ่อม: ${emp.fullname}`);
+      } else {
+        clearReporterDetails();
+        showToast(`ไม่พบรหัสพนักงาน ${empId} ในชีต Employees`, 'error');
+      }
+      validateRepairForm();
+    }
+
+    function fillHolderFromAsset(holderId) {
+      const cleanId = String(holderId || '').trim().toUpperCase();
+      if (!cleanId) { clearHolderDetails(); return null; }
+      document.getElementById('f-holder-id').value = cleanId;
+      const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id || '').trim().toUpperCase() === cleanId);
+      if (emp) {
+        document.getElementById('f-holder-name').value = emp.fullname || '';
+        document.getElementById('f-holder-pos').value = emp.position || '';
+        document.getElementById('f-holder-phone').value = emp.phone || '';
+        document.getElementById('f-holder-dept').value = [emp.section, emp.department].filter(Boolean).join(' / ');
+        document.getElementById('f-holder-loc').value = [emp.location_id, emp.location_name].filter(Boolean).join(' - ');
+        return emp;
+      }
+      clearHolderDetails();
+      document.getElementById('f-holder-id').value = cleanId;
+      return null;
+    }
+
+    function resetFormHelper() {
+      SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
+      clearReporterDetails();
+      clearHolderDetails();
+      clearRemarkPresets();
+      updateAssetLockBanner('repair-asset-lock-alert', null);
+      ['f-asset-category', 'f-asset-brand', 'f-asset-model'].forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+      setTimeout(() => {
+        document.getElementById('f-date').valueAsDate = new Date();
+        document.getElementById('f-vendor-select').value = 'Repair Center';
+        handleVendorChange();
+        validateRepairForm();
+      }, 10);
+    }
+
+    document.getElementById('repair-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!validateRepairForm()) { showToast('กรุณากรอกและค้นหาข้อมูลให้ครบถ้วนก่อนบันทึกและพิมพ์', 'warning'); return; }
+
+      const repFullname = document.getElementById('f-rep-fullname').value.trim();
+      const repDept = document.getElementById('f-rep-dept').value.trim();
+      const holderName = document.getElementById('f-holder-name').value.trim();
+      const holderDept = document.getElementById('f-holder-dept').value.trim();
+      const assetDetail = document.getElementById('f-asset-detail').value.trim();
+
+      const payload = {
+        repair_date: document.getElementById('f-date').value,
+        vendor: getSelectedVendor(),
+        reporter_id: document.getElementById('f-reporter-id').value.trim().toUpperCase(),
+        reporter_name: repDept ? `${repFullname} (${repDept})` : repFullname,
+        reporter_position: document.getElementById('f-rep-pos').value.trim(),
+        reporter_phone: document.getElementById('f-emp-phone').value.trim(),
+        reporter_section: document.getElementById('f-emp-section').value.trim(),
+        reporter_department: repDept,
+        reporter_location_id: document.getElementById('f-emp-loc-id').value.trim(),
+        reporter_location_name: document.getElementById('f-emp-loc-name').value.trim(),
+        holder_id: document.getElementById('f-holder-id').value.trim().toUpperCase(),
+        holder_name: holderDept ? `${holderName} (${holderDept})` : holderName,
+        asset_id: document.getElementById('f-asset-id').value.trim().toUpperCase(),
+        asset_detail: assetDetail,
+        category: SELECTED_ASSET.category,
+        brand: SELECTED_ASSET.brand,
+        model: SELECTED_ASSET.model,
+        serial_no: document.getElementById('f-serial-no').value,
+        symptom: document.getElementById('f-symptom').value.trim(),
+        remark: document.getElementById('f-remark').value.trim()
+      };
+
+      Swal.fire({ title: 'กำลังบันทึกข้อมูลส่งซ่อม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      google.script.run.withSuccessHandler(res => {
+        Swal.close();
+        if (res.success) {
+          const printedDoc = Object.assign({}, payload, { doc_no: res.doc_no, status: 'กำลังส่งซ่อม' });
+          MASTER_DATA.repairs.unshift(res.record || printedDoc);
+          const targetAsset = (MASTER_DATA.assets || []).find(a => String(a.asset_id).trim().toUpperCase() === payload.asset_id);
+          if (targetAsset) targetAsset.status = 'ส่งซ่อม';
+
+          updateDashboard(); renderRepairTable(); renderAssetTable(); refreshNextDocNo();
+          document.getElementById('repair-form').reset();
+          resetFormHelper();
+          showToast(`บันทึกใบส่งซ่อมเลขที่ ${res.doc_no} สำเร็จ!`);
+          printRepairDoc(printedDoc);
+        } else {
+          Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+        }
+      }).saveRepairTransaction(payload);
+    });
+
+    function lookupNewHolder() {
+      const empId = document.getElementById('t-new-holder-id').value.trim().toUpperCase();
+      if (!empId) { document.getElementById('t-new-holder-name').value = ''; validateTransferForm(); return; }
+      if (!Array.isArray(MASTER_DATA.employees) || MASTER_DATA.employees.length === 0) {
+        showToast('ไม่พบข้อมูลพนักงานในหน่วยความจำ กรุณาเข้าสู่ระบบใหม่อีกครั้ง', 'warning');
+        return;
+      }
+      const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id || '').trim().toUpperCase() === empId);
+      if (emp) {
+        document.getElementById('t-new-holder-id').value = empId;
+        document.getElementById('t-new-holder-name').value = `${emp.fullname} (${emp.department})`;
+        showToast(`พบผู้ถือครองใหม่: ${emp.fullname}`);
+      } else {
+        document.getElementById('t-new-holder-name').value = '';
+        showToast(`ไม่พบรหัสพนักงาน ${empId} ในชีต Employees`, 'error');
+      }
+      validateTransferForm();
+    }
+
+    document.getElementById('t-asset-id').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lookupTransferAsset(); } });
+    document.getElementById('t-new-holder-id').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lookupNewHolder(); } });
+
+    function resetTransferFormHelper() {
+      SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
+      updateAssetLockBanner('transfer-asset-lock-alert', null);
+      setTimeout(() => { document.getElementById('t-date').valueAsDate = new Date(); validateTransferForm(); }, 10);
+    }
+
+    document.getElementById('transfer-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!validateTransferForm()) { showToast('กรุณากรอกและค้นหาข้อมูลให้ครบถ้วนก่อนบันทึก', 'warning'); return; }
+
+      const payload = {
+        transfer_date: document.getElementById('t-date').value,
+        asset_id: document.getElementById('t-asset-id').value.trim().toUpperCase(),
+        asset_detail: document.getElementById('t-asset-detail').value.trim(),
+        category: SELECTED_TRANSFER_ASSET.category,
+        brand: SELECTED_TRANSFER_ASSET.brand,
+        model: SELECTED_TRANSFER_ASSET.model,
+        serial_no: document.getElementById('t-serial-no').value.trim(),
+        old_holder_id: document.getElementById('t-old-holder-id').value.trim() || '-',
+        old_holder_name: document.getElementById('t-old-holder-name').value.trim() || '-',
+        new_holder_id: document.getElementById('t-new-holder-id').value.trim().toUpperCase(),
+        new_holder_name: document.getElementById('t-new-holder-name').value.trim(),
+        reason: document.getElementById('t-reason').value.trim(),
+        remark: document.getElementById('t-remark').value.trim(),
+        created_by: CURRENT_USER ? `${CURRENT_USER.fullname} (${CURRENT_USER.emp_id})` : ''
+      };
+
+      Swal.fire({ title: 'กำลังบันทึกการเปลี่ยนแปลงผู้ถือครอง...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      google.script.run.withSuccessHandler(res => {
+        Swal.close();
+        if (res.success) {
+          const printedDoc = Object.assign({}, payload, { doc_no: res.doc_no });
+          MASTER_DATA.transfers.unshift(res.record || printedDoc);
+          const targetAsset = (MASTER_DATA.assets || []).find(a => String(a.asset_id).trim().toUpperCase() === payload.asset_id);
+          if (targetAsset) targetAsset.holder_id = payload.new_holder_id;
+
+          renderTransferHistoryTable(); renderAssetTable(); refreshNextTransferDocNo();
+          document.getElementById('transfer-form').reset();
+          resetTransferFormHelper();
+          showToast(`บันทึกเอกสารเปลี่ยนผู้ถือครองเลขที่ ${res.doc_no} สำเร็จ!`);
+          printTransferDoc(printedDoc);
+        } else {
+          Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+        }
+      }).saveHolderTransfer(payload);
+    });
+
+    function renderTransferHistoryTable() {
+      const tbody = document.getElementById('transfer-history-table');
+      if (!tbody) return;
+      const list = MASTER_DATA.transfers || [];
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ยังไม่มีประวัติการเปลี่ยนแปลงผู้ถือครอง</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(t => `
+        <tr>
+          <td><strong style="color:var(--hope-primary);">${t.doc_no}</strong></td>
+          <td>${t.transfer_date}</td>
+          <td>${t.asset_id}</td>
+          <td>${t.asset_detail}<br><small style="color:var(--text-muted)">S/N: ${t.serial_no}</small></td>
+          <td><small>[${t.old_holder_id}] ${t.old_holder_name}</small></td>
+          <td><small><strong>[${t.new_holder_id}] ${t.new_holder_name}</strong></small></td>
+          <td>${t.reason}</td>
+          <td><button class="btn btn-outline btn-sm" onclick='printTransferDoc(${JSON.stringify(t)})' title="พิมพ์เอกสาร A4"><i class="bi bi-printer"></i></button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderRepairTable() {
+      const keyword = document.getElementById('search-repair').value.toLowerCase();
+      const statusFilter = document.getElementById('filter-status').value;
+
+      const filtered = (MASTER_DATA.repairs || []).filter(r => {
+        const matchStatus = statusFilter === 'ALL' || r.status === statusFilter;
+        const matchText = [r.doc_no, r.asset_id, r.asset_detail, r.reporter_name, r.holder_name].join(' ').toLowerCase().includes(keyword);
+        return matchStatus && matchText;
+      });
+
+      document.getElementById('manage-repair-table').innerHTML = filtered.map(r => `
+        <tr>
+          <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
+          <td>${r.repair_date}</td>
+          <td>${r.asset_id}</td>
+          <td>${r.asset_detail}<br><small style="color:var(--text-muted)">S/N: ${r.serial_no}</small></td>
+          <td><small>แจ้ง: ${r.reporter_name}<br>ถือครอง: ${r.holder_name}</small></td>
+          <td>${r.symptom}</td>
+          <td>${getStatusBadge(r.status)}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})' title="พิมพ์ A4"><i class="bi bi-printer"></i></button>
+            ${r.status === 'กำลังส่งซ่อม' ? `<button class="btn btn-ais btn-sm" onclick="openStatusModal('${r.doc_no}', '${r.asset_id}')" title="อัปเดตสถานะ"><i class="bi bi-pencil-square"></i> อัปเดต</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openStatusModal(docNo, assetId) {
+      const primaryColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
+      Swal.fire({
+        title: `อัปเดตสถานะเอกสาร<br><span style="display:inline-block; margin-top:4px; font-size:16px; font-weight:700; color:${primaryColor}; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${docNo}</span>`,
+        html: `
+          <div style="text-align:left; margin-top:10px;">
+            <label style="font-weight:600;">เลือกสถานะใหม่:</label>
+            <select id="swal-new-status" class="swal2-input" style="width:100%; margin:8px 0;">
+              <option value="ได้รับคืนแล้ว">ได้รับคืนแล้ว (พร้อมใช้งาน)</option>
+              <option value="ตัดจำหน่าย">ตัดจำหน่าย (ซ่อมไม่ได้)</option>
+            </select>
+            <label style="font-weight:600;">หมายเหตุการรับคืน / ตัดจำหน่าย:</label>
+            <input id="swal-remark" class="swal2-input" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)" style="width:100%; margin:8px 0;">
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: primaryColor,
+        confirmButtonText: 'บันทึกสถานะ',
+        cancelButtonText: 'ยกเลิก',
+        preConfirm: () => ({ status: document.getElementById('swal-new-status').value, remark: document.getElementById('swal-remark').value })
+      }).then(result => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'กำลังอัปเดต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          google.script.run.withSuccessHandler(res => {
+            Swal.close();
+            if (res.success) {
+              const targetRepair = (MASTER_DATA.repairs || []).find(r => String(r.doc_no).trim() === String(docNo).trim());
+              if (targetRepair) {
+                targetRepair.status = result.value.status;
+                if (result.value.remark) targetRepair.remark = result.value.remark;
+              }
+              const targetAsset = (MASTER_DATA.assets || []).find(a => String(a.asset_id).trim().toUpperCase() === String(assetId).trim().toUpperCase());
+              if (targetAsset) targetAsset.status = (result.value.status === 'ได้รับคืนแล้ว') ? 'พร้อมใช้งาน' : 'ตัดจำหน่าย';
+              updateDashboard(); renderRepairTable(); renderAssetTable();
+              showToast(`อัปเดตสถานะ ${docNo} เป็น "${result.value.status}" เรียบร้อย`);
+            } else {
+              Swal.fire('ผิดพลาด', res.message, 'error');
+            }
+          }).updateRepairStatus(docNo, assetId, result.value.status, result.value.remark);
+        }
+      });
+    }
+
+    function renderAssetTable() {
+      const tbody = document.getElementById('asset-master-tbody');
+      const list = MASTER_DATA.assets || [];
+      if (assetDataTable) { assetDataTable.destroy(); assetDataTable = null; }
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">ไม่พบข้อมูลในทะเบียนเครื่องมือ (ตรวจสอบชีต Assets)</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(a => {
+        const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id).trim().toUpperCase() === String(a.holder_id || '').trim().toUpperCase());
+        const holderText = a.holder_id ? (emp ? `${a.holder_id} - ${emp.fullname}` : a.holder_id) : '-';
+        return `
+          <tr>
+            <td><strong style="color:var(--hope-primary);">${a.asset_id}</strong></td>
+            <td>${a.category}</td>
+            <td>${a.brand}</td>
+            <td>${a.model}</td>
+            <td>${a.serial_no}</td>
+            <td>${holderText}</td>
+            <td>${getStatusBadge(a.status)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      assetDataTable = new DataTable('#asset-master-table', {
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        autoWidth: false,
+        order: [[0, 'asc']],
+        deferRender: true,
+        language: {
+          search: 'ค้นหา:',
+          lengthMenu: 'แสดง _MENU_ รายการต่อหน้า',
+          info: 'แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ',
+          infoEmpty: 'ไม่พบข้อมูล',
+          infoFiltered: '(กรองจากทั้งหมด _MAX_ รายการ)',
+          zeroRecords: 'ไม่พบรายการที่ตรงกับคำค้นหา',
+          paginate: { first: 'หน้าแรก', last: 'หน้าสุดท้าย', next: 'ถัดไป', previous: 'ก่อนหน้า' }
+        }
+      });
+      adjustAssetDataTable(80);
+    }
+
+    function parseAssetFields(doc) {
+      let cat = doc.category || '', brand = doc.brand || '', model = doc.model || '';
+      if (!cat && !brand && !model && doc.asset_detail) {
+        const parts = String(doc.asset_detail).split(' - ');
+        cat = parts[0] || ''; brand = parts[1] || ''; model = parts.slice(2).join(' - ') || '';
+      }
+      return { cat, brand, model };
+    }
+
+    function buildHalfForm(doc, copyType) {
+      const { cat, brand, model } = parseAssetFields(doc);
+      const reporterShortName = String(doc.reporter_name || '').split('(')[0].trim();
+      return `
+        <div class="a4-half">
+          <div class="doc-header">
+            <div class="doc-title-wrap">
+              <div class="ais-logo-badge">BBFNM</div>
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#1E2E8A;">ใบส่งซ่อมเครื่องมือและอุปกรณ์</div>
+                <div style="font-size:14px; font-weight:700; color:#3A57E8;">TOOL REPAIR ORDER</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="doc-badge">${copyType}</div>
+              <div style="font-size:12.5px; margin-top:4px;">เลขที่เอกสาร: <strong>${doc.doc_no}</strong></div>
+              <div style="font-size:11.5px;">วันที่แจ้ง: ${doc.repair_date}</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:12px; margin-bottom:6px;">
+            <div><strong>ผู้แจ้งส่งซ่อม:</strong> [${doc.reporter_id}] ${doc.reporter_name}</div>
+            <div><strong>ผู้ถือครองเครื่องมือ:</strong> [${doc.holder_id}] ${doc.holder_name}</div>
+          </div>
+          <table class="doc-table">
+            <tbody>
+              <tr>
+                <th style="width:22%;">รหัสเครื่องมือ</th>
+                <td style="width:28%;"><strong>${doc.asset_id}</strong></td>
+                <th style="width:18%;">ประเภท</th>
+                <td style="width:32%;">${cat || doc.asset_detail}</td>
+              </tr>
+              <tr>
+                <th>ยี่ห้อ</th>
+                <td>${brand || '-'}</td>
+                <th>รุ่น / หมายเลขประจำเครื่อง</th>
+                <td>${model || '-'} / <strong>${doc.serial_no || '-'}</strong></td>
+              </tr>
+              <tr>
+                <th>อาการชำรุด</th>
+                <td colspan="3">${doc.symptom}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:11.5px; margin-top:6px;"><strong>หมายเหตุ / อุปกรณ์ติดเครื่อง:</strong> ${doc.remark || '-'}</div>
+          <div class="sign-grid">
+            <div><div class="sign-line"></div><div>(${reporterShortName})</div><div>ผู้แจ้งส่งซ่อม</div><div class="sign-date">วันที่ ____/____/____</div></div>
+            <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้อนุมัติส่งซ่อม</div><div class="sign-date">วันที่ ____/____/____</div></div>
+            <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้รับซ่อม</div><div class="sign-date">วันที่ ____/____/____</div></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildTransferHalfForm(doc, copyType) {
+      const { cat, brand, model } = parseAssetFields(doc);
+      const newHolderShortName = String(doc.new_holder_name || '').split('(')[0].trim();
+      return `
+        <div class="a4-half">
+          <div class="doc-header">
+            <div class="doc-title-wrap">
+              <div class="ais-logo-badge">BBFNM</div>
+              <div>
+                <div style="font-size:15.5px; font-weight:700; color:#1E2E8A;">ใบเปลี่ยนแปลงผู้ถือครองทรัพย์สิน</div>
+                <div style="font-size:12.5px; font-weight:700; color:#3A57E8;">ASSET HOLDER TRANSFER</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="doc-badge">${copyType}</div>
+              <div style="font-size:12px; margin-top:4px;">เลขที่เอกสาร: <span class="code-mono">${doc.doc_no}</span></div>
+              <div style="font-size:11.5px; color:#334155;">วันที่เปลี่ยน: <strong>${doc.transfer_date}</strong></div>
+            </div>
+          </div>
+          <div class="transfer-party-grid">
+            <div class="transfer-party-card">
+              <div class="transfer-party-label">ผู้ถือครองเดิม (Previous Holder)</div>
+              <div><span class="code-mono">[${doc.old_holder_id || '-'}]</span> ${doc.old_holder_name || '-'}</div>
+            </div>
+            <div class="transfer-arrow-badge">→</div>
+            <div class="transfer-party-card new-holder">
+              <div class="transfer-party-label">ผู้ถือครองใหม่ (New Holder)</div>
+              <div><span class="code-mono">[${doc.new_holder_id || '-'}]</span> <strong>${doc.new_holder_name || '-'}</strong></div>
+            </div>
+          </div>
+          <table class="pretty-doc-table">
+            <tbody>
+              <tr>
+                <th>รหัสทรัพย์สิน</th>
+                <td><span class="code-mono">${doc.asset_id || '-'}</span></td>
+                <th>ประเภท</th>
+                <td>${cat || doc.asset_detail || '-'}</td>
+              </tr>
+              <tr>
+                <th>ยี่ห้อ</th>
+                <td>${brand || '-'}</td>
+                <th>รุ่น / Serial No.</th>
+                <td>${model || '-'} <span style="color:#64748b;">/</span> <span class="code-mono">${doc.serial_no || '-'}</span></td>
+              </tr>
+              <tr>
+                <th>เหตุผลในการเปลี่ยน</th>
+                <td><strong>${doc.reason || '-'}</strong></td>
+                <th>สถานะการโอน</th>
+                <td>โอนสิทธิ์ผู้ถือครองเรียบร้อย</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="doc-remark-box"><strong>หมายเหตุ:</strong> ${doc.remark || '-'}</div>
+          <div class="sign-grid">
+            <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้ส่งมอบ / ผู้ถือครองเดิม</div><div class="sign-date">วันที่ ____/____/____</div></div>
+            <div><div class="sign-line"></div><div>(${newHolderShortName || '............................................'})</div><div>ผู้รับมอบ / ผู้ถือครองใหม่</div><div class="sign-date">วันที่ ____/____/____</div></div>
+            <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้อนุมัติ / ผู้ดูแลทรัพย์สิน</div><div class="sign-date">วันที่ ____/____/____</div></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function printRepairDoc(doc) {
+      document.getElementById('print-area').innerHTML = `
+        ${buildHalfForm(doc, 'ต้นฉบับ (ORIGINAL)')}
+        <div class="cut-line"><span>ตัดตามรอยปรุ</span></div>
+        ${buildHalfForm(doc, 'สำเนา (COPY)')}
+      `;
+      setTimeout(() => window.print(), 250);
+    }
+
+    function printTransferDoc(doc) {
+      document.getElementById('print-area').innerHTML = `
+        ${buildTransferHalfForm(doc, 'ต้นฉบับ (ORIGINAL)')}
+        <div class="cut-line"><span>ตัดตามรอยปรุ</span></div>
+        ${buildTransferHalfForm(doc, 'สำเนา (COPY)')}
+      `;
+      setTimeout(() => window.print(), 250);
+    }
+
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyZG546py63Lh-jdIsvi0pjUnjWuIFTdeh2AFNSmvyhyYBx2M9iH0itIt7i_gPcgPbV/exec';
+
+async function callGasApi(action, params = {}) {
+  const res = await fetch(GAS_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, params })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+// สร้าง wrapper ให้เรียกผ่าน google.script.run ได้เหมือนเดิมทุกฟังก์ชัน
+if (!window.google || !window.google.script || !window.google.script.run) {
+  const createRunner = (handlers = {}) => new Proxy({}, {
+    get(_, actionName) {
+      return (...args) => {
+        const paramMap = {
+          checkLogin: ['user', 'pass'],
+          getInitialData: [],
+          generateDocNo: [],
+          generateTransferDocNo: [],
+          saveRepairTransaction: ['payload'],
+          saveHolderTransfer: ['payload'],
+          updateRepairStatus: ['docNo', 'assetId', 'status', 'remark']
+        };
+        const keys = paramMap[actionName] || [];
+        const params = {};
+        keys.forEach((k, idx) => { params[k] = args[idx]; });
+
+        callGasApi(actionName, params)
+          .then(data => { if (typeof handlers.onSuccess === 'function') handlers.onSuccess(data); })
+          .catch(err => { if (typeof handlers.onFailure === 'function') handlers.onFailure(err); });
+      };
+    }
+  });
+
+  window.google = {
+    script: {
+      run: {
+        withSuccessHandler(fn) { return createRunner({ onSuccess: fn }); },
+        withFailureHandler(fn) { return createRunner({ onFailure: fn }); },
+        checkLogin(...a) { return createRunner().checkLogin(...a); },
+        getInitialData(...a) { return createRunner().getInitialData(...a); },
+        generateDocNo(...a) { return createRunner().generateDocNo(...a); },
+        generateTransferDocNo(...a) { return createRunner().generateTransferDocNo(...a); },
+        saveRepairTransaction(...a) { return createRunner().saveRepairTransaction(...a); },
+        saveHolderTransfer(...a) { return createRunner().saveHolderTransfer(...a); },
+        updateRepairStatus(...a) { return createRunner().updateRepairStatus(...a); }
+      }
+    }
+  };
+}
+
+  </script>
+</body>
+</html>
