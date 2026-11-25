@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tool repair system</title>
+  <title>ระบบส่งซ่อมเครื่องมือ</title>
   <!-- Google Fonts: Sarabun, Kanit, Prompt, Mali, Bai Jamjuree, IBM Plex Sans Thai & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
   <style>
     /* ================= HOPE UI DESIGN SYSTEM TOKENS ================= */
     :root {
-      --app-font: 'Sarabun', sans-serif;
+      --app-font: 'Sarabun', 'Inter', sans-serif;
       --hope-primary: #3A57E8;
       --hope-primary-hover: #2A45D0;
       --hope-primary-soft: rgba(58, 87, 232, 0.12);
@@ -344,10 +344,10 @@
       left: calc(var(--sidebar-collapsed-width) + 12px);
       top: var(--tooltip-top, 50%);
       transform: translateY(-50%) translateX(-6px);
-      background: #232D42;
-      color: #ffffff;
+      background: var(--bg-card);
+      color: var(--text-main);
       border: 1px solid var(--hope-primary);
-      box-shadow: 0 10px 24px rgba(17, 38, 146, 0.22);
+      box-shadow: var(--shadow);
       padding: 6px 12px;
       border-radius: 8px;
       font-size: 12.5px;
@@ -368,7 +368,7 @@
       transform: translateY(-50%) translateX(-6px);
       border-width: 6px 6px 6px 0;
       border-style: solid;
-      border-color: transparent #232D42 transparent transparent;
+      border-color: transparent var(--bg-card) transparent transparent;
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
@@ -643,8 +643,8 @@
 
     .color-swatch-btn.active {
       border-color: var(--swatch-color);
-      background: var(--hope-primary-soft);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      background: var(--input-bg);
+      box-shadow: 0 0 0 2px var(--hope-primary-soft), 0 4px 12px rgba(0, 0, 0, 0.14);
     }
 
     .swatch-dot {
@@ -1811,9 +1811,9 @@
       padding: 9px 13px;
       margin-bottom: 12px;
       border-radius: 8px;
-      background: #FFF4EC;
-      border: 1px solid #FDBA74;
-      color: #9A3412;
+      background: var(--hope-warning-soft);
+      border: 1px solid var(--hope-warning);
+      color: var(--hope-warning);
       font-size: 12.8px;
       font-weight: 600;
     }
@@ -1823,9 +1823,31 @@
     }
 
     [data-theme="dark"] .asset-lock-alert {
-      background: rgba(241, 106, 27, 0.16);
-      border-color: rgba(241, 106, 27, 0.45);
-      color: #FDBA74;
+      background: var(--hope-warning-soft);
+      border-color: var(--hope-warning);
+      color: var(--hope-warning);
+    }
+
+    /* ================= SWEETALERT2 THEME SYNC ================= */
+    .swal2-popup {
+      background: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      border: 1px solid var(--border-color);
+      border-radius: 14px !important;
+    }
+
+    .swal2-title,
+    .swal2-html-container,
+    .swal2-popup label {
+      color: var(--text-main) !important;
+    }
+
+    .swal2-popup .swal2-input,
+    .swal2-popup .swal2-select,
+    .swal2-popup .swal2-textarea {
+      background: var(--input-bg) !important;
+      color: var(--text-main) !important;
+      border: 1px solid var(--border-color) !important;
     }
 
     /* ================= REMARK ACCESSORY CHECKBOXES ================= */
@@ -2054,7 +2076,7 @@
           <h1 class="hope-hero-title" id="hero-title">สวัสดี! ระบบบริหารงานส่งซ่อมเครื่องมือ</h1>
           <div class="hope-hero-sub" id="hero-subtitle">ติดตามสถานะการส่งซ่อม การรับคืน และการโอนย้ายผู้ถือครองทรัพย์สินแบบเรียลไทม์</div>
         </div>
-        <button type="button" class="btn-hero-glass" onclick="document.querySelectorAll('.nav-item')[1].click()">
+        <button type="button" class="btn-hero-glass" onclick="switchPage('create-repair', document.querySelectorAll('.nav-item')[1])">
           <i class="bi bi-plus-lg"></i> สร้างใบส่งซ่อมใหม่
         </button>
       </div>
@@ -2209,11 +2231,11 @@
                     <input type="text" id="f-rep-dept" class="form-control" readonly placeholder="สังกัด / แผนก">
                   </div>
                   <div class="form-group">
-                    <label>รหัสสถานที่ตั้ง</label>
+                    <label>location_id</label>
                     <input type="text" id="f-emp-loc-id" class="form-control" readonly placeholder="location_id">
                   </div>
                   <div class="form-group">
-                    <label>ชื่อสถานที่ตั้ง</label>
+                    <label>location_name</label>
                     <input type="text" id="f-emp-loc-name" class="form-control" readonly placeholder="location_name">
                   </div>
                 </div>
@@ -2225,6 +2247,7 @@
                 <div class="side-table-panel">
                   <div class="side-table-header">
                     <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
+                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
@@ -2641,10 +2664,27 @@
 
       try { localStorage.setItem('tool_repair_color_theme', colorKey); } catch (e) {}
 
-      if (statusChartInstance) {
-        statusChartInstance.data.datasets[0].backgroundColor = ['#F16A1B', theme.primary, '#C03221'];
-        statusChartInstance.update();
+      applyChartThemeColors();
+    }
+
+    function applyChartThemeColors() {
+      if (!statusChartInstance) return;
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const legendColor = isDark ? '#E2E8F0' : '#232D42';
+      const borderColor = isDark ? '#222738' : '#FFFFFF';
+      const primaryColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
+
+      statusChartInstance.data.datasets[0].backgroundColor = ['#F16A1B', primaryColor, '#C03221'];
+      statusChartInstance.data.datasets[0].borderColor = borderColor;
+      statusChartInstance.data.datasets[0].borderWidth = 2;
+      if (statusChartInstance.options && statusChartInstance.options.plugins && statusChartInstance.options.plugins.legend && statusChartInstance.options.plugins.legend.labels) {
+        statusChartInstance.options.plugins.legend.labels.color = legendColor;
+        statusChartInstance.options.plugins.legend.labels.font = {
+          family: `'${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`,
+          size: 12
+        };
       }
+      statusChartInstance.update();
     }
 
     function setFontTheme(fontName) {
@@ -2660,6 +2700,7 @@
       });
 
       try { localStorage.setItem('tool_repair_font_family', fontName); } catch (e) {}
+      applyChartThemeColors();
       adjustAssetDataTable(100);
     }
 
@@ -3008,6 +3049,7 @@
         html.setAttribute('data-theme', 'light');
         icon.className = 'bi bi-moon';
       }
+      applyChartThemeColors();
     }
 
     function toggleFullScreen() {
@@ -3082,6 +3124,7 @@
         </tr>
       `).join('');
 
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const activeThemeColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
       const ctx = document.getElementById('statusChart').getContext('2d');
       if (statusChartInstance) statusChartInstance.destroy();
@@ -3089,7 +3132,12 @@
         type: 'doughnut',
         data: {
           labels: ['กำลังส่งซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
-          datasets: [{ data: [repairing, returned, scrapped], backgroundColor: ['#F16A1B', activeThemeColor, '#C03221'], borderWidth: 0 }]
+          datasets: [{
+            data: [repairing, returned, scrapped],
+            backgroundColor: ['#F16A1B', activeThemeColor, '#C03221'],
+            borderColor: isDark ? '#222738' : '#FFFFFF',
+            borderWidth: 2
+          }]
         },
         options: {
           responsive: true,
@@ -3098,7 +3146,15 @@
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { boxWidth: 11, padding: 10, font: { size: 12 } }
+              labels: {
+                boxWidth: 11,
+                padding: 10,
+                color: isDark ? '#E2E8F0' : '#232D42',
+                font: {
+                  family: `'${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`,
+                  size: 12
+                }
+              }
             }
           }
         }
