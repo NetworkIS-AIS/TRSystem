@@ -3464,7 +3464,7 @@
       setTimeout(() => window.print(), 250);
     }
 
-    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyZG546py63Lh-jdIsvi0pjUnjWuIFTdeh2AFNSmvyhyYBx2M9iH0itIt7i_gPcgPbV/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyZG546py63Lh-jdIsvi0pjUnjWuIFTdeh2AFNSmvyhyYBx2M9iH0itIt7i_gPcgPbV/exec';
 
 async function callGasApi(action, params = {}) {
   const res = await fetch(GAS_API_URL, {
@@ -3476,44 +3476,59 @@ async function callGasApi(action, params = {}) {
   return await res.json();
 }
 
-// สร้าง wrapper ให้เรียกผ่าน google.script.run ได้เหมือนเดิมทุกฟังก์ชัน
 if (!window.google || !window.google.script || !window.google.script.run) {
-  const createRunner = (handlers = {}) => new Proxy({}, {
-    get(_, actionName) {
-      return (...args) => {
-        const paramMap = {
-          checkLogin: ['user', 'pass'],
-          getInitialData: [],
-          generateDocNo: [],
-          generateTransferDocNo: [],
-          saveRepairTransaction: ['payload'],
-          saveHolderTransfer: ['payload'],
-          updateRepairStatus: ['docNo', 'assetId', 'status', 'remark']
-        };
-        const keys = paramMap[actionName] || [];
-        const params = {};
-        keys.forEach((k, idx) => { params[k] = args[idx]; });
+  const paramMap = {
+    checkLogin: ['user', 'pass'],
+    getInitialData: [],
+    generateDocNo: [],
+    generateTransferDocNo: [],
+    saveRepairTransaction: ['payload'],
+    saveHolderTransfer: ['payload'],
+    updateRepairStatus: ['docNo', 'assetId', 'status', 'remark']
+  };
 
-        callGasApi(actionName, params)
-          .then(data => { if (typeof handlers.onSuccess === 'function') handlers.onSuccess(data); })
-          .catch(err => { if (typeof handlers.onFailure === 'function') handlers.onFailure(err); });
-      };
-    }
-  });
+  const createRunner = (handlers = {}) => {
+    const state = {
+      onSuccess: handlers.onSuccess || null,
+      onFailure: handlers.onFailure || null
+    };
+
+    const api = {
+      withSuccessHandler(fn) {
+        state.onSuccess = fn;
+        return proxy;
+      },
+      withFailureHandler(fn) {
+        state.onFailure = fn;
+        return proxy;
+      }
+    };
+
+    const proxy = new Proxy(api, {
+      get(target, prop) {
+        if (prop in target) return target[prop];
+        return (...args) => {
+          const keys = paramMap[prop] || [];
+          const params = {};
+          keys.forEach((k, idx) => { params[k] = args[idx]; });
+
+          callGasApi(prop, params)
+            .then(data => {
+              if (typeof state.onSuccess === 'function') state.onSuccess(data);
+            })
+            .catch(err => {
+              if (typeof state.onFailure === 'function') state.onFailure(err);
+            });
+        };
+      }
+    });
+
+    return proxy;
+  };
 
   window.google = {
     script: {
-      run: {
-        withSuccessHandler(fn) { return createRunner({ onSuccess: fn }); },
-        withFailureHandler(fn) { return createRunner({ onFailure: fn }); },
-        checkLogin(...a) { return createRunner().checkLogin(...a); },
-        getInitialData(...a) { return createRunner().getInitialData(...a); },
-        generateDocNo(...a) { return createRunner().generateDocNo(...a); },
-        generateTransferDocNo(...a) { return createRunner().generateTransferDocNo(...a); },
-        saveRepairTransaction(...a) { return createRunner().saveRepairTransaction(...a); },
-        saveHolderTransfer(...a) { return createRunner().saveHolderTransfer(...a); },
-        updateRepairStatus(...a) { return createRunner().updateRepairStatus(...a); }
-      }
+      run: createRunner()
     }
   };
 }
