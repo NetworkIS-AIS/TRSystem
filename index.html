@@ -3302,7 +3302,7 @@
       clearRemarkPresets();
       updateAssetLockBanner('repair-asset-lock-alert', null);
       ['f-asset-category', 'f-asset-brand', 'f-asset-model'].forEach(id => { document.getElementById(id).value = ''; });
-      document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+      // document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
       setTimeout(() => {
         document.getElementById('f-date').valueAsDate = new Date();
         document.getElementById('f-vendor-select').value = 'Repair Center';
