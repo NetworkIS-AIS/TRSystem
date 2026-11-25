@@ -1245,8 +1245,8 @@
     }
 
     .side-table-header.holder-header {
-      background: var(--hope-info-soft);
-      color: var(--hope-info);
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
     }
 
     .side-kv-table {
@@ -1830,6 +1830,63 @@
       color: var(--hope-warning);
     }
 
+
+    /* ================= CREATE REPAIR THEME ADAPTATION ================= */
+    #sec-create-repair .form-section-box {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      border-left-color: var(--hope-primary);
+    }
+
+    #sec-create-repair .side-table-panel {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+    }
+
+    #sec-create-repair .side-kv-table th {
+      background: var(--hope-primary-soft);
+      color: var(--text-main);
+    }
+
+    #sec-create-repair .form-control[readonly] {
+      background: var(--bg-body);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    #sec-create-repair .remark-check-item {
+      background: var(--bg-body);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    #sec-create-repair .remark-check-item:has(input:checked) {
+      background: var(--hope-primary-soft);
+      border-color: var(--hope-primary);
+      color: var(--hope-primary);
+    }
+
+    #sec-create-repair .validation-hint {
+      color: var(--hope-primary);
+    }
+
+    #sec-create-repair .validation-hint.ready {
+      color: var(--hope-primary);
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] #sec-create-repair .form-section-box {
+      background: var(--bg-body);
+      border-color: var(--border-color);
+      border-left-color: var(--hope-primary);
+    }
+
+    [data-theme="dark"] #sec-create-repair .form-control[readonly] {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
     /* ================= SWEETALERT2 THEME SYNC ================= */
     .swal2-popup {
       background: var(--bg-card) !important;
@@ -2321,9 +2378,9 @@
                 </div>
               </div>
 
-              <div class="form-section-box accent-warning">
+              <div class="form-section-box">
                 <div class="form-section-header">
-                  <div class="form-section-title" style="color:var(--hope-warning);"><i class="bi bi-tools"></i> อาการชำรุดและหมายเหตุประกอบการซ่อม</div>
+                  <div class="form-section-title"><i class="bi bi-tools"></i> อาการชำรุดและหมายเหตุประกอบการซ่อม</div>
                 </div>
                 <div class="form-grid">
                   <div class="form-group">
