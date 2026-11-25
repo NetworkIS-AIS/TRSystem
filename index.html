@@ -56,6 +56,8 @@
       --hope-primary-hover: #3A57E8;
       --hope-primary-soft: rgba(77, 105, 250, 0.18);
       --hope-primary-shadow: 0 4px 14px rgba(77, 105, 250, 0.35);
+      --hope-info: #22D3EE;
+      --hope-info-soft: rgba(34, 211, 238, 0.16);
       --bg-body: #151824;
       --bg-card: #222738;
       --bg-sidebar: #222738;
@@ -1067,9 +1069,9 @@
       font-size: 11px;
       padding: 3px 10px;
       border-radius: 20px;
-      background: var(--hope-info-soft);
-      color: var(--hope-info);
-      border: 1px solid rgba(8, 177, 186, 0.3);
+      background: var(--hope-primary-soft);
+      color: var(--hope-primary);
+      border: 1px solid var(--hope-primary);
       font-weight: 600;
     }
 
@@ -1243,8 +1245,8 @@
     }
 
     .side-table-header.holder-header {
-      background: var(--hope-primary-soft);
-      color: var(--hope-primary);
+      background: var(--hope-info-soft);
+      color: var(--hope-info);
     }
 
     .side-kv-table {
@@ -1489,7 +1491,7 @@
     }
 
     #sec-asset-list .table.is-striped tbody tr:not(.is-selected):nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.015);
+      background-color: var(--bg-body);
     }
 
     #sec-asset-list .table.is-hoverable tbody tr:not(.is-selected):hover {
@@ -2145,9 +2147,9 @@
                 </table>
               </div>
             </div>
-            <div class="card-box">
+            <div class="card-box card-accent-info">
               <h3 class="card-title" style="font-size:15.5px;">
-                <span class="card-title-icon"><i class="bi bi-pie-chart"></i></span>
+                <span class="card-title-icon info"><i class="bi bi-pie-chart"></i></span>
                 <span>สัดส่วนสถานะงานซ่อม</span>
               </h3>
               <div class="chart-card-inner">
@@ -2247,6 +2249,7 @@
                 <div class="side-table-panel">
                   <div class="side-table-header">
                     <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
+                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
@@ -2370,7 +2373,7 @@
 
         <!-- SECTION 3: MANAGE & UPDATE STATUS -->
         <section id="sec-manage-repair" class="page-section">
-          <div class="card-box">
+          <div class="card-box card-accent-warning">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
               <h3 class="card-title" style="margin:0;">
                 <span class="card-title-icon"><i class="bi bi-list-check"></i></span>
@@ -2409,11 +2412,11 @@
 
         <!-- SECTION 4: CHANGE HOLDER & PRINT TRANSFER DOC -->
         <section id="sec-change-holder" class="page-section">
-          <div class="card-box">
+          <div class="card-box card-accent-info">
             <div class="form-top-bar">
               <div>
                 <h3 class="card-title" style="margin:0;">
-                  <span class="card-title-icon"><i class="bi bi-person-lines-fill"></i></span>
+                  <span class="card-title-icon info"><i class="bi bi-person-lines-fill"></i></span>
                   <span>เปลี่ยนแปลงผู้ถือครองทรัพย์สิน</span>
                 </h3>
                 <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">
@@ -2439,25 +2442,25 @@
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>รหัสทรัพย์สิน / เครื่องมือ <span class="req-star">*</span></label>
+                    <label>รหัสทรัพย์สิน / เครื่องมือ (asset_id) <span class="req-star">*</span></label>
                     <div class="input-group">
                       <input type="text" id="t-asset-id" class="form-control" placeholder="เช่น BBC1001234" oninput="validateTransferForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupTransferAsset()"><i class="bi bi-search"></i> ค้นหา</button>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label>หมายเลขประจำเครื่อง</label>
+                    <label>หมายเลขประจำเครื่อง (Serial No.)</label>
                     <input type="text" id="t-serial-no" class="form-control" readonly placeholder="Serial Number">
                   </div>
                   <div class="form-group span-2">
                     <label>ประเภท - ยี่ห้อ - รุ่น</label>
-                    <input type="text" id="t-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา">
+                    <input type="text" id="t-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา asset_id">
                   </div>
                 </div>
 
                 <div class="form-grid" style="margin-top:10px;">
                   <div class="form-group">
-                    <label>รหัสผู้ถือครองเดิม</label>
+                    <label>รหัสผู้ถือครองเดิม (old_holder_id)</label>
                     <input type="text" id="t-old-holder-id" class="form-control" readonly placeholder="รหัสผู้ถือครองเดิม">
                   </div>
                   <div class="form-group">
@@ -2467,14 +2470,15 @@
                 </div>
               </div>
 
-              <div class="form-section-box">
+              <div class="form-section-box accent-info">
                 <div class="form-section-header">
-                  <div class="form-section-title"><i class="bi bi-2-circle"></i> ข้อมูลผู้ถือครองใหม่และเหตุผลการเปลี่ยนแปลง</div>
+                  <div class="form-section-title" style="color:var(--hope-primary);"><i class="bi bi-2-circle"></i> ข้อมูลผู้ถือครองใหม่และเหตุผลการเปลี่ยนแปลง</div>
+                  <span class="auto-badge">ค้นหารหัสผู้ถือครองใหม่จาก Employees</span>
                 </div>
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>รหัสผู้ถือครองใหม่<span class="req-star">*</span></label>
+                    <label>รหัสผู้ถือครองใหม่ (new_holder_id) <span class="req-star">*</span></label>
                     <div class="input-group">
                       <input type="text" id="t-new-holder-id" class="form-control" placeholder="ระบุรหัสพนักงานผู้ถือครองใหม่" oninput="validateTransferForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupNewHolder()"><i class="bi bi-search"></i> ค้นหา</button>
@@ -2506,7 +2510,7 @@
                 <div style="display:flex; gap:10px;">
                   <button type="reset" class="btn btn-outline" onclick="resetTransferFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
                   <button type="submit" class="btn btn-ais" id="btn-save-transfer" disabled>
-                    <i class="bi bi-printer"></i> บันทึกข้อมูลและพิมพ์เอกสาร
+                    <i class="bi bi-printer"></i> บันทึกการเปลี่ยนแปลงและพิมพ์เอกสาร A4
                   </button>
                 </div>
               </div>
@@ -2540,7 +2544,7 @@
 
         <!-- SECTION 5: ASSET LIST -->
         <section id="sec-asset-list" class="page-section">
-          <div class="card-box">
+          <div class="card-box card-accent-success">
             <h3 class="card-title">
               <span class="card-title-icon"><i class="bi bi-box-seam"></i></span>
               <span>ทะเบียนเครื่องมือทั้งหมด</span>
@@ -2865,8 +2869,8 @@
 
       if (!dateVal) missing.push('วันที่แจ้งซ่อม');
       if (vendorSelect === 'Others' && !vendorOther) missing.push('ชื่อศูนย์ซ่อม (Others)');
-      if (!reporterId || !repFullname) missing.push('ข้อมูลผู้ส่งซ่อม');
-      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน');
+      if (!reporterId || !repFullname) missing.push('ข้อมูลผู้ส่งซ่อม (กดค้นหา emp_id)');
+      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน (กดค้นหา asset_id)');
       if (lockInfo.locked) missing.push('เครื่องมือไม่สามารถส่งซ่อมได้ในขณะนี้');
       if (!symptom) missing.push('อาการชำรุด');
 
@@ -2997,7 +3001,7 @@
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: primaryColor,
-        cancelButtonColor: '#8A92A6',
+        cancelButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#8A92A6',
         confirmButtonText: 'ออกจากระบบ',
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
@@ -3213,7 +3217,7 @@
         SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
         ['f-asset-category', 'f-asset-brand', 'f-asset-model', 'f-asset-detail', 'f-serial-no'].forEach(id => { document.getElementById(id).value = ''; });
         clearHolderDetails();
-        // document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+        document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
         showToast(`ไม่พบรหัสทรัพย์สิน ${assetId}`, 'error');
       }
       validateRepairForm();
@@ -3302,7 +3306,7 @@
       clearRemarkPresets();
       updateAssetLockBanner('repair-asset-lock-alert', null);
       ['f-asset-category', 'f-asset-brand', 'f-asset-model'].forEach(id => { document.getElementById(id).value = ''; });
-      // document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+      document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
       setTimeout(() => {
         document.getElementById('f-date').valueAsDate = new Date();
         document.getElementById('f-vendor-select').value = 'Repair Center';
