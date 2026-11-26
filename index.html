@@ -92,21 +92,118 @@
       transition: background-color 0.25s, color 0.25s;
     }
 
-    /* ================= LOGIN SCREEN (HOPE UI SPLIT LAYOUT • FIXED AIS GREEN) ================= */
+    /* ================= LOGIN SCREEN (HOPE UI SPLIT LAYOUT • FIXED AIS GREEN & IBM FONT) ================= */
+    #login-screen,
+    #login-screen *,
+    #login-screen input,
+    #login-screen button,
+    #login-screen label,
+    #login-screen a {
+      font-family: 'IBM Plex Sans Thai', 'Inter', sans-serif !important;
+    }
+
     #login-screen {
       --ais-green: #59B800;
       --ais-green-dark: #439300;
       --ais-green-deep: #1B4D18;
       --ais-green-soft: rgba(89, 184, 0, 0.14);
       --ais-green-shadow: 0 10px 24px rgba(89, 184, 0, 0.34);
+      --hope-primary: #59B800 !important;
+      --hope-primary-hover: #439300 !important;
+      --hope-primary-soft: rgba(89, 184, 0, 0.14) !important;
+      --bg-body: #FFFFFF !important;
+      --bg-card: #FFFFFF !important;
+      --text-main: #232D42 !important;
+      --text-muted: #6B7280 !important;
+      --border-color: #D1D5DB !important;
+      --input-bg: #FFFFFF !important;
 
       min-height: 100vh;
       display: flex;
       align-items: stretch;
-      background: #FFFFFF;
-      color: #232D42;
+      background: #FFFFFF !important;
+      color: #232D42 !important;
       position: relative;
       overflow: hidden;
+    }
+
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .password-input-wrap .form-control {
+      padding-right: 44px !important;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: #6B7280;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.16s ease, background-color 0.16s ease;
+    }
+
+    .password-toggle-btn:hover {
+      color: #439300;
+      background: rgba(89, 184, 0, 0.12);
+    }
+
+    .login-aux-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: -4px;
+    }
+
+    .login-remember-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #4B5563;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .login-remember-check input[type="checkbox"] {
+      accent-color: #59B800;
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .forgot-pw-link {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #439300;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.16s ease;
+    }
+
+    .forgot-pw-link:hover {
+      color: #2F7D00;
+      text-decoration: underline;
     }
 
     .hope-auth-left {
@@ -2258,13 +2355,25 @@
         <form id="login-form" style="display:flex; flex-direction:column; gap:16px;">
           <div class="form-group">
             <label for="login-user">ชื่อผู้ใช้งาน (Username / รหัสพนักงาน)</label>
-            <input type="text" id="login-user" class="form-control" placeholder="ระบุ Username หรือรหัสพนักงาน" required>
+            <input type="text" id="login-user" class="form-control" placeholder="ระบุ Username หรือรหัสพนักงาน" autocomplete="username" required>
           </div>
           <div class="form-group">
             <label for="login-pass">รหัสผ่าน (Password)</label>
-            <input type="password" id="login-pass" class="form-control" placeholder="ระบุรหัสผ่าน" required>
+            <div class="password-input-wrap">
+              <input type="password" id="login-pass" class="form-control" placeholder="ระบุรหัสผ่าน" autocomplete="current-password" required>
+              <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onclick="toggleLoginPassword()" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+                <i class="bi bi-eye" id="toggle-login-pass-icon"></i>
+              </button>
+            </div>
           </div>
-          <div style="margin-top:6px; display:flex; justify-content:center;">
+          <div class="login-aux-row">
+            <label class="login-remember-check">
+              <input type="checkbox" id="login-remember">
+              <span>จำชื่อผู้ใช้งานไว้</span>
+            </label>
+            <button type="button" class="forgot-pw-link" onclick="openForgotPasswordModal()">ลืมรหัสผ่าน? (Forgot Password)</button>
+          </div>
+          <div style="margin-top:4px; display:flex; justify-content:center;">
             <button type="submit" class="btn-ais-login" style="width:100%;">
               <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ (Sign In)
             </button>
@@ -3509,10 +3618,86 @@
     /* =====================================================================
        3. AUTHENTICATION & DATA SYNCHRONIZATION
        ===================================================================== */
+    function toggleLoginPassword() {
+      const passInput = document.getElementById('login-pass');
+      const icon = document.getElementById('toggle-login-pass-icon');
+      if (!passInput || !icon) return;
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+      } else {
+        passInput.type = 'password';
+        icon.className = 'bi bi-eye';
+      }
+    }
+
+    function openForgotPasswordModal() {
+      const currentUser = document.getElementById('login-user').value.trim();
+      Swal.fire({
+        title: '<span style="font-family:'IBM Plex Sans Thai',sans-serif; font-weight:700; color:#232D42;">ลืมรหัสผ่าน (Forgot Password)</span>',
+        html: `
+          <div style="font-family:'IBM Plex Sans Thai',sans-serif; text-align:left; font-size:14px; color:#4B5563; line-height:1.6;">
+            <p style="margin:0 0 10px 0;">กรุณาระบุ <strong>Username หรือรหัสพนักงาน</strong> และติดต่อผู้ดูแลระบบ (Admin) เพื่อรีเซ็ตรหัสผ่านในชีต <strong>Users</strong></p>
+            <label style="display:block; font-weight:600; color:#232D42; margin-bottom:4px;">รหัสพนักงาน / Username ที่ต้องการรีเซ็ต:</label>
+            <input id="swal-forgot-user" class="swal2-input" style="width:100%; margin:0 0 10px 0; font-family:'IBM Plex Sans Thai',sans-serif;" placeholder="เช่น 560827" value="${currentUser.replace(/"/g, '&quot;')}">
+            <div style="padding:10px 12px; border-radius:9px; background:rgba(89,184,0,0.10); border:1px solid rgba(89,184,0,0.35); color:#2F7D00; font-size:13px;">
+              <i class="bi bi-info-circle"></i> <strong>ช่องทางติดต่อผู้ดูแลระบบ BBFNM:</strong><br>
+              แจ้งรหัสพนักงานกับทีมดูแลระบบส่งซ่อมเครื่องมือเพื่อตั้งรหัสผ่านใหม่
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#59B800',
+        cancelButtonColor: '#8A92A6',
+        confirmButtonText: 'คัดลอกคำขอรีเซ็ต',
+        cancelButtonText: 'ปิดหน้าต่าง',
+        preConfirm: () => {
+          const emp = document.getElementById('swal-forgot-user').value.trim();
+          if (!emp) {
+            Swal.showValidationMessage('กรุณาระบุ Username หรือรหัสพนักงาน');
+            return false;
+          }
+          return emp;
+        }
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          const msg = `ขอรีเซ็ตรหัสผ่านระบบ Tool Repair (BBFNM) รหัสพนักงาน/Username: ${result.value}`;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(msg).catch(() => {});
+          }
+          Swal.fire({
+            icon: 'success',
+            title: 'คัดลอกข้อความแจ้งรีเซ็ตแล้ว',
+            text: msg,
+            confirmButtonColor: '#59B800'
+          });
+        }
+      });
+    }
+
+    (function restoreRememberedLoginUser() {
+      try {
+        const savedUser = localStorage.getItem('tool_repair_saved_username');
+        if (savedUser) {
+          const userEl = document.getElementById('login-user');
+          const remEl = document.getElementById('login-remember');
+          if (userEl) userEl.value = savedUser;
+          if (remEl) remEl.checked = true;
+        }
+      } catch (e) {}
+    })();
+
     document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
+      const remember = document.getElementById('login-remember')?.checked;
+
+      try {
+        if (remember && user) localStorage.setItem('tool_repair_saved_username', user);
+        else localStorage.removeItem('tool_repair_saved_username');
+      } catch (e) {}
+
       Swal.fire({ title: 'กำลังตรวจสอบสิทธิ์...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
       try {
@@ -3527,11 +3712,11 @@
           syncSidebarToggleIcon();
           loadAllData();
         } else {
-          Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: (res && res.message) || 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+          Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: (res && res.message) || 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', confirmButtonColor: '#59B800' });
         }
       } catch (err) {
         Swal.close();
-        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาดในการเชื่อมต่อ', text: err.message, confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาดในการเชื่อมต่อ', text: err.message, confirmButtonColor: '#59B800' });
       }
     });
 
@@ -3552,6 +3737,17 @@
           MASTER_DATA = { employees: [], assets: [], repairs: [], transfers: [] };
           closeMobileSidebar();
           document.getElementById('login-form').reset();
+          const passEl = document.getElementById('login-pass');
+          const eyeIcon = document.getElementById('toggle-login-pass-icon');
+          if (passEl) passEl.type = 'password';
+          if (eyeIcon) eyeIcon.className = 'bi bi-eye';
+          try {
+            const savedUser = localStorage.getItem('tool_repair_saved_username');
+            if (savedUser) {
+              document.getElementById('login-user').value = savedUser;
+              document.getElementById('login-remember').checked = true;
+            }
+          } catch (e) {}
           document.getElementById('app-container').style.display = 'none';
           document.getElementById('login-screen').style.display = 'flex';
         }
