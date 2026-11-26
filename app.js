@@ -45,6 +45,8 @@
     let SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
     let CURRENT_USER = null;
     let statusChartInstance = null;
+    let dashboardDataTable = null;
+    let manageRepairDataTable = null;
     let assetDataTable = null;
     let transferDataTable = null;
     let dismantleDataTable = null;
@@ -226,9 +228,12 @@
 
     function adjustAssetDataTable(delay = 260) {
       setTimeout(() => {
-        if (assetDataTable) assetDataTable.columns.adjust();
-        if (transferDataTable) transferDataTable.columns.adjust();
-        if (dismantleDataTable) dismantleDataTable.columns.adjust();
+        [dashboardDataTable, manageRepairDataTable, assetDataTable, transferDataTable, dismantleDataTable].forEach(dt => {
+          if (dt) {
+            dt.columns.adjust();
+            if (dt.responsive) dt.responsive.recalc();
+          }
+        });
       }, delay);
     }
 
@@ -575,7 +580,9 @@
       const titleIconEl = document.getElementById('page-title-icon');
       if (titleIconEl) titleIconEl.className = `bi ${meta.icon}`;
 
-      if (pageId === 'create-repair') { refreshNextDocNo(); validateRepairForm(); }
+      if (pageId === 'dashboard') { adjustAssetDataTable(60); }
+      else if (pageId === 'create-repair') { refreshNextDocNo(); validateRepairForm(); }
+      else if (pageId === 'manage-repair') { adjustAssetDataTable(60); }
       else if (pageId === 'change-holder') { refreshNextTransferDocNo(); validateTransferForm(); adjustAssetDataTable(60); }
       else if (pageId === 'asset-list') { adjustAssetDataTable(60); }
       else if (pageId === 'dismantle-log') { loadDismantleWorkbookData(); validateDismantleForm(); adjustAssetDataTable(60); }
@@ -662,16 +669,30 @@
       document.getElementById('kpi-returned').innerText = returned;
       document.getElementById('kpi-scrapped').innerText = scrapped;
 
-      document.getElementById('dashboard-recent-table').innerHTML = repairs.slice(0, 6).map(r => `
-        <tr>
-          <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
-          <td>${r.repair_date}</td>
-          <td>${r.asset_id}</td>
-          <td>${r.asset_detail}</td>
-          <td>${getStatusBadge(r.status)}</td>
-          <td><button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})'><i class="bi bi-printer"></i></button></td>
-        </tr>
-      `).join('');
+      if (dashboardDataTable) { dashboardDataTable.destroy(); dashboardDataTable = null; }
+      const dashTbody = document.getElementById('dashboard-recent-table');
+      const recentList = repairs.slice(0, 6);
+      if (recentList.length === 0) {
+        dashTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">ยังไม่มีรายการส่งซ่อมล่าสุด</td></tr>`;
+      } else {
+        dashTbody.innerHTML = recentList.map(r => `
+          <tr>
+            <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
+            <td>${r.repair_date}</td>
+            <td>${r.asset_id}</td>
+            <td>${r.asset_detail}</td>
+            <td>${getStatusBadge(r.status)}</td>
+          </tr>
+        `).join('');
+        dashboardDataTable = new DataTable('#dashboard-recent-datatable', {
+          responsive: true,
+          paging: false,
+          searching: false,
+          info: false,
+          ordering: false,
+          autoWidth: false
+        });
+      }
 
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const ctx = document.getElementById('statusChart').getContext('2d');
@@ -1016,6 +1037,7 @@
       `).join('');
 
       transferDataTable = new DataTable('#transfer-history-datatable', {
+        responsive: true,
         pageLength: 5,
         lengthMenu: [5, 20, 50, 100],
         autoWidth: false,
@@ -1040,11 +1062,18 @@
 
       const filtered = (MASTER_DATA.repairs || []).filter(r => {
         const matchStatus = statusFilter === 'ALL' || r.status === statusFilter;
-        const matchText = [r.doc_no, r.asset_id, r.asset_detail, r.reporter_name, r.holder_name].join(' ').toLowerCase().includes(keyword);
+        const matchText = [r.doc_no, r.asset_id, r.asset_detail, r.reporter_name, r.holder_name, r.symptom].join(' ').toLowerCase().includes(keyword);
         return matchStatus && matchText;
       });
 
-      document.getElementById('manage-repair-table').innerHTML = filtered.map(r => `
+      if (manageRepairDataTable) { manageRepairDataTable.destroy(); manageRepairDataTable = null; }
+      const tbody = document.getElementById('manage-repair-table');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ไม่พบรายการส่งซ่อม</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
         <tr>
           <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
           <td>${r.repair_date}</td>
@@ -1059,6 +1088,24 @@
           </td>
         </tr>
       `).join('');
+
+      manageRepairDataTable = new DataTable('#manage-repair-datatable', {
+        responsive: true,
+        searching: false,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        autoWidth: false,
+        order: [[0, 'desc']],
+        deferRender: true,
+        language: {
+          lengthMenu: 'แสดง _MENU_ รายการต่อหน้า',
+          info: 'แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ',
+          infoEmpty: 'ไม่พบข้อมูล',
+          zeroRecords: 'ไม่พบรายการที่ตรงกับคำค้นหา',
+          paginate: { first: 'หน้าแรก', last: 'หน้าสุดท้าย', next: 'ถัดไป', previous: 'ก่อนหน้า' }
+        }
+      });
+      adjustAssetDataTable(80);
     }
 
     function openStatusModal(docNo, assetId) {
@@ -1133,6 +1180,7 @@
       }).join('');
 
       assetDataTable = new DataTable('#asset-master-table', {
+        responsive: true,
         pageLength: 10,
         lengthMenu: [10, 25, 50, 100],
         autoWidth: false,
@@ -1446,6 +1494,7 @@
       `).join('');
 
       dismantleDataTable = new DataTable('#dismantle-datatable', {
+        responsive: true,
         pageLength: 5,
         lengthMenu: [5, 20, 50, 100],
         autoWidth: true,
