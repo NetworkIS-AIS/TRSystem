@@ -134,8 +134,16 @@
       width: 100%;
     }
 
+    #login-screen .password-input-wrap .form-control,
     .password-input-wrap .form-control {
       padding-right: 44px !important;
+      position: relative;
+      z-index: 1;
+    }
+
+    #login-screen .password-toggle-btn,
+    .password-toggle-btn {
+      z-index: 2;
     }
 
     .password-toggle-btn {
@@ -2361,7 +2369,7 @@
             <label for="login-pass">รหัสผ่าน (Password)</label>
             <div class="password-input-wrap">
               <input type="password" id="login-pass" class="form-control" placeholder="ระบุรหัสผ่าน" autocomplete="current-password" required>
-              <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onclick="toggleLoginPassword()" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+              <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onpointerdown="event.preventDefault(); event.stopPropagation();" onclick="event.preventDefault(); event.stopPropagation(); toggleLoginPassword();" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
                 <i class="bi bi-eye" id="toggle-login-pass-icon"></i>
               </button>
             </div>
@@ -3620,16 +3628,28 @@
        ===================================================================== */
     function toggleLoginPassword() {
       const passInput = document.getElementById('login-pass');
-      const icon = document.getElementById('toggle-login-pass-icon');
-      if (!passInput || !icon) return;
-      if (passInput.type === 'password') {
-        passInput.type = 'text';
-        icon.className = 'bi bi-eye-slash';
-      } else {
-        passInput.type = 'password';
-        icon.className = 'bi bi-eye';
+      const icon = document.getElementById('toggle-login-pass-icon') || document.querySelector('#toggle-login-pass-btn i');
+      if (!passInput) return;
+      const showPass = (passInput.type === 'password');
+      try {
+        passInput.setAttribute('type', showPass ? 'text' : 'password');
+      } catch (e) {}
+      passInput.type = showPass ? 'text' : 'password';
+      if (icon) {
+        icon.className = showPass ? 'bi bi-eye-slash' : 'bi bi-eye';
       }
+      passInput.focus({ preventScroll: true });
     }
+
+    (function bindPasswordToggleListeners() {
+      const btn = document.getElementById('toggle-login-pass-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleLoginPassword();
+      });
+    })();
 
     function openForgotPasswordModal() {
       const currentUser = document.getElementById('login-user').value.trim();
