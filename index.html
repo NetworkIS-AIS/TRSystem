@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบส่งซ่อมเครื่องมือ</title>
+  <title>BBFNM Portal</title>
   <!-- Favicon (AIS Green Tool & Asset Badge) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2359B800'/%3E%3Cstop offset='100%25' stop-color='%231E8E3E'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M9 14.5L16 10.5L23 14.5V21.5L16 25.5L9 21.5V14.5Z' fill='none' stroke='%23FFFFFF' stroke-width='2.3' stroke-linejoin='round'/%3E%3Cpath d='M9 14.5L16 18.5L23 14.5M16 18.5V25.5' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='22.8' cy='9.2' r='3.4' fill='%23B2FF59' stroke='%231E8E3E' stroke-width='1.3'/%3E%3C/svg%3E">
   <!-- Google Fonts: Sarabun, Kanit, Prompt, Mali, Bai Jamjuree, IBM Plex Sans Thai & Inter -->
@@ -2320,6 +2320,100 @@
       color: var(--hope-primary);
     }
 
+/* ================= API STATUS INDICATOR IN SIDEBAR ================= */
+.api-status-box {
+  margin: 0 12px 8px 12px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.api-status-box:hover {
+  border-color: var(--hope-primary);
+}
+
+.api-status-dot {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  border-radius: 50%;
+  background: #94A3B8;
+  position: relative;
+}
+
+.api-status-box.connected {
+  color: #1AA053;
+  border-color: rgba(26, 160, 83, 0.35);
+  background: rgba(26, 160, 83, 0.08);
+}
+
+.api-status-box.connected .api-status-dot {
+  background: #1AA053;
+  box-shadow: 0 0 0 0 rgba(26, 160, 83, 0.7);
+  animation: pulseGreen 1.6s infinite;
+}
+
+.api-status-box.disconnected {
+  color: #D92D20;
+  border-color: rgba(217, 45, 32, 0.35);
+  background: rgba(217, 45, 32, 0.08);
+}
+
+.api-status-box.disconnected .api-status-dot {
+  background: #D92D20;
+  box-shadow: 0 0 0 0 rgba(217, 45, 32, 0.7);
+  animation: pulseRed 1.5s infinite;
+}
+
+.api-status-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 0 rgba(26, 160, 83, 0.7); }
+  70% { box-shadow: 0 0 0 7px rgba(26, 160, 83, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(26, 160, 83, 0); }
+}
+
+@keyframes pulseRed {
+  0% { box-shadow: 0 0 0 0 rgba(217, 45, 32, 0.75); }
+  70% { box-shadow: 0 0 0 7px rgba(217, 45, 32, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 45, 32, 0); }
+}
+
+/* รองรับตอนย่อ Sidebar */
+#app-container.sidebar-collapsed .api-status-box {
+  justify-content: center;
+  padding: 9px 0;
+  margin: 0 12px 8px 12px;
+}
+
+#app-container.sidebar-collapsed .api-status-label {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  #app-container.sidebar-collapsed .api-status-box {
+    justify-content: flex-start;
+    padding: 8px 11px;
+  }
+  #app-container.sidebar-collapsed .api-status-label {
+    display: inline-block;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2358,17 +2452,17 @@
         </div>
 
         <h2 class="hope-auth-heading">Sign In</h2>
-        <p class="hope-auth-subtitle">เข้าสู่ระบบบริหารงานส่งซ่อมเครื่องมือ ทรัพย์สิน และบันทึกการรื้อถอน</p>
+        <p class="hope-auth-subtitle">เข้าสู่ระบบบริหารงานทรัพย์สินโครงข่ายและเครื่องมือ</p>
 
         <form id="login-form" style="display:flex; flex-direction:column; gap:16px;">
           <div class="form-group">
-            <label for="login-user">ชื่อผู้ใช้งาน (Username / รหัสพนักงาน)</label>
-            <input type="text" id="login-user" class="form-control" placeholder="ระบุ Username หรือรหัสพนักงาน" autocomplete="username" required>
+            <label for="login-user">ชื่อผู้ใช้งาน (Username)</label>
+            <input type="text" id="login-user" class="form-control" autocomplete="username" required>
           </div>
           <div class="form-group">
             <label for="login-pass">รหัสผ่าน (Password)</label>
             <div class="password-input-wrap">
-              <input type="password" id="login-pass" class="form-control" placeholder="ระบุรหัสผ่าน" autocomplete="current-password" required>
+              <input type="password" id="login-pass" class="form-control" placeholder="**********" autocomplete="current-password" required>
               <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onpointerdown="event.preventDefault(); event.stopPropagation();" onclick="event.preventDefault(); event.stopPropagation(); toggleLoginPassword();" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
                 <i class="bi bi-eye" id="toggle-login-pass-icon"></i>
               </button>
@@ -2421,7 +2515,7 @@
         </div>
         <h3 class="hope-showcase-title">Tool Repair &amp; Asset Management</h3>
         <p class="hope-showcase-desc">
-          ศูนย์กลางบริหารจัดการใบส่งซ่อมเครื่องมือ ตรวจสอบสถานะรับคืน โอนย้ายผู้ถือครองทรัพย์สิน และบันทึกการรื้อถอนอุปกรณ์อย่างเป็นระบบ
+          ศูนย์กลางบริหารจัดการทรัพย์สินโครงข่าย ส่งซ่อมเครื่องมือ ตรวจสอบสถานะรับคืน โอนย้ายผู้ถือครองทรัพย์สิน และบันทึกการรื้อถอนอุปกรณ์อย่างเป็นระบบ
         </p>
         <div class="hope-showcase-pills">
           <span class="hope-showcase-pill"><i class="bi bi-wrench-adjustable"></i> ส่งซ่อม &amp; รับคืน</span>
@@ -2437,7 +2531,7 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
 
     <aside class="sidebar" id="main-sidebar">
-      <div class="sidebar-header" data-tooltip="TOOL REPAIR • ระบบบริหารงานส่งซ่อม">
+      <div class="sidebar-header" data-tooltip="BBFNM • ระบบบริหารงานทรัพย์สิน">
         <div class="brand-badge">
           <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M8.5 14.5L16 10.2L23.5 14.5V22L16 26.3L8.5 22V14.5Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"/>
@@ -2447,8 +2541,8 @@
           </svg>
         </div>
         <div class="brand-text">
-          <div class="brand-title">TOOL REPAIR</div>
-          <div class="brand-subtitle">ระบบบริหารงานส่งซ่อม</div>
+          <div class="brand-title">BBFNM</div>
+          <div class="brand-subtitle">ระบบบริหารงานทรัพย์สิน</div>
         </div>
       </div>
 
@@ -2462,9 +2556,9 @@
           <i class="bi bi-file-earmark-plus-fill"></i>
           <span class="nav-label">สร้างใบส่งซ่อมใหม่</span>
         </li>
-        <li class="nav-item" onclick="switchPage('manage-repair', this)" data-tooltip="ติดตาม / รับคืน / ตัดจำหน่าย">
+        <li class="nav-item" onclick="switchPage('manage-repair', this)" data-tooltip="ติดตามงานซ่อม">
           <i class="bi bi-arrow-repeat"></i>
-          <span class="nav-label">ติดตาม / รับคืน / ตัดจำหน่าย</span>
+          <span class="nav-label">ติดตามงานซ่อม</span>
         </li>
         <li class="nav-item" onclick="switchPage('change-holder', this)" data-tooltip="เปลี่ยนแปลงผู้ถือครอง">
           <i class="bi bi-person-lines-fill"></i>
@@ -2474,11 +2568,15 @@
           <i class="bi bi-box-seam-fill"></i>
           <span class="nav-label">ทะเบียนเครื่องมือ</span>
         </li>
-        <li class="nav-item" onclick="switchPage('dismantle-log', this)" data-tooltip="บันทึกการรื้อถอนอุปกรณ์">
+        <li class="nav-item" onclick="switchPage('dismantle-log', this)" data-tooltip="บันทึกรื้อถอนอุปกรณ์">
           <i class="bi bi-tools"></i>
-          <span class="nav-label">บันทึกการรื้อถอนอุปกรณ์</span>
+          <span class="nav-label">บันทึกรื้อถอนอุปกรณ์</span>
         </li>
       </ul>
+      <div id="sidebar-api-status" class="api-status-box disconnected" data-tooltip="API Disconnected" onclick="checkApiHealthStatus()" title="คลิกเพื่อตรวจสอบสถานะ API อีกครั้ง">
+        <span class="api-status-dot"></span>
+        <span id="sidebar-api-status-text" class="api-status-label">API Disconnected</span>
+      </div>
       <div class="sidebar-footer">
         <button class="btn" onclick="confirmLogout()" data-tooltip="ออกจากระบบ" style="width:100%; background:var(--hope-danger-soft); color:var(--hope-danger);">
           <i class="bi bi-box-arrow-right"></i>
@@ -2588,7 +2686,7 @@
 
       <div class="hope-hero-banner">
         <div>
-          <h1 class="hope-hero-title" id="hero-title">สวัสดี! ระบบบริหารงานส่งซ่อมเครื่องมือ</h1>
+          <h1 class="hope-hero-title" id="hero-title">สวัสดี! ระบบบริหารงานทรัพย์สิน</h1>
           <div class="hope-hero-sub" id="hero-subtitle">ติดตามสถานะการส่งซ่อม การรับคืน และการโอนย้ายผู้ถือครองทรัพย์สินแบบเรียลไทม์</div>
         </div>
         <button type="button" class="btn-hero-glass" onclick="switchPage('create-repair', document.querySelectorAll('.nav-item')[1])">
@@ -2689,7 +2787,6 @@
                   </label>
                   <select id="f-vendor-select" class="form-control" style="width:auto; min-width:210px;" onchange="handleVendorChange(); validateRepairForm();" required>
                     <option value="Repair Center">Repair Center</option>
-                    <option value="NPE Technology PLC.">NPE Technology PLC.</option>
                     <option value="Others">Others</option>
                   </select>
                   <input type="text" id="f-vendor-other" class="form-control" placeholder="ระบุชื่อศูนย์ซ่อมเพิ่มเติม..." style="width:auto; min-width:210px; display:none;" oninput="validateRepairForm()">
@@ -2721,37 +2818,37 @@
                   </div>
                   <div class="form-group">
                     <label>ชื่อพนักงาน</label>
-                    <input type="text" id="f-rep-fullname" class="form-control" readonly placeholder="ชื่อ-นามสกุลผู้ส่งซ่อม">
+                    <input type="text" id="f-rep-fullname" class="form-control" readonly>
                   </div>
                 </div>
 
                 <div class="sender-row-2">
                   <div class="form-group">
                     <label>ตำแหน่ง</label>
-                    <input type="text" id="f-rep-pos" class="form-control" readonly placeholder="ตำแหน่ง">
+                    <input type="text" id="f-rep-pos" class="form-control" readonly>
                   </div>
                   <div class="form-group">
                     <label>เบอร์โทร</label>
-                    <input type="text" id="f-emp-phone" class="form-control" readonly placeholder="เบอร์โทรศัพท์">
+                    <input type="text" id="f-emp-phone" class="form-control" readonly>
                   </div>
                   <div class="form-group">
                     <label>ส่วนงาน</label>
-                    <input type="text" id="f-emp-section" class="form-control" readonly placeholder="ส่วนงาน">
+                    <input type="text" id="f-emp-section" class="form-control" readonly>
                   </div>
                 </div>
 
                 <div class="sender-row-3">
                   <div class="form-group">
                     <label>สังกัด</label>
-                    <input type="text" id="f-rep-dept" class="form-control" readonly placeholder="สังกัด / แผนก">
+                    <input type="text" id="f-rep-dept" class="form-control" readonly>
                   </div>
                   <div class="form-group">
-                    <label>location_id</label>
-                    <input type="text" id="f-emp-loc-id" class="form-control" readonly placeholder="location_id">
+                    <label>รหัสสถานที่ทำงาน</label>
+                    <input type="text" id="f-emp-loc-id" class="form-control" readonly>
                   </div>
                   <div class="form-group">
-                    <label>location_name</label>
-                    <input type="text" id="f-emp-loc-name" class="form-control" readonly placeholder="location_name">
+                    <label>ชื่อสถานที่ทำงาน</label>
+                    <input type="text" id="f-emp-loc-name" class="form-control" readonly>
                   </div>
                 </div>
               </div>
@@ -2776,23 +2873,23 @@
                       </tr>
                       <tr>
                         <th>หมายเลขประจำเครื่อง (S/N)</th>
-                        <td><input type="text" id="f-serial-no" class="form-control" readonly placeholder="Serial Number"></td>
+                        <td><input type="text" id="f-serial-no" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>ประเภท</th>
-                        <td><input type="text" id="f-asset-category" class="form-control" readonly placeholder="ประเภทเครื่องมือ"></td>
+                        <td><input type="text" id="f-asset-category" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>ยี่ห้อ</th>
-                        <td><input type="text" id="f-asset-brand" class="form-control" readonly placeholder="ยี่ห้อ"></td>
+                        <td><input type="text" id="f-asset-brand" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>รุ่น</th>
-                        <td><input type="text" id="f-asset-model" class="form-control" readonly placeholder="รุ่น"></td>
+                        <td><input type="text" id="f-asset-model" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>ประเภท - ยี่ห้อ - รุ่น</th>
-                        <td><input type="text" id="f-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา"></td>
+                        <td><input type="text" id="f-asset-detail" class="form-control" readonly></td>
                       </tr>
                     </tbody>
                   </table>
@@ -2810,23 +2907,23 @@
                       </tr>
                       <tr>
                         <th>ชื่อผู้ถือครอง</th>
-                        <td><input type="text" id="f-holder-name" class="form-control" readonly placeholder="ชื่อ-นามสกุลผู้ถือครอง"></td>
+                        <td><input type="text" id="f-holder-name" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>ตำแหน่ง</th>
-                        <td><input type="text" id="f-holder-pos" class="form-control" readonly placeholder="ตำแหน่ง"></td>
+                        <td><input type="text" id="f-holder-pos" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>เบอร์โทร</th>
-                        <td><input type="text" id="f-holder-phone" class="form-control" readonly placeholder="เบอร์โทรศัพท์"></td>
+                        <td><input type="text" id="f-holder-phone" class="form-control" readonly></td>
                       </tr>
                       <tr>
                         <th>ส่วนงาน / สังกัด</th>
-                        <td><input type="text" id="f-holder-dept" class="form-control" readonly placeholder="ส่วนงาน / สังกัด"></td>
+                        <td><input type="text" id="f-holder-dept" class="form-control" readonly></td>
                       </tr>
                       <tr>
-                        <th>สถานที่ (location_name)</th>
-                        <td><input type="text" id="f-holder-loc" class="form-control" readonly placeholder="สถานที่ปฏิบัติงาน"></td>
+                        <th>สถานที่ปฏิบัติงาน</th>
+                        <td><input type="text" id="f-holder-loc" class="form-control" readonly></td>
                       </tr>
                     </tbody>
                   </table>
@@ -2875,7 +2972,7 @@
                 <div style="display:flex; gap:10px;">
                   <button type="reset" class="btn btn-outline" onclick="resetFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
                   <button type="submit" class="btn btn-ais" id="btn-save-repair" disabled>
-                    <i class="bi bi-printer"></i> บันทึกข้อมูลส่งซ่อมและพิมพ์เอกสาร A4
+                    <i class="bi bi-printer"></i> บันทึกข้อมูลและพิมพ์เอกสาร
                   </button>
                 </div>
               </div>
@@ -2954,7 +3051,7 @@
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>รหัสทรัพย์สิน / เครื่องมือ (asset_id) <span class="req-star">*</span></label>
+                    <label>รหัสทรัพย์สิน<span class="req-star">*</span></label>
                     <div class="input-group">
                       <input type="text" id="t-asset-id" class="form-control" placeholder="เช่น BBC1001234" oninput="validateTransferForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupTransferAsset()"><i class="bi bi-search"></i> ค้นหา</button>
@@ -2962,22 +3059,22 @@
                   </div>
                   <div class="form-group">
                     <label>หมายเลขประจำเครื่อง (Serial No.)</label>
-                    <input type="text" id="t-serial-no" class="form-control" readonly placeholder="Serial Number">
+                    <input type="text" id="t-serial-no" class="form-control" readonly>
                   </div>
                   <div class="form-group span-2">
                     <label>ประเภท - ยี่ห้อ - รุ่น</label>
-                    <input type="text" id="t-asset-detail" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา asset_id">
+                    <input type="text" id="t-asset-detail" class="form-control" readonly>
                   </div>
                 </div>
 
                 <div class="form-grid" style="margin-top:10px;">
                   <div class="form-group">
-                    <label>รหัสผู้ถือครองเดิม (old_holder_id)</label>
-                    <input type="text" id="t-old-holder-id" class="form-control" readonly placeholder="รหัสผู้ถือครองเดิม">
+                    <label>รหัสผู้ถือครองเดิม</label>
+                    <input type="text" id="t-old-holder-id" class="form-control" readonly>
                   </div>
                   <div class="form-group">
-                    <label>ชื่อ-สกุล / แผนก (ผู้ถือครองเดิม)</label>
-                    <input type="text" id="t-old-holder-name" class="form-control" readonly placeholder="ข้อมูลผู้ถือครองเดิม">
+                    <label>ชื่อ-สกุล / แผนก</label>
+                    <input type="text" id="t-old-holder-name" class="form-control" readonly>
                   </div>
                 </div>
               </div>
@@ -2985,19 +3082,18 @@
               <div class="form-section-box">
                 <div class="form-section-header">
                   <div class="form-section-title" style="color:var(--hope-primary);"><i class="bi bi-2-circle"></i> ข้อมูลผู้ถือครองใหม่และเหตุผลการเปลี่ยนแปลง</div>
-                  <span class="auto-badge">ค้นหารหัสผู้ถือครองใหม่จาก Employees</span>
                 </div>
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>รหัสผู้ถือครองใหม่ (new_holder_id) <span class="req-star">*</span></label>
+                    <label>รหัสผู้ถือครองใหม่<span class="req-star">*</span></label>
                     <div class="input-group">
                       <input type="text" id="t-new-holder-id" class="form-control" placeholder="ระบุรหัสพนักงานผู้ถือครองใหม่" oninput="validateTransferForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupNewHolder()"><i class="bi bi-search"></i> ค้นหา</button>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label>ชื่อ-สกุล / แผนก (ผู้ถือครองใหม่)</label>
+                    <label>ชื่อ-สกุล / แผนก</label>
                     <input type="text" id="t-new-holder-name" class="form-control" readonly placeholder="แสดงอัตโนมัติเมื่อกดค้นหา">
                   </div>
                 </div>
@@ -3005,11 +3101,11 @@
                 <div class="form-grid" style="margin-top:10px;">
                   <div class="form-group">
                     <label>เหตุผลในการเปลี่ยนแปลงผู้ถือครอง <span class="req-star">*</span></label>
-                    <input type="text" id="t-reason" class="form-control" placeholder="เช่น โอนย้ายสายงาน / สับเปลี่ยนอุปกรณ์ปฏิบัติงาน" oninput="validateTransferForm()" required>
+                    <input type="text" id="t-reason" class="form-control" oninput="validateTransferForm()" required>
                   </div>
                   <div class="form-group">
                     <label>หมายเหตุเพิ่มเติม</label>
-                    <input type="text" id="t-remark" class="form-control" placeholder="ระบุหมายเหตุ (ถ้ามี)">
+                    <input type="text" id="t-remark" class="form-control">
                   </div>
                 </div>
               </div>
@@ -3022,7 +3118,7 @@
                 <div style="display:flex; gap:10px;">
                   <button type="reset" class="btn btn-outline" onclick="resetTransferFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
                   <button type="submit" class="btn btn-ais" id="btn-save-transfer" disabled>
-                    <i class="bi bi-printer"></i> บันทึกการเปลี่ยนแปลงและพิมพ์เอกสาร A4
+                    <i class="bi bi-printer"></i> บันทึกข้อมูลและพิมพ์เอกสาร
                   </button>
                 </div>
               </div>
@@ -3090,13 +3186,13 @@
                   <span>บันทึกการรื้อถอนอุปกรณ์</span>
                 </h3>
                 <div style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">
-                  แยก Workbook: <strong style="color:var(--hope-primary);">1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM</strong> • ค้นหาข้อมูลสถานที่จากชีต <strong>Location</strong> และรหัส/รายละเอียดอุปกรณ์จากชีต <strong>Article</strong>
+                  บันทึกทรัพย์สินที่รื้อถอนจากชุมสายเป็นหลักฐานว่าได้รับคืนเข้าคลังแล้ว
                 </div>
               </div>
               <div class="doc-meta-box">
-                <div class="doc-no-line">Workbook: <span id="dismantle-wb-badge">1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM</span></div>
+                <div class="doc-no-line"><span id="dismantle-wb-badge">วันที่รับคืนอุปกรณ์</span></div>
                 <div class="doc-date-line">
-                  <span>วันที่บันทึก (date):</span>
+                  <!-- <span>วันที่บันทึก (date):</span> -->
                   <input type="date" id="d-date" onchange="validateDismantleForm()" required>
                 </div>
               </div>
@@ -3106,27 +3202,27 @@
               <div class="form-section-box">
                 <div class="form-section-header">
                   <div class="form-section-title"><i class="bi bi-geo-alt"></i> ข้อมูลงานและสถานที่ (Location)</div>
-                  <span class="auto-badge">Sheet: Location</span>
+                  <!-- <span class="auto-badge">Sheet: Location</span> -->
                 </div>
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>รหัสงาน (job_id) <span class="req-star">*</span></label>
-                    <input type="text" id="d-job-id" class="form-control" placeholder="ระบุรหัสงาน เช่น JOB-2026-001" oninput="validateDismantleForm()" required>
+                    <label>รหัสงาน (JOB ID) <span class="req-star">*</span></label>
+                    <input type="text" id="d-job-id" class="form-control" placeholder="ระบุรหัสงาน เช่น JB26-0123456" oninput="validateDismantleForm()" required>
                   </div>
                   <div class="form-group">
-                    <label>รหัสสถานที่ (location_code) <span class="req-star">*</span></label>
+                    <label>รหัสสถานที่ (Location Code) <span class="req-star">*</span></label>
                     <div class="input-group">
-                      <input type="text" id="d-location-code" class="form-control" placeholder="ระบุ location_code หรือ location_id แล้วกดค้นหา" oninput="validateDismantleForm()" required>
+                      <input type="text" id="d-location-code" class="form-control" placeholder="เช่น 0101_001" oninput="validateDismantleForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupDismantleLocation()"><i class="bi bi-search"></i> ค้นหา</button>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label>ชื่อสถานที่ (location_name) <span class="req-star">*</span></label>
-                    <input type="text" id="d-location-name" class="form-control" placeholder="ชื่อสถานที่ (ดึงอัตโนมัติจาก Location หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                    <label>ชื่อสถานที่ (Location Name) <span class="req-star">*</span></label>
+                    <input type="text" id="d-location-name" class="form-control" oninput="validateDismantleForm()" required>
                   </div>
                   <div class="form-group">
-                    <label>โซนสถานที่ (location_zone) <span class="req-star">*</span></label>
-                    <input type="text" id="d-location-zone" class="form-control" placeholder="โซนสถานที่ (ดึงอัตโนมัติจาก Location หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                    <label>โซนสถานที่ (Zone) <span class="req-star">*</span></label>
+                    <input type="text" id="d-location-zone" class="form-control" oninput="validateDismantleForm()" required>
                   </div>
                 </div>
               </div>
@@ -3134,30 +3230,30 @@
               <div class="form-section-box accent-info">
                 <div class="form-section-header">
                   <div class="form-section-title"><i class="bi bi-cpu"></i> ข้อมูลอุปกรณ์ที่รื้อถอน (Article)</div>
-                  <span class="auto-badge">Sheet: Article</span>
+                  <!-- <span class="auto-badge">Sheet: Article</span> -->
                 </div>
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>เลขที่/รหัสอุปกรณ์ (article_no) <span class="req-star">*</span></label>
+                    <label>เลขที่/รหัสอุปกรณ์ (Article No) <span class="req-star">*</span></label>
                     <div class="input-group">
-                      <input type="text" id="d-article-no" class="form-control" placeholder="ระบุ article_no หรือ article_id แล้วกดค้นหา" oninput="validateDismantleForm()" required>
+                      <input type="text" id="d-article-no" class="form-control" oninput="validateDismantleForm()" required>
                       <button type="button" class="btn btn-ais" onclick="lookupDismantleArticle()"><i class="bi bi-search"></i> ค้นหา</button>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label>รายละเอียดอุปกรณ์ (article_desc) <span class="req-star">*</span></label>
-                    <input type="text" id="d-article-desc" class="form-control" placeholder="รายละเอียดอุปกรณ์ (ดึงอัตโนมัติจาก Article หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                    <label>รายละเอียดอุปกรณ์ <span class="req-star">*</span></label>
+                    <input type="text" id="d-article-desc" class="form-control" oninput="validateDismantleForm()" required>
                   </div>
                   <div class="form-group">
-                    <label>Asset Tag (asset_tag)</label>
+                    <label>Asset Tag</label>
                     <input type="text" id="d-asset-tag" class="form-control" placeholder="ระบุ Asset Tag (ถ้ามี)">
                   </div>
                   <div class="form-group">
-                    <label>Serial No. (serial_no)</label>
+                    <label>Serial No.</label>
                     <input type="text" id="d-serial-no" class="form-control" placeholder="ระบุหมายเลขเครื่อง Serial No. (ถ้ามี)">
                   </div>
                   <div class="form-group">
-                    <label>เลขที่เอกสาร AAM (aam_doc)</label>
+                    <label>เลขที่เอกสาร AAM</label>
                     <input type="text" id="d-aam-doc" class="form-control" placeholder="ระบุเลขที่เอกสาร AAM (ถ้ามี)">
                   </div>
                   <div class="form-group">
@@ -3185,7 +3281,7 @@
           <div class="card-box">
             <h3 class="card-title">
               <span class="card-title-icon"><i class="bi bi-table"></i></span>
-              <span>รายการบันทึกการรื้อถอนอุปกรณ์ (wb: 1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM)</span>
+              <span>รายการบันทึกการรื้อถอนอุปกรณ์</span>
             </h3>
             <div class="table-responsive">
               <table id="dismantle-datatable" class="table is-fullwidth is-striped is-hoverable">
@@ -3565,9 +3661,9 @@
       updateAssetLockBanner('transfer-asset-lock-alert', lockInfo);
 
       if (!dateVal) missing.push('วันที่เปลี่ยนแปลง');
-      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน (กดค้นหา asset_id)');
+      if (!assetId || !assetDetail) missing.push('ข้อมูลทรัพย์สิน');
       if (lockInfo.locked) missing.push('เครื่องมือไม่สามารถโอนย้ายได้ในขณะนี้');
-      if (!newHolderId || !newHolderName) missing.push('ข้อมูลผู้ถือครองใหม่ (กดค้นหา emp_id)');
+      if (!newHolderId || !newHolderName) missing.push('ข้อมูลผู้ถือครองใหม่');
       if (!reason) missing.push('เหตุผลในการเปลี่ยนแปลง');
 
       const isComplete = missing.length === 0;
@@ -3844,7 +3940,7 @@
         refreshNextTransferDocNo();
         loadDismantleWorkbookData(true);
       } catch (err) {
-        showToast('โหลดข้อมูลจากชีตไม่สำเร็จ: ' + err.message, 'error');
+        showToast('โหลดข้อมูลไม่สำเร็จ: ' + err.message, 'error');
       } finally {
         isLoadingData = false;
       }
@@ -3993,7 +4089,7 @@
 
     function lookupTransferAsset() {
       const assetId = document.getElementById('t-asset-id').value.trim().toUpperCase();
-      if (!assetId) { showToast('กรุณาระบุรหัสทรัพย์สิน (asset_id) ก่อนค้นหา', 'warning'); return; }
+      if (!assetId) { showToast('กรุณาระบุรหัสทรัพย์สินก่อนค้นหา', 'warning'); return; }
       if (!Array.isArray(MASTER_DATA.assets) || MASTER_DATA.assets.length === 0) {
         showToast('ไม่พบข้อมูลทะเบียนทรัพย์สิน กรุณาเข้าสู่ระบบใหม่อีกครั้ง', 'warning');
         return;
@@ -4009,7 +4105,7 @@
 
         if (asset.holder_id) {
           const emp = (MASTER_DATA.employees || []).find(e => String(e.emp_id || '').trim().toUpperCase() === String(asset.holder_id).trim().toUpperCase());
-          document.getElementById('t-old-holder-name').value = emp ? `${emp.fullname} (${emp.department})` : 'ไม่พบข้อมูลพนักงานในชีต Employees';
+          document.getElementById('t-old-holder-name').value = emp ? `${emp.fullname} (${emp.department})` : 'ไม่พบข้อมูลพนักงานในฐานข้อมูลพนักงาน';
         } else {
           document.getElementById('t-old-holder-name').value = 'ยังไม่ได้ระบุผู้ถือครองเดิม';
         }
@@ -4041,7 +4137,7 @@
         document.getElementById('f-emp-loc-name').value = emp.location_name || '';
       } else {
         clearReporterDetails();
-        showToast(`ไม่พบรหัสพนักงาน ${empId} ในชีต Employees`, 'error');
+        showToast(`ไม่พบรหัสพนักงาน ${empId} ในฐานข้อมูลพนักงาน`, 'error');
       }
       validateRepairForm();
     }
@@ -4150,7 +4246,7 @@
         document.getElementById('t-new-holder-name').value = `${emp.fullname} (${emp.department})`;
       } else {
         document.getElementById('t-new-holder-name').value = '';
-        showToast(`ไม่พบรหัสพนักงาน ${empId} ในชีต Employees`, 'error');
+        showToast(`ไม่พบรหัสพนักงาน ${empId} ในฐานข้อมูลพนักงาน`, 'error');
       }
       validateTransferForm();
     }
@@ -4273,7 +4369,7 @@
           <td>${r.symptom}</td>
           <td>${getStatusBadge(r.status)}</td>
           <td style="white-space:nowrap;">
-            <button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})' title="พิมพ์ A4"><i class="bi bi-printer"></i></button>
+            <button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})' title="พิมพ์เอกสารส่งซ่อม"><i class="bi bi-printer"></i></button>
             ${r.status === 'กำลังส่งซ่อม' ? `<button class="btn btn-ais btn-sm" onclick="openStatusModal('${r.doc_no}', '${r.asset_id}')" title="อัปเดตสถานะ"><i class="bi bi-pencil-square"></i> อัปเดต</button>` : ''}
           </td>
         </tr>
@@ -4332,7 +4428,7 @@
       const list = MASTER_DATA.assets || [];
       if (assetDataTable) { assetDataTable.destroy(); assetDataTable = null; }
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">ไม่พบข้อมูลในทะเบียนเครื่องมือ (ตรวจสอบชีต Assets)</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">ไม่พบข้อมูลในทะเบียนเครื่องมือ</td></tr>`;
         return;
       }
       tbody.innerHTML = list.map(a => {
@@ -4408,24 +4504,29 @@
           <table class="doc-table">
             <tbody>
               <tr>
-                <th style="width:22%;">รหัสเครื่องมือ</th>
-                <td style="width:28%;"><strong>${doc.asset_id}</strong></td>
-                <th style="width:18%;">ประเภท</th>
-                <td style="width:32%;">${cat || doc.asset_detail}</td>
+                <th style="width:20%;">รหัสเครื่องมือ</th>
+                <td style="width:25%;"><strong>${doc.asset_id}</strong></td>
+                <th style="width:15%;">ประเภท</th>
+                <td style="width:40%;">${cat || doc.asset_detail}</td>
               </tr>
               <tr>
-                <th>ยี่ห้อ</th>
-                <td>${brand || '-'}</td>
-                <th>รุ่น / หมายเลขประจำเครื่อง</th>
-                <td>${model || '-'} / <strong>${doc.serial_no || '-'}</strong></td>
+                <th style="width:15%;">ยี่ห้อ</th>
+                <td style="width:35%;">${brand || '-'}</td>
+                <th style="width:12%;">รุ่น</th>
+                <td style="width:38%;">${model || '-'}</td>
               </tr>
+              <tr>
+                <th>หมายเลขประจำเครื่อง</th>
+                <td colspan="3"><strong>${doc.serial_no || '-'}</strong></td>
+              </tr>
+
               <tr>
                 <th>อาการชำรุด</th>
                 <td colspan="3">${doc.symptom}</td>
               </tr>
             </tbody>
           </table>
-          <div style="font-size:11.5px; margin-top:6px;"><strong>หมายเหตุ / อุปกรณ์ติดเครื่อง:</strong> ${doc.remark || '-'}</div>
+          <div style="font-size:11.5px; margin-top:6px;"><strong>หมายเหตุ / อุปกรณ์ติดเครื่อง: </strong> ${doc.remark || '-'}</div>
           <div class="sign-grid">
             <div><div class="sign-line"></div><div>(${reporterShortName})</div><div>ผู้แจ้งส่งซ่อม</div><div class="sign-date">วันที่ ____/____/____</div></div>
             <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้อนุมัติส่งซ่อม</div><div class="sign-date">วันที่ ____/____/____</div></div>
@@ -4457,12 +4558,12 @@
           </div>
           <div class="transfer-party-grid">
             <div class="transfer-party-card">
-              <div class="transfer-party-label">ผู้ถือครองเดิม (Previous Holder)</div>
+              <div class="transfer-party-label">ผู้ถือครองเดิม</div>
               <div><span class="code-mono">[${doc.old_holder_id || '-'}]</span> ${doc.old_holder_name || '-'}</div>
             </div>
-            <div class="transfer-arrow-badge">→</div>
+            <div class="transfer-arrow-badge"><i class="bi bi-chevron-double-right"></i></div>
             <div class="transfer-party-card new-holder">
-              <div class="transfer-party-label">ผู้ถือครองใหม่ (New Holder)</div>
+              <div class="transfer-party-label">ผู้ถือครองใหม่</div>
               <div><span class="code-mono">[${doc.new_holder_id || '-'}]</span> <strong>${doc.new_holder_name || '-'}</strong></div>
             </div>
           </div>
@@ -4549,7 +4650,7 @@
           renderDismantleTable();
         }
       } catch (err) {
-        if (!silent) showToast('ไม่สามารถโหลดข้อมูล Workbook การรื้อถอนได้: ' + err.message, 'warning');
+        if (!silent) showToast('ไม่สามารถโหลดฐานข้อมูลการรื้อถอนได้: ' + err.message, 'warning');
         renderDismantleTable();
       }
     }
@@ -4570,7 +4671,7 @@
         document.getElementById('d-location-name').value = resolvedName;
         document.getElementById('d-location-zone').value = resolvedZone;
       } else {
-        showToast(`ไม่พบรหัสสถานที่ ${codeInput} ในชีต Location (สามารถกรอกชื่อและโซนด้วยตนเองได้)`, 'warning');
+        showToast(`ไม่พบรหัสสถานที่ ${codeInput} ในฐานข้อมูล Location`, 'warning');
       }
       validateDismantleForm();
     }
@@ -4589,7 +4690,7 @@
         document.getElementById('d-article-no').value = resolvedNo;
         document.getElementById('d-article-desc').value = fallbackDesc || '';
       } else {
-        showToast(`ไม่พบรหัสอุปกรณ์ ${artInput} ในชีต Article (สามารถกรอกรายละเอียดด้วยตนเองได้)`, 'warning');
+        showToast(`ไม่พบรหัสอุปกรณ์ ${artInput} ในฐานข้อมูลทะเบียนพัสดุ`, 'warning');
       }
       validateDismantleForm();
     }
@@ -4619,7 +4720,7 @@
       btn.disabled = !isComplete;
       if (isComplete) {
         hint.className = 'validation-hint ready';
-        hint.innerHTML = `<i class="bi bi-check-circle"></i><span>ข้อมูลครบถ้วน พร้อมบันทึกลง Workbook (${DISMANTLE_WB_ID})</span>`;
+        hint.innerHTML = `<i class="bi bi-check-circle"></i><span>ข้อมูลครบถ้วน พร้อมบันทึก</span>`;
       } else {
         hint.className = 'validation-hint';
         hint.innerHTML = `<i class="bi bi-exclamation-circle"></i><span>รอข้อมูล: ${missing.join(' • ')}</span>`;
@@ -4720,6 +4821,67 @@
         Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
       }
     });
+
+    let apiHealthTimer = null;
+
+function setApiIndicator(isConnected, detailText = '') {
+  const box = document.getElementById('sidebar-api-status');
+  const textEl = document.getElementById('sidebar-api-status-text');
+  if (!box || !textEl) return;
+
+  const label = isConnected ? 'API Connected' : 'API Disconnected';
+  box.classList.remove('connected', 'disconnected');
+  box.classList.add(isConnected ? 'connected' : 'disconnected');
+  box.setAttribute('data-tooltip', detailText ? `${label} (${detailText})` : label);
+  textEl.textContent = label;
+}
+
+async function checkApiHealthStatus() {
+  if (typeof GAS_API_URL !== 'string' || !GAS_API_URL.trim()) {
+    setApiIndicator(false, 'Missing API URL');
+    return false;
+  }
+
+  try {
+    // ลองเรียกแบบ GET (กรณี GAS doGet คืน {"status":"ok",...}) ก่อน แล้ว fallback เป็น POST action: 'ping'
+    let data = null;
+    try {
+      const getRes = await fetch(GAS_API_URL, { method: 'GET', cache: 'no-store' });
+      if (getRes.ok) {
+        data = await getRes.json();
+      }
+    } catch (_) {}
+
+    if (!data || String(data.status || '').toLowerCase() !== 'ok') {
+      const postRes = await fetch(GAS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'ping' })
+      });
+      if (!postRes.ok) throw new Error(`HTTP ${postRes.status}`);
+      data = await postRes.json();
+    }
+
+    const ok = Boolean(data && String(data.status || '').toLowerCase() === 'ok');
+    setApiIndicator(ok, data?.timestamp || data?.message || '');
+    return ok;
+  } catch (err) {
+    setApiIndicator(false, err.message || 'Offline');
+    return false;
+  }
+}
+
+function startApiHealthMonitor(intervalMs = 30000) {
+  checkApiHealthStatus();
+  if (apiHealthTimer) clearInterval(apiHealthTimer);
+  apiHealthTimer = setInterval(checkApiHealthStatus, intervalMs);
+}
+
+// เริ่มเช็กอัตโนมัติเมื่อหน้าพร้อมใช้งาน
+document.addEventListener('DOMContentLoaded', () => {
+  startApiHealthMonitor(30000);
+});
+
   </script>
 </body>
 </html>
