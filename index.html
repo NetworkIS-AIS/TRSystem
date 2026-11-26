@@ -4438,6 +4438,7 @@
     function buildTransferHalfForm(doc, copyType) {
       const { cat, brand, model } = parseAssetFields(doc);
       const newHolderShortName = String(doc.new_holder_name || '').split('(')[0].trim();
+      const oldHolderShortName = String(doc.old_holder_name || '').split('(')[0].trim();
       return `
         <div class="a4-half">
           <div class="doc-header">
@@ -4489,7 +4490,7 @@
           </table>
           <div class="doc-remark-box"><strong>หมายเหตุ:</strong> ${doc.remark || '-'}</div>
           <div class="sign-grid">
-            <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้ส่งมอบ / ผู้ถือครองเดิม</div><div class="sign-date">วันที่ ____/____/____</div></div>
+            <div><div class="sign-line"></div><div>(${oldHolderShortName || '............................................'})</div><div>ผู้ส่งมอบ / ผู้ถือครองเดิม</div><div class="sign-date">วันที่ ____/____/____</div></div>
             <div><div class="sign-line"></div><div>(${newHolderShortName || '............................................'})</div><div>ผู้รับมอบ / ผู้ถือครองใหม่</div><div class="sign-date">วันที่ ____/____/____</div></div>
             <div><div class="sign-line"></div><div>(....................................................)</div><div>ผู้อนุมัติ / ผู้ดูแลทรัพย์สิน</div><div class="sign-date">วันที่ ____/____/____</div></div>
           </div>
