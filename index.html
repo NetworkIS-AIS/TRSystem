@@ -1960,16 +1960,18 @@
       border-bottom: 1px dashed var(--border-color);
       font-size: 14.5px;
     }
-    #sec-create-repair .side-kv-table {
-      margin-top: 4px;
+    #sec-create-repair .form-section-box .side-kv-table {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
     }
-    #sec-create-repair .side-kv-table th {
+    #sec-create-repair .form-section-box .side-kv-table th {
       background: var(--bg-body);
       color: var(--text-main);
-      padding-left: 16px;
+      padding: 7px 10px;
     }
-    #sec-create-repair .side-kv-table td {
-      padding-right: 16px;
+    #sec-create-repair .form-section-box .side-kv-table td {
+      padding: 6px 10px;
     }
     #sec-create-repair .form-control[readonly] {
       background: var(--hope-primary-soft);
@@ -2339,10 +2341,9 @@
               <div id="repair-asset-lock-alert" class="asset-lock-alert"></div>
 
               <div class="split-info-grid">
-                <div class="side-table-panel">
-                  <div class="side-table-header">
-                    <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
-                    
+                <div class="form-section-box" style="margin-bottom:0;">
+                  <div class="form-section-header">
+                    <div class="form-section-title"><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</div>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
@@ -2379,9 +2380,9 @@
                   </table>
                 </div>
 
-                <div class="side-table-panel">
-                  <div class="side-table-header holder-header">
-                    <span><i class="bi bi-person-badge"></i> ข้อมูลผู้ถือครอง</span>
+                <div class="form-section-box" style="margin-bottom:0;">
+                  <div class="form-section-header">
+                    <div class="form-section-title"><i class="bi bi-person-badge"></i> ข้อมูลผู้ถือครอง</div>
                   </div>
                   <table class="side-kv-table">
                     <tbody>
