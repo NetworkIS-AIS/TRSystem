@@ -2089,6 +2089,10 @@
           <i class="bi bi-box-seam-fill"></i>
           <span class="nav-label">ทะเบียนเครื่องมือ</span>
         </li>
+        <li class="nav-item" onclick="switchPage('dismantle-log', this)" data-tooltip="บันทึกการรื้อถอนอุปกรณ์">
+          <i class="bi bi-tools"></i>
+          <span class="nav-label">บันทึกการรื้อถอนอุปกรณ์</span>
+        </li>
       </ul>
       <div class="sidebar-footer">
         <button class="btn" onclick="confirmLogout()" data-tooltip="ออกจากระบบ" style="width:100%; background:var(--hope-danger-soft); color:var(--hope-danger);">
@@ -2690,6 +2694,136 @@
             </div>
           </div>
         </section>
+
+        <!-- SECTION 6: DISMANTLE / REMOVAL LOG (SEPARATE WORKBOOK: 1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM) -->
+        <section id="sec-dismantle-log" class="page-section">
+          <div class="card-box">
+            <div class="form-top-bar">
+              <div>
+                <h3 class="card-title" style="margin:0;">
+                  <span class="card-title-icon"><i class="bi bi-tools"></i></span>
+                  <span>บันทึกการรื้อถอนอุปกรณ์</span>
+                </h3>
+                <div style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">
+                  แยก Workbook: <strong style="color:var(--hope-primary);">1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM</strong> • ค้นหาข้อมูลสถานที่จากชีต <strong>Location</strong> และรหัส/รายละเอียดอุปกรณ์จากชีต <strong>Article</strong>
+                </div>
+              </div>
+              <div class="doc-meta-box">
+                <div class="doc-no-line">Workbook: <span id="dismantle-wb-badge">1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM</span></div>
+                <div class="doc-date-line">
+                  <span>วันที่บันทึก (date):</span>
+                  <input type="date" id="d-date" onchange="validateDismantleForm()" required>
+                </div>
+              </div>
+            </div>
+
+            <form id="dismantle-form">
+              <div class="form-section-box">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-geo-alt"></i> ข้อมูลงานและสถานที่ (Location)</div>
+                  <span class="auto-badge">Sheet: Location</span>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>รหัสงาน (job_id) <span class="req-star">*</span></label>
+                    <input type="text" id="d-job-id" class="form-control" placeholder="ระบุรหัสงาน เช่น JOB-2026-001" oninput="validateDismantleForm()" required>
+                  </div>
+                  <div class="form-group">
+                    <label>รหัสสถานที่ (location_code) <span class="req-star">*</span></label>
+                    <div class="input-group">
+                      <input type="text" id="d-location-code" class="form-control" placeholder="ระบุ location_code หรือ location_id แล้วกดค้นหา" oninput="validateDismantleForm()" required>
+                      <button type="button" class="btn btn-ais" onclick="lookupDismantleLocation()"><i class="bi bi-search"></i> ค้นหา</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อสถานที่ (location_name) <span class="req-star">*</span></label>
+                    <input type="text" id="d-location-name" class="form-control" placeholder="ชื่อสถานที่ (ดึงอัตโนมัติจาก Location หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                  </div>
+                  <div class="form-group">
+                    <label>โซนสถานที่ (location_zone) <span class="req-star">*</span></label>
+                    <input type="text" id="d-location-zone" class="form-control" placeholder="โซนสถานที่ (ดึงอัตโนมัติจาก Location หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section-box accent-info">
+                <div class="form-section-header">
+                  <div class="form-section-title"><i class="bi bi-cpu"></i> ข้อมูลอุปกรณ์ที่รื้อถอน (Article)</div>
+                  <span class="auto-badge">Sheet: Article</span>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>เลขที่/รหัสอุปกรณ์ (article_no) <span class="req-star">*</span></label>
+                    <div class="input-group">
+                      <input type="text" id="d-article-no" class="form-control" placeholder="ระบุ article_no หรือ article_id แล้วกดค้นหา" oninput="validateDismantleForm()" required>
+                      <button type="button" class="btn btn-ais" onclick="lookupDismantleArticle()"><i class="bi bi-search"></i> ค้นหา</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>รายละเอียดอุปกรณ์ (article_desc) <span class="req-star">*</span></label>
+                    <input type="text" id="d-article-desc" class="form-control" placeholder="รายละเอียดอุปกรณ์ (ดึงอัตโนมัติจาก Article หรือกรอกเพิ่ม)" oninput="validateDismantleForm()" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Asset Tag (asset_tag)</label>
+                    <input type="text" id="d-asset-tag" class="form-control" placeholder="ระบุ Asset Tag (ถ้ามี)">
+                  </div>
+                  <div class="form-group">
+                    <label>Serial No. (serial_no)</label>
+                    <input type="text" id="d-serial-no" class="form-control" placeholder="ระบุหมายเลขเครื่อง Serial No. (ถ้ามี)">
+                  </div>
+                  <div class="form-group">
+                    <label>เลขที่เอกสาร AAM (aam_doc)</label>
+                    <input type="text" id="d-aam-doc" class="form-control" placeholder="ระบุเลขที่เอกสาร AAM (ถ้ามี)">
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเหตุ (remark)</label>
+                    <input type="text" id="d-remark" class="form-control" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="submit-footer-bar">
+                <div class="validation-hint" id="dismantle-validation-msg">
+                  <i class="bi bi-exclamation-circle"></i>
+                  <span>กรุณากรอกข้อมูล date, job_id, location_code, location_name, location_zone, article_no และ article_desc</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <button type="reset" class="btn btn-outline" onclick="resetDismantleFormHelper()"><i class="bi bi-arrow-counterclockwise"></i> ล้างข้อมูล</button>
+                  <button type="submit" class="btn btn-ais" id="btn-save-dismantle" disabled>
+                    <i class="bi bi-save"></i> บันทึกรายการรื้อถอนอุปกรณ์
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-box">
+            <h3 class="card-title">
+              <span class="card-title-icon"><i class="bi bi-table"></i></span>
+              <span>รายการบันทึกการรื้อถอนอุปกรณ์ (wb: 1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM)</span>
+            </h3>
+            <div class="table-responsive">
+              <table id="dismantle-datatable" class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>date</th>
+                    <th>job_id</th>
+                    <th>location_code</th>
+                    <th>location_name</th>
+                    <th>location_zone</th>
+                    <th>article_no</th>
+                    <th>article_desc</th>
+                    <th>asset_tag</th>
+                    <th>serial_no</th>
+                    <th>aam_doc</th>
+                    <th>remark</th>
+                  </tr>
+                </thead>
+                <tbody id="dismantle-log-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   </div>
@@ -2714,9 +2848,20 @@
         return await res.json();
       }
 
+      const DISMANTLE_WORKBOOK_ID = '1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM';
       return {
+        dismantleWorkbookId: DISMANTLE_WORKBOOK_ID,
         checkLogin: (user, pass) => request('checkLogin', { user, pass }),
         getInitialData: () => request('getInitialData'),
+        getDismantleData: () => request('getDismantleData', {
+          workbook_id: DISMANTLE_WORKBOOK_ID,
+          sheets: ['Dismantle', 'Location', 'Article']
+        }),
+        saveDismantleRecord: (payload) => request('saveDismantleRecord', {
+          workbook_id: DISMANTLE_WORKBOOK_ID,
+          sheet_name: 'Dismantle',
+          payload
+        }),
         generateDocNo: () => request('generateDocNo'),
         generateTransferDocNo: () => request('generateTransferDocNo'),
         saveRepairTransaction: (payload) => request('saveRepairTransaction', { payload }),
@@ -2728,13 +2873,15 @@
     /* =====================================================================
        2. APPLICATION STATE & APPEARANCE CUSTOMIZER
        ===================================================================== */
-    let MASTER_DATA = { employees: [], assets: [], repairs: [], transfers: [] };
+    const DISMANTLE_WB_ID = '1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM';
+    let MASTER_DATA = { employees: [], assets: [], repairs: [], transfers: [], locations: [], articles: [], dismantles: [] };
     let SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
     let SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
     let CURRENT_USER = null;
     let statusChartInstance = null;
     let assetDataTable = null;
     let transferDataTable = null;
+    let dismantleDataTable = null;
     let isLoadingData = false;
 
     const COLOR_THEMES = {
@@ -2840,6 +2987,7 @@
 
     document.getElementById('f-date').valueAsDate = new Date();
     document.getElementById('t-date').valueAsDate = new Date();
+    document.getElementById('d-date').valueAsDate = new Date();
 
     function syncRemarkFromPresets(changedCb) {
       const remarkEl = document.getElementById('f-remark');
@@ -2914,6 +3062,7 @@
       setTimeout(() => {
         if (assetDataTable) assetDataTable.columns.adjust();
         if (transferDataTable) transferDataTable.columns.adjust();
+        if (dismantleDataTable) dismantleDataTable.columns.adjust();
       }, delay);
     }
 
@@ -3152,7 +3301,8 @@
         'create-repair': { title: 'สร้างใบส่งซ่อมเครื่องมือใหม่', icon: 'bi-file-earmark-plus-fill' },
         'manage-repair': { title: 'ติดตามสถานะ / รับคืน / ตัดจำหน่าย', icon: 'bi-arrow-repeat' },
         'change-holder': { title: 'เปลี่ยนแปลงผู้ถือครองทรัพย์สิน', icon: 'bi-person-lines-fill' },
-        'asset-list': { title: 'ทะเบียนเครื่องมือในระบบ', icon: 'bi-box-seam-fill' }
+        'asset-list': { title: 'ทะเบียนเครื่องมือในระบบ', icon: 'bi-box-seam-fill' },
+        'dismantle-log': { title: 'บันทึกการรื้อถอนอุปกรณ์', icon: 'bi-tools' }
       };
       const meta = pageMeta[pageId] || pageMeta.dashboard;
       document.getElementById('page-title').innerText = meta.title;
@@ -3162,6 +3312,7 @@
       if (pageId === 'create-repair') { refreshNextDocNo(); validateRepairForm(); }
       else if (pageId === 'change-holder') { refreshNextTransferDocNo(); validateTransferForm(); adjustAssetDataTable(60); }
       else if (pageId === 'asset-list') { adjustAssetDataTable(60); }
+      else if (pageId === 'dismantle-log') { loadDismantleWorkbookData(); validateDismantleForm(); adjustAssetDataTable(60); }
 
       if (isMobileViewport()) closeMobileSidebar();
     }
@@ -3195,13 +3346,18 @@
       isLoadingData = true;
       try {
         const data = await GasClient.getInitialData();
-        MASTER_DATA = data || { employees: [], assets: [], repairs: [], transfers: [] };
+        MASTER_DATA = Object.assign({
+          employees: [], assets: [], repairs: [], transfers: [],
+          locations: [], articles: [], dismantles: []
+        }, data || {});
         updateDashboard();
         renderRepairTable();
         renderAssetTable();
         renderTransferHistoryTable();
+        renderDismantleTable();
         refreshNextDocNo();
         refreshNextTransferDocNo();
+        loadDismantleWorkbookData(true);
       } catch (err) {
         showToast('โหลดข้อมูลจากชีตไม่สำเร็จ: ' + err.message, 'error');
       } finally {
@@ -3873,6 +4029,211 @@
       `;
       setTimeout(() => window.print(), 250);
     }
+
+    /* =====================================================================
+       8. DISMANTLE / REMOVAL LOG (WORKBOOK: 1t8GOOyo3Bo7charARubv2TkykSnv_WGumAOQK1bR6MM)
+       ===================================================================== */
+    function normalizeDismantleRow(r) {
+      return {
+        date: r.date || r.Date || '',
+        job_id: r.job_id || r.Job_ID || '',
+        location_code: r.location_code || r.Location_Code || '',
+        location_name: r.location_name || r.Location_name || r.Location_Name || '',
+        location_zone: r.location_zone || r.Location_Zone || '',
+        article_no: r.article_no || r.Article_No || '',
+        article_desc: r.article_desc || r.Article_Desc || '',
+        asset_tag: r.asset_tag || r.Asset_Tag || '',
+        serial_no: r.serial_no || r.Serial_No || '',
+        aam_doc: r.aam_doc || r.AAM_Doc || '',
+        remark: r.remark || r.Remark || ''
+      };
+    }
+
+    async function loadDismantleWorkbookData(silent = false) {
+      if (!CURRENT_USER) return;
+      try {
+        const res = await GasClient.getDismantleData();
+        if (res && res.success) {
+          MASTER_DATA.locations = res.locations || res.Location || MASTER_DATA.locations || [];
+          MASTER_DATA.articles = res.articles || res.Article || MASTER_DATA.articles || [];
+          const rawList = res.dismantles || res.Dismantle || res.records || [];
+          MASTER_DATA.dismantles = Array.isArray(rawList) ? rawList.map(normalizeDismantleRow) : [];
+          renderDismantleTable();
+        } else if (!silent) {
+          renderDismantleTable();
+        }
+      } catch (err) {
+        if (!silent) showToast('ไม่สามารถโหลดข้อมูล Workbook การรื้อถอนได้: ' + err.message, 'warning');
+        renderDismantleTable();
+      }
+    }
+
+    function lookupDismantleLocation() {
+      const codeInput = document.getElementById('d-location-code').value.trim().toUpperCase();
+      if (!codeInput) { validateDismantleForm(); return; }
+      const locs = MASTER_DATA.locations || [];
+      const loc = locs.find(item =>
+        String(item.location_code || item.Location_Code || '').trim().toUpperCase() === codeInput ||
+        String(item.location_id || item.Location_ID || '').trim().toUpperCase() === codeInput
+      );
+      if (loc) {
+        const resolvedCode = loc.location_code || loc.Location_Code || codeInput;
+        const resolvedName = loc.location_name || loc.Location_name || loc.Location_Name || '';
+        const resolvedZone = loc.location_zone || loc.Location_Zone || '';
+        document.getElementById('d-location-code').value = resolvedCode;
+        document.getElementById('d-location-name').value = resolvedName;
+        document.getElementById('d-location-zone').value = resolvedZone;
+      } else {
+        showToast(`ไม่พบรหัสสถานที่ ${codeInput} ในชีต Location (สามารถกรอกชื่อและโซนด้วยตนเองได้)`, 'warning');
+      }
+      validateDismantleForm();
+    }
+
+    function lookupDismantleArticle() {
+      const artInput = document.getElementById('d-article-no').value.trim().toUpperCase();
+      if (!artInput) { validateDismantleForm(); return; }
+      const arts = MASTER_DATA.articles || [];
+      const art = arts.find(item =>
+        String(item.article_no || item.Article_No || '').trim().toUpperCase() === artInput ||
+        String(item.article_id || item.Article_ID || '').trim().toUpperCase() === artInput
+      );
+      if (art) {
+        const resolvedNo = art.article_no || art.Article_No || artInput;
+        const fallbackDesc = [art.article_desc || art.Article_Desc, art.brand, art.model].filter(Boolean).join(' ');
+        document.getElementById('d-article-no').value = resolvedNo;
+        document.getElementById('d-article-desc').value = fallbackDesc || '';
+      } else {
+        showToast(`ไม่พบรหัสอุปกรณ์ ${artInput} ในชีต Article (สามารถกรอกรายละเอียดด้วยตนเองได้)`, 'warning');
+      }
+      validateDismantleForm();
+    }
+
+    document.getElementById('d-location-code').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); lookupDismantleLocation(); }
+    });
+    document.getElementById('d-article-no').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); lookupDismantleArticle(); }
+    });
+
+    function validateDismantleForm() {
+      const btn = document.getElementById('btn-save-dismantle');
+      const hint = document.getElementById('dismantle-validation-msg');
+      if (!btn || !hint) return false;
+
+      const missing = [];
+      if (!document.getElementById('d-date').value.trim()) missing.push('date');
+      if (!document.getElementById('d-job-id').value.trim()) missing.push('job_id');
+      if (!document.getElementById('d-location-code').value.trim()) missing.push('location_code');
+      if (!document.getElementById('d-location-name').value.trim()) missing.push('location_name');
+      if (!document.getElementById('d-location-zone').value.trim()) missing.push('location_zone');
+      if (!document.getElementById('d-article-no').value.trim()) missing.push('article_no');
+      if (!document.getElementById('d-article-desc').value.trim()) missing.push('article_desc');
+
+      const isComplete = missing.length === 0;
+      btn.disabled = !isComplete;
+      if (isComplete) {
+        hint.className = 'validation-hint ready';
+        hint.innerHTML = `<i class="bi bi-check-circle"></i><span>ข้อมูลครบถ้วน พร้อมบันทึกลง Workbook (${DISMANTLE_WB_ID})</span>`;
+      } else {
+        hint.className = 'validation-hint';
+        hint.innerHTML = `<i class="bi bi-exclamation-circle"></i><span>รอข้อมูล: ${missing.join(' • ')}</span>`;
+      }
+      return isComplete;
+    }
+
+    function resetDismantleFormHelper() {
+      setTimeout(() => {
+        document.getElementById('d-date').valueAsDate = new Date();
+        validateDismantleForm();
+      }, 10);
+    }
+
+    function renderDismantleTable() {
+      const tbody = document.getElementById('dismantle-log-tbody');
+      if (!tbody) return;
+      const list = (MASTER_DATA.dismantles || []).map(normalizeDismantleRow);
+      if (dismantleDataTable) { dismantleDataTable.destroy(); dismantleDataTable = null; }
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:var(--text-muted);">ยังไม่มีรายการบันทึกการรื้อถอนอุปกรณ์</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(row => `
+        <tr>
+          <td>${row.date}</td>
+          <td><strong style="color:var(--hope-primary);">${row.job_id}</strong></td>
+          <td>${row.location_code}</td>
+          <td>${row.location_name}</td>
+          <td>${row.location_zone}</td>
+          <td>${row.article_no}</td>
+          <td>${row.article_desc}</td>
+          <td>${row.asset_tag || '-'}</td>
+          <td>${row.serial_no || '-'}</td>
+          <td>${row.aam_doc || '-'}</td>
+          <td>${row.remark || '-'}</td>
+        </tr>
+      `).join('');
+
+      dismantleDataTable = new DataTable('#dismantle-datatable', {
+        pageLength: 5,
+        lengthMenu: [5, 20, 50, 100],
+        autoWidth: true,
+        order: [[0, 'desc']],
+        deferRender: true,
+        language: {
+          search: 'ค้นหา:',
+          lengthMenu: 'แสดง _MENU_ รายการต่อหน้า',
+          info: 'แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ',
+          infoEmpty: 'ไม่พบข้อมูล',
+          infoFiltered: '(กรองจากทั้งหมด _MAX_ รายการ)',
+          zeroRecords: 'ไม่พบรายการที่ตรงกับคำค้นหา',
+          paginate: { first: 'หน้าแรก', last: 'หน้าสุดท้าย', next: 'ถัดไป', previous: 'ก่อนหน้า' }
+        }
+      });
+      adjustAssetDataTable(80);
+    }
+
+    document.getElementById('dismantle-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!validateDismantleForm()) {
+        showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วนก่อนบันทึก', 'warning');
+        return;
+      }
+
+      const payload = {
+        workbook_id: DISMANTLE_WB_ID,
+        date: document.getElementById('d-date').value.trim(),
+        job_id: document.getElementById('d-job-id').value.trim(),
+        location_code: document.getElementById('d-location-code').value.trim(),
+        location_name: document.getElementById('d-location-name').value.trim(),
+        location_zone: document.getElementById('d-location-zone').value.trim(),
+        article_no: document.getElementById('d-article-no').value.trim(),
+        article_desc: document.getElementById('d-article-desc').value.trim(),
+        asset_tag: document.getElementById('d-asset-tag').value.trim(),
+        serial_no: document.getElementById('d-serial-no').value.trim(),
+        aam_doc: document.getElementById('d-aam-doc').value.trim(),
+        remark: document.getElementById('d-remark').value.trim(),
+        created_by: CURRENT_USER ? `${CURRENT_USER.fullname} (${CURRENT_USER.emp_id})` : ''
+      };
+
+      Swal.fire({ title: 'กำลังบันทึกการรื้อถอนอุปกรณ์...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+        const res = await GasClient.saveDismantleRecord(payload);
+        Swal.close();
+        if (res && res.success) {
+          MASTER_DATA.dismantles = MASTER_DATA.dismantles || [];
+          MASTER_DATA.dismantles.unshift(normalizeDismantleRow(res.record || payload));
+          renderDismantleTable();
+          document.getElementById('dismantle-form').reset();
+          resetDismantleFormHelper();
+          showToast(`บันทึกการรื้อถอนงาน ${payload.job_id} สำเร็จ`);
+        } else {
+          Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: (res && res.message) || 'ไม่สามารถบันทึกข้อมูลการรื้อถอนได้', confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+        }
+      } catch (err) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary });
+      }
+    });
   </script>
 </body>
 </html>
