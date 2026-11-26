@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233A57E8'/%3E%3Cpath d='M9 15L16 11L23 15V22L16 26L9 22V15Z' fill='none' stroke='%23FFFFFF' stroke-width='2.3' stroke-linejoin='round'/%3E%3Cpath d='M9 15L16 19L23 15M16 19V26' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='22.5' cy='9.5' r='3.5' fill='%2308B1BA' stroke='%23FFFFFF' stroke-width='1.5'/%3E%3C/svg%3E">
   <title>ระบบส่งซ่อมเครื่องมือ</title>
+  <!-- Favicon (AIS Green Tool & Asset Badge) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2359B800'/%3E%3Cstop offset='100%25' stop-color='%231E8E3E'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M9 14.5L16 10.5L23 14.5V21.5L16 25.5L9 21.5V14.5Z' fill='none' stroke='%23FFFFFF' stroke-width='2.3' stroke-linejoin='round'/%3E%3Cpath d='M9 14.5L16 18.5L23 14.5M16 18.5V25.5' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='22.8' cy='9.2' r='3.4' fill='%23B2FF59' stroke='%231E8E3E' stroke-width='1.3'/%3E%3C/svg%3E">
   <!-- Google Fonts: Sarabun, Kanit, Prompt, Mali, Bai Jamjuree, IBM Plex Sans Thai & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,52 +92,252 @@
       transition: background-color 0.25s, color 0.25s;
     }
 
-    /* ================= LOGIN SCREEN ================= */
+    /* ================= LOGIN SCREEN (HOPE UI SPLIT LAYOUT • FIXED AIS GREEN) ================= */
     #login-screen {
+      --ais-green: #59B800;
+      --ais-green-dark: #439300;
+      --ais-green-deep: #1B4D18;
+      --ais-green-soft: rgba(89, 184, 0, 0.14);
+      --ais-green-shadow: 0 10px 24px rgba(89, 184, 0, 0.34);
+
       min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--hope-hero-gradient);
-      padding: 20px;
+      align-items: stretch;
+      background: #FFFFFF;
+      color: #232D42;
       position: relative;
       overflow: hidden;
     }
 
-    #login-screen::before {
-      content: "";
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.07);
-      top: -120px;
-      left: -100px;
-      pointer-events: none;
+    .hope-auth-left {
+      flex: 1 1 50%;
+      min-width: 0;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 28px;
+      position: relative;
+      z-index: 2;
     }
 
-    .login-card {
-      background: var(--bg-card);
+    .hope-auth-bg-mark {
+      position: absolute;
+      left: -30px;
+      top: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hope-auth-card {
       width: 100%;
-      max-width: 420px;
-      padding: 40px 34px;
-      border-radius: 16px;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
-      text-align: center;
+      max-width: 430px;
       position: relative;
       z-index: 1;
     }
 
-    .login-logo {
-      width: 64px;
-      height: 64px;
-      background: var(--hope-primary-soft);
-      color: var(--hope-primary);
-      border-radius: 16px;
+    .hope-auth-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      text-decoration: none;
+    }
+
+    .hope-auth-logo-badge {
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6BD100 0%, #499E00 100%);
+      color: #FFFFFF;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
+      box-shadow: 0 10px 22px rgba(89, 184, 0, 0.36);
+      border: 2px solid rgba(255, 255, 255, 0.85);
+    }
+
+    .hope-auth-brand-title {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #1F2937;
+      line-height: 1.15;
+    }
+
+    .hope-auth-brand-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ais-green-dark);
+      margin-top: 2px;
+    }
+
+    .hope-auth-heading {
+      margin: 0 0 6px 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: #232D42;
+      text-align: center;
+    }
+
+    .hope-auth-subtitle {
+      margin: 0 0 26px 0;
+      font-size: 14px;
+      color: #6B7280;
+      text-align: center;
+    }
+
+    #login-screen .form-group label {
+      border-left: none;
+      padding-left: 0;
+      color: #4B5563;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    #login-screen .form-control {
+      height: 44px;
+      font-size: 14.5px;
+      background: #FFFFFF !important;
+      color: #1F2937 !important;
+      border: 1.5px solid #D1D5DB !important;
+      border-radius: 9px;
+      padding: 8px 14px;
+    }
+
+    #login-screen .form-control:focus {
+      border-color: var(--ais-green) !important;
+      box-shadow: 0 0 0 3.5px var(--ais-green-soft) !important;
+    }
+
+    .btn-ais-login {
+      background: linear-gradient(135deg, #59B800 0%, #439300 100%) !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 9px;
+      height: 44px;
+      padding: 0 28px;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: var(--ais-green-shadow);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    .btn-ais-login:hover {
+      filter: brightness(1.04);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(89, 184, 0, 0.42);
+    }
+
+    /* Right Hero Panel (Hope UI Geometric Green Wave Graphic) */
+    .hope-auth-right {
+      flex: 1 1 50%;
+      min-width: 0;
+      background: radial-gradient(circle at 22% 20%, #7CE000 0%, #59B800 42%, #2F7D00 82%, #1B4D18 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 40px;
+    }
+
+    .hope-auth-right-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .hope-auth-showcase {
+      position: relative;
+      z-index: 2;
+      max-width: 440px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 22px;
+      padding: 32px 28px;
+      color: #FFFFFF;
+      box-shadow: 0 24px 50px rgba(15, 45, 10, 0.28);
+    }
+
+    .hope-showcase-emblem {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: #FFFFFF;
+      color: #499E00;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      margin-bottom: 18px;
+    }
+
+    .hope-showcase-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      line-height: 1.25;
+      color: #FFFFFF;
+    }
+
+    .hope-showcase-desc {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.55;
+      margin: 0 0 20px 0;
+    }
+
+    .hope-showcase-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hope-showcase-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    @media (max-width: 900px) {
+      .hope-auth-right {
+        display: none;
+      }
+      .hope-auth-left {
+        flex: 1 1 100%;
+        background: linear-gradient(160deg, #F4FCEB 0%, #FFFFFF 45%, #EEF9E2 100%);
+      }
+    }
+
+    /* Prominent Sidebar Brand Badge */
+    .sidebar-header .brand-badge {
+      width: 38px !important;
+      height: 38px !important;
+      min-width: 38px !important;
+      border-radius: 11px;
+      background: var(--hope-primary);
+      color: #FFFFFF !important;
+      box-shadow: var(--hope-primary-shadow);
     }
 
     /* ================= LAYOUT & SIDEBAR ================= */
@@ -2018,36 +2219,99 @@
 </head>
 <body>
 
-  <!-- ==================== 1. LOGIN SCREEN ==================== -->
+  <!-- ==================== 1. LOGIN SCREEN (HOPE UI • AIS GREEN) ==================== -->
   <div id="login-screen">
-    <div class="login-card">
-      <div class="login-logo">
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" fill-opacity="0.14"/>
-      <!-- กล่องอุปกรณ์ -->
-        <path d="M9 14.5L16 10.5L23 14.5V21.5L16 25.5L9 21.5V14.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-        <path d="M9 14.5L16 18.5L23 14.5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M16 18.5V25.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <!-- ประแจด้านบน -->
-        <path d="M21.8 7.2C20.6 6 18.8 5.8 17.4 6.6L19.3 8.5L18.2 9.6L16.3 7.7C15.5 9.1 15.7 10.9 16.9 12.1C18.1 13.3 19.9 13.5 21.3 12.7L23.5 14.9L25 13.4L22.8 11.2C23.6 9.8 23.4 8 21.8 7.2Z" fill="currentColor"/>
+    <div class="hope-auth-left">
+      <!-- Hope UI Subtle Watermark Shape -->
+      <div class="hope-auth-bg-mark">
+        <svg width="280" height="230" viewBox="0 0 431 398" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g opacity="0.07">
+            <rect x="-157.085" y="193.773" width="543" height="77.5714" rx="38.7857" transform="rotate(-45 -157.085 193.773)" fill="#59B800"/>
+            <rect x="7.46875" y="358.327" width="543" height="77.5714" rx="38.7857" transform="rotate(-45 7.46875 358.327)" fill="#59B800"/>
+            <rect x="61.9355" y="138.545" width="310.286" height="77.5714" rx="38.7857" transform="rotate(45 61.9355 138.545)" fill="#59B800"/>
+            <rect x="62.3154" y="-190.173" width="543" height="77.5714" rx="38.7857" transform="rotate(45 62.3154 -190.173)" fill="#59B800"/>
+          </g>
         </svg>
       </div>
-      <h2 style="margin:0 0 6px 0; font-weight:700; font-size:22px;">ระบบส่งซ่อมเครื่องมือ</h2>
-      <p style="margin:0 0 24px 0; color:var(--text-muted); font-size:13.5px;">Sign in to Tool Repair & Asset Management</p>
 
-      <form id="login-form" style="text-align:left; display:flex; flex-direction:column; gap:14px;">
-        <div class="form-group">
-          <label>ชื่อผู้ใช้งาน (Username)</label>
-          <input type="text" id="login-user" class="form-control" style="height:40px; font-size:14px;" placeholder="ระบุ Username" required>
+      <div class="hope-auth-card">
+        <div style="display:flex; justify-content:center;">
+          <div class="hope-auth-brand">
+            <div class="hope-auth-logo-badge">
+              <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.5 14.5L16 10.2L23.5 14.5V22L16 26.3L8.5 22V14.5Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M8.5 14.5L16 18.8L23.5 14.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M16 18.8V26.3" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="23.2" cy="8.8" r="3.5" fill="#C6FF00" stroke="#2F7D00" stroke-width="1.3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="hope-auth-brand-title">TOOL REPAIR</div>
+              <div class="hope-auth-brand-sub">BBFNM • Tool &amp; Asset Portal</div>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>รหัสผ่าน (Password)</label>
-          <input type="password" id="login-pass" class="form-control" style="height:40px; font-size:14px;" placeholder="ระบุรหัสผ่าน" required>
+
+        <h2 class="hope-auth-heading">Sign In</h2>
+        <p class="hope-auth-subtitle">เข้าสู่ระบบบริหารงานส่งซ่อมเครื่องมือ ทรัพย์สิน และบันทึกการรื้อถอน</p>
+
+        <form id="login-form" style="display:flex; flex-direction:column; gap:16px;">
+          <div class="form-group">
+            <label for="login-user">ชื่อผู้ใช้งาน (Username / รหัสพนักงาน)</label>
+            <input type="text" id="login-user" class="form-control" placeholder="ระบุ Username หรือรหัสพนักงาน" required>
+          </div>
+          <div class="form-group">
+            <label for="login-pass">รหัสผ่าน (Password)</label>
+            <input type="password" id="login-pass" class="form-control" placeholder="ระบุรหัสผ่าน" required>
+          </div>
+          <div style="margin-top:6px; display:flex; justify-content:center;">
+            <button type="submit" class="btn-ais-login" style="width:100%;">
+              <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ (Sign In)
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="hope-auth-right">
+      <!-- Hope UI Inspired Layered Geometric Ribbons in AIS Green -->
+      <svg class="hope-auth-right-svg" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="aisRibbon1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#AEEA00" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#2E7D32" stop-opacity="0.12"/>
+          </linearGradient>
+          <linearGradient id="aisRibbon2" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.24"/>
+            <stop offset="100%" stop-color="#76FF03" stop-opacity="0.06"/>
+          </linearGradient>
+        </defs>
+        <circle cx="660" cy="140" r="260" fill="url(#aisRibbon1)"/>
+        <circle cx="140" cy="780" r="310" fill="url(#aisRibbon2)"/>
+        <rect x="120" y="-120" width="760" height="130" rx="65" transform="rotate(35 120 -120)" fill="url(#aisRibbon2)"/>
+        <rect x="-140" y="340" width="840" height="130" rx="65" transform="rotate(-35 -140 340)" fill="url(#aisRibbon1)"/>
+        <rect x="60" y="560" width="820" height="120" rx="60" transform="rotate(-35 60 560)" fill="url(#aisRibbon2)"/>
+      </svg>
+
+      <div class="hope-auth-showcase">
+        <div class="hope-showcase-emblem">
+          <svg width="38" height="38" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.5 14.5L16 10.2L23.5 14.5V22L16 26.3L8.5 22V14.5Z" stroke="#439300" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M8.5 14.5L16 18.8L23.5 14.5" stroke="#439300" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M16 18.8V26.3" stroke="#439300" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="23.2" cy="8.8" r="3.6" fill="#76FF03" stroke="#2F7D00" stroke-width="1.4"/>
+          </svg>
         </div>
-        <button type="submit" class="btn btn-ais" style="margin-top:8px; width:100%; padding:11px; font-size:14.5px;">
-          <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ
-        </button>
-      </form>
+        <h3 class="hope-showcase-title">Tool Repair &amp; Asset Management</h3>
+        <p class="hope-showcase-desc">
+          ศูนย์กลางบริหารจัดการใบส่งซ่อมเครื่องมือ ตรวจสอบสถานะรับคืน โอนย้ายผู้ถือครองทรัพย์สิน และบันทึกการรื้อถอนอุปกรณ์อย่างเป็นระบบ
+        </p>
+        <div class="hope-showcase-pills">
+          <span class="hope-showcase-pill"><i class="bi bi-wrench-adjustable"></i> ส่งซ่อม &amp; รับคืน</span>
+          <span class="hope-showcase-pill"><i class="bi bi-person-lines-fill"></i> โอนย้ายผู้ถือครอง</span>
+          <span class="hope-showcase-pill"><i class="bi bi-tools"></i> บันทึกรื้อถอนอุปกรณ์</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2058,14 +2322,11 @@
     <aside class="sidebar" id="main-sidebar">
       <div class="sidebar-header" data-tooltip="TOOL REPAIR • ระบบบริหารงานส่งซ่อม">
         <div class="brand-badge">
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" fill-opacity="0.14"/>
-        <!-- กล่องอุปกรณ์ -->
-          <path d="M9 14.5L16 10.5L23 14.5V21.5L16 25.5L9 21.5V14.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-          <path d="M9 14.5L16 18.5L23 14.5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M16 18.5V25.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <!-- ประแจด้านบน -->
-          <path d="M21.8 7.2C20.6 6 18.8 5.8 17.4 6.6L19.3 8.5L18.2 9.6L16.3 7.7C15.5 9.1 15.7 10.9 16.9 12.1C18.1 13.3 19.9 13.5 21.3 12.7L23.5 14.9L25 13.4L22.8 11.2C23.6 9.8 23.4 8 21.8 7.2Z" fill="currentColor"/>
+          <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.5 14.5L16 10.2L23.5 14.5V22L16 26.3L8.5 22V14.5Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M8.5 14.5L16 18.8L23.5 14.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M16 18.8V26.3" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="23.2" cy="8.8" r="3.4" fill="#B2FF59"/>
           </svg>
         </div>
         <div class="brand-text">
