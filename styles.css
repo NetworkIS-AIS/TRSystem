@@ -2387,3 +2387,75 @@
     display: inline-block;
   }
 }
+
+
+    /* ================= DATATABLES RESPONSIVE STYLING ================= */
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
+      background-color: var(--hope-primary) !important;
+      border-color: var(--hope-primary) !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+    }
+
+    table.dataTable > tbody > tr.child ul.dtr-details {
+      width: 100%;
+      padding: 6px 10px;
+      background: var(--bg-body);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table.dataTable > tbody > tr.child ul.dtr-details > li {
+      border-bottom: 1px dashed var(--border-color) !important;
+      padding: 6px 4px !important;
+      color: var(--text-main);
+    }
+
+    table.dataTable > tbody > tr.child ul.dtr-details > li:last-child {
+      border-bottom: none !important;
+    }
+
+    table.dataTable > tbody > tr.child span.dtr-title {
+      color: var(--hope-primary);
+      font-weight: 700;
+      min-width: 140px;
+    }
+
+    /* Reset fixed table layout where responsive recalculates column widths dynamically */
+    #sec-asset-list .table,
+    #transfer-history-datatable.table,
+    #dashboard-recent-datatable.table,
+    #manage-repair-datatable.table,
+    #dismantle-datatable.table {
+      table-layout: auto !important;
+      width: 100% !important;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      margin-bottom: 0;
+      font-size: 12.5px;
+    }
+
+    #sec-dashboard .dt-container,
+    #sec-manage-repair .dt-container,
+    #sec-dismantle-log .dt-container {
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    #sec-manage-repair .dt-container .dt-length select,
+    #sec-dismantle-log .dt-container .dt-length select,
+    #sec-dismantle-log .dt-container .dt-input {
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      min-height: 32px;
+    }
+
+    #sec-manage-repair .dt-container .dt-paging .dt-paging-button.current,
+    #sec-dismantle-log .dt-container .dt-paging .dt-paging-button.current {
+      background: var(--hope-primary) !important;
+      border-color: var(--hope-primary) !important;
+      color: #fff !important;
+      border-radius: 8px;
+    }
