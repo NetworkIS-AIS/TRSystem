@@ -1949,16 +1949,27 @@
     }
     #sec-create-repair .side-table-panel {
       background: var(--bg-card);
-      border-color: var(--border-color);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--hope-primary);
     }
     #sec-create-repair .side-table-header,
     #sec-create-repair .side-table-header.holder-header {
-      background: var(--hope-primary-soft);
+      background: transparent;
       color: var(--hope-primary);
+      padding: 14px 16px 7px 16px;
+      border-bottom: 1px dashed var(--border-color);
+      font-size: 14.5px;
+    }
+    #sec-create-repair .side-kv-table {
+      margin-top: 4px;
     }
     #sec-create-repair .side-kv-table th {
       background: var(--bg-body);
       color: var(--text-main);
+      padding-left: 16px;
+    }
+    #sec-create-repair .side-kv-table td {
+      padding-right: 16px;
     }
     #sec-create-repair .form-control[readonly] {
       background: var(--hope-primary-soft);
@@ -2331,7 +2342,7 @@
                 <div class="side-table-panel">
                   <div class="side-table-header">
                     <span><i class="bi bi-hdd-stack"></i> ข้อมูลทรัพย์สิน / เครื่องมือ</span>
-                    <span class="auto-badge" id="holder-source-badge">ค้นหาจาก asset_id</span>
+                    
                   </div>
                   <table class="side-kv-table">
                     <tbody>
@@ -3283,10 +3294,10 @@
 
         if (asset.holder_id) {
           const holderEmp = fillHolderFromAsset(asset.holder_id);
-          document.getElementById('holder-source-badge').innerText = holderEmp ? `อิงจาก ${asset.asset_id}` : 'ไม่พบผู้ถือครองใน Employees';
+          
         } else {
           clearHolderDetails();
-          document.getElementById('holder-source-badge').innerText = 'ไม่มี holder_id ใน Assets';
+          
         }
 
         const lockInfo = checkAssetUnderRepair(assetId);
@@ -3297,7 +3308,7 @@
         SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
         ['f-asset-category', 'f-asset-brand', 'f-asset-model', 'f-asset-detail', 'f-serial-no'].forEach(id => { document.getElementById(id).value = ''; });
         clearHolderDetails();
-        document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+        
         showToast(`ไม่พบรหัสทรัพย์สิน ${assetId}`, 'error');
       }
       validateRepairForm();
@@ -3386,7 +3397,7 @@
       clearRemarkPresets();
       updateAssetLockBanner('repair-asset-lock-alert', null);
       ['f-asset-category', 'f-asset-brand', 'f-asset-model'].forEach(id => { document.getElementById(id).value = ''; });
-      document.getElementById('holder-source-badge').innerText = 'ค้นหาจาก asset_id';
+      
       setTimeout(() => {
         document.getElementById('f-date').valueAsDate = new Date();
         document.getElementById('f-vendor-select').value = 'Repair Center';
