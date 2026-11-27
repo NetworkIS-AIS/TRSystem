@@ -1306,27 +1306,25 @@
       background: var(--hope-primary-soft);
     }
 
-    .chart-card-inner {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 250px;
-      padding: 8px 0;
-    }
-
     .chart-canvas-wrap {
       width: 100%;
       max-width: 255px;
       margin: 0 auto;
     }
 
+    .chart-card-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 250px;
+      padding: 6px 0;
+    }
+
     .bar-chart-wrap {
-      flex: 1;
       position: relative;
       width: 100%;
-      min-height: 250px;
+      height: 250px;
     }
 
     /* Dashboard Split Grid (3fr : 1fr -> Chart half width compared to previous 2fr : 1fr) */
