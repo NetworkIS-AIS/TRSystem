@@ -114,8 +114,8 @@
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const legendColor = isDark ? '#E2E8F0' : '#232D42';
       const borderColor = isDark ? '#222738' : '#FFFFFF';
-      // กำลังส่งซ่อม: ส้ม (#F16A1B) | ได้รับคืนแล้ว: เขียวตายตัว (#1AA053) | ตัดจำหน่าย: แดง (#C03221)
-      statusChartInstance.data.datasets[0].backgroundColor = ['#F16A1B', '#1AA053', '#C03221'];
+      // รอส่งศูนย์ซ่อม: เหลือง (#EAB308) | กำลังซ่อม: ส้ม (#F16A1B) | ได้รับคืนแล้ว: เขียว (#1AA053) | ตัดจำหน่าย: แดง (#C03221)
+      statusChartInstance.data.datasets[0].backgroundColor = ['#EAB308', '#F16A1B', '#1AA053', '#C03221'];
       statusChartInstance.data.datasets[0].borderColor = borderColor;
       statusChartInstance.data.datasets[0].borderWidth = 2;
       if (statusChartInstance.options && statusChartInstance.options.plugins && statusChartInstance.options.plugins.legend && statusChartInstance.options.plugins.legend.labels) {
@@ -682,11 +682,14 @@
     function updateDashboard() {
       const repairs = MASTER_DATA.repairs || [];
       const total = repairs.length;
-      const repairing = repairs.filter(r => r.status === 'รอส่งศูนย์ซ่อม' || r.status === 'กำลังซ่อม' || r.status === 'กำลังส่งซ่อม').length;
-      const returned = repairs.filter(r => r.status === 'ได้รับคืนแล้ว').length;
-      const scrapped = repairs.filter(r => r.status === 'ตัดจำหน่าย').length;
+      const pending = repairs.filter(r => String(r.status || '').trim() === 'รอส่งศูนย์ซ่อม').length;
+      const repairing = repairs.filter(r => ['กำลังซ่อม', 'กำลังส่งซ่อม', 'ส่งซ่อม'].includes(String(r.status || '').trim())).length;
+      const returned = repairs.filter(r => String(r.status || '').trim() === 'ได้รับคืนแล้ว').length;
+      const scrapped = repairs.filter(r => String(r.status || '').trim() === 'ตัดจำหน่าย').length;
 
       document.getElementById('kpi-total').innerText = total;
+      const pendingEl = document.getElementById('kpi-pending');
+      if (pendingEl) pendingEl.innerText = pending;
       document.getElementById('kpi-repairing').innerText = repairing;
       document.getElementById('kpi-returned').innerText = returned;
       document.getElementById('kpi-scrapped').innerText = scrapped;
@@ -737,10 +740,10 @@
       statusChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['รอส่งศูนย์ซ่อม / กำลังซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
+          labels: ['รอส่งศูนย์ซ่อม', 'กำลังซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
           datasets: [{
-            data: [repairing, returned, scrapped],
-            backgroundColor: ['#F16A1B', '#1AA053', '#C03221'],
+            data: [pending, repairing, returned, scrapped],
+            backgroundColor: ['#EAB308', '#F16A1B', '#1AA053', '#C03221'],
             borderColor: isDark ? '#222738' : '#FFFFFF',
             borderWidth: 2
           }]
@@ -1693,7 +1696,7 @@
             display: DataTable.Responsive.display.modal({
               header: function(row) {
                 const data = row.data();
-                return 'รายละเอียดอุปกรณ์รื้อถอน ' + $('<div>').html(data[2]).text().trim();
+                return 'รายละเอียดรื้อถอน ' + $('<div>').html(data[1]).text().trim();
               }
             }),
             renderer: DataTable.Responsive.renderer.tableAll({
@@ -1705,8 +1708,8 @@
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 }
         ],
-        pageLength: 10,
-        lengthMenu: [10, 20, 50, 100],
+        pageLength: 5,
+        lengthMenu: [5, 20, 50, 100],
         autoWidth: false,
         order: [[0, 'desc']],
         deferRender: true,
