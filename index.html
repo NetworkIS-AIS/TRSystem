@@ -75,7 +75,7 @@
             <label for="login-pass">รหัสผ่าน (Password)</label>
             <div class="password-input-wrap">
               <input type="password" id="login-pass" class="form-control" placeholder="**********" autocomplete="current-password" required>
-              <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onpointerdown="event.preventDefault(); event.stopPropagation();" onclick="event.preventDefault(); event.stopPropagation(); toggleLoginPassword();" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+              <button type="button" class="password-toggle-btn" id="toggle-login-pass-btn" onclick="toggleLoginPassword()" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
                 <i class="bi bi-eye" id="toggle-login-pass-icon"></i>
               </button>
             </div>
