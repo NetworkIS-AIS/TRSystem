@@ -1,4 +1,3 @@
-
 /* =====================================================================
        1. API CLIENT ADAPTER (Google Apps Script Web App Bridge)
        ===================================================================== */
@@ -115,7 +114,6 @@
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const legendColor = isDark ? '#E2E8F0' : '#232D42';
       const borderColor = isDark ? '#222738' : '#FFFFFF';
-      // รอส่งศูนย์ซ่อม: เหลือง (#EAB308) | กำลังซ่อม: ส้ม (#F16A1B) | ได้รับคืนแล้ว: เขียว (#1AA053) | ตัดจำหน่าย: แดง (#C03221)
       statusChartInstance.data.datasets[0].backgroundColor = ['#EAB308', '#F16A1B', '#1AA053', '#C03221'];
       statusChartInstance.data.datasets[0].borderColor = borderColor;
       statusChartInstance.data.datasets[0].borderWidth = 2;
@@ -415,7 +413,6 @@
       return sel === 'Others' ? (document.getElementById('f-vendor-other').value.trim() || 'Others') : sel;
     }
 
-    /* Toast: เฉพาะเหตุการณ์สำคัญ (บันทึกสำเร็จ, แจ้งเตือนข้อผิดพลาด/ไม่พบข้อมูล) */
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -439,27 +436,13 @@
       const passInput = document.getElementById('login-pass');
       const icon = document.getElementById('toggle-login-pass-icon') || document.querySelector('#toggle-login-pass-btn i');
       if (!passInput) return;
-      const showPass = (passInput.type === 'password');
-      try {
-        passInput.setAttribute('type', showPass ? 'text' : 'password');
-      } catch (e) {}
-      passInput.type = showPass ? 'text' : 'password';
+      const nextType = passInput.type === 'password' ? 'text' : 'password';
+      passInput.type = nextType;
       if (icon) {
-        icon.className = showPass ? 'bi bi-eye-slash' : 'bi bi-eye';
+        icon.className = nextType === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
       }
-      passInput.focus({ preventScroll: true });
     }
     window.toggleLoginPassword = toggleLoginPassword;
-
-    (function bindPasswordToggleListeners() {
-      const btn = document.getElementById('toggle-login-pass-btn');
-      if (!btn) return;
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleLoginPassword();
-      });
-    })();
 
     function openForgotPasswordModal() {
       const currentUser = document.getElementById('login-user').value.trim();
@@ -588,7 +571,7 @@
       document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('sec-' + pageId).classList.add('active');
-      el.classList.add('active');
+      if (el) el.classList.add('active');
 
       const pageMeta = {
         'dashboard': { title: 'แดชบอร์ดรายงานภาพรวม', icon: 'bi-grid-1x2-fill' },
@@ -695,7 +678,6 @@
       document.getElementById('kpi-returned').innerText = returned;
       document.getElementById('kpi-scrapped').innerText = scrapped;
 
-// 2) ในฟังก์ชัน renderDashboard(): เปลี่ยนจาก slice(0, 6) เป็น slice(0, 10)
       if (dashboardDataTable) { dashboardDataTable.destroy(); dashboardDataTable = null; }
       const dashTbody = document.getElementById('dashboard-recent-table');
       const recentList = repairs.slice(0, 10);
@@ -736,7 +718,6 @@
         });
       }
 
-      // 3) วาด Doughnut Chart (ซ้าย) + Bar Chart รายเดือน (ขวา)
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const ctx = document.getElementById('statusChart').getContext('2d');
       if (statusChartInstance) statusChartInstance.destroy();
@@ -771,7 +752,6 @@
         }
       });
 
-      // กราฟแท่งสถิติการส่งซ่อมรายเดือน
       try {
         if (typeof renderMonthlyRepairChart === 'function') {
           renderMonthlyRepairChart(repairs, isDark);
@@ -779,19 +759,17 @@
       } catch (chartErr) {
         console.error('renderMonthlyRepairChart error:', chartErr);
       }
+    }
 
-
-function parseRepairYearMonth(dateStr) {
+    function parseRepairYearMonth(dateStr) {
       if (!dateStr) return null;
       const s = String(dateStr).trim();
-      // รองรับ YYYY-MM-DD หรือ YYYY/MM/DD (ทั้ง ค.ศ. และ พ.ศ.)
       let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
       if (m) {
         let y = parseInt(m[1], 10);
         if (y > 2400) y -= 543;
         return { year: y, month: parseInt(m[2], 10) };
       }
-      // รองรับ DD/MM/YYYY หรือ DD-MM-YYYY
       m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
       if (m) {
         let y = parseInt(m[3], 10);
@@ -894,7 +872,7 @@ function parseRepairYearMonth(dateStr) {
         }
       });
     }
-           
+
     function normalizeRepairRow(r) {
       const otherEq = r.other_eq !== undefined && r.other_eq !== null ? String(r.other_eq) : (r.remark !== undefined && r.remark !== null ? String(r.remark) : '');
       const updateRemark = r.update_remark !== undefined && r.update_remark !== null
@@ -952,7 +930,7 @@ function parseRepairYearMonth(dateStr) {
     }
 
     /* =====================================================================
-       5. LOOKUPS & FORMS (SILENT ON FOUND, ALERT ONLY WHEN NOT FOUND)
+       5. LOOKUPS & FORMS
        ===================================================================== */
     function clearReporterDetails() {
       ['f-rep-fullname', 'f-rep-pos', 'f-emp-phone', 'f-emp-section', 'f-rep-dept', 'f-emp-loc-id', 'f-emp-loc-name'].forEach(id => {
@@ -982,11 +960,9 @@ function parseRepairYearMonth(dateStr) {
         document.getElementById('f-serial-no').value = asset.serial_no || '';
 
         if (asset.holder_id) {
-          const holderEmp = fillHolderFromAsset(asset.holder_id);
-          
+          fillHolderFromAsset(asset.holder_id);
         } else {
           clearHolderDetails();
-          
         }
 
         const lockInfo = checkAssetUnderRepair(assetId);
@@ -997,7 +973,6 @@ function parseRepairYearMonth(dateStr) {
         SELECTED_ASSET = { category: '', brand: '', model: '', holder_id: '' };
         ['f-asset-category', 'f-asset-brand', 'f-asset-model', 'f-asset-detail', 'f-serial-no'].forEach(id => { document.getElementById(id).value = ''; });
         clearHolderDetails();
-        
         showToast(`ไม่พบรหัสทรัพย์สิน ${assetId}`, 'error');
       }
       validateRepairForm();
@@ -1086,7 +1061,6 @@ function parseRepairYearMonth(dateStr) {
       clearRemarkPresets();
       updateAssetLockBanner('repair-asset-lock-alert', null);
       ['f-asset-category', 'f-asset-brand', 'f-asset-model'].forEach(id => { document.getElementById(id).value = ''; });
-      
       setTimeout(() => {
         document.getElementById('f-date').valueAsDate = new Date();
         document.getElementById('f-vendor-select').value = 'Repair Center';
@@ -1897,60 +1871,58 @@ function parseRepairYearMonth(dateStr) {
 
     let apiHealthTimer = null;
 
-function setApiIndicator(isConnected, detailText = '') {
-  const box = document.getElementById('sidebar-api-status');
-  const textEl = document.getElementById('sidebar-api-status-text');
-  if (!box || !textEl) return;
+    function setApiIndicator(isConnected, detailText = '') {
+      const box = document.getElementById('sidebar-api-status');
+      const textEl = document.getElementById('sidebar-api-status-text');
+      if (!box || !textEl) return;
 
-  const label = isConnected ? 'API Connected' : 'API Disconnected';
-  box.classList.remove('connected', 'disconnected');
-  box.classList.add(isConnected ? 'connected' : 'disconnected');
-  box.setAttribute('data-tooltip', detailText ? `${label} (${detailText})` : label);
-  textEl.textContent = label;
-}
-
-async function checkApiHealthStatus() {
-  if (typeof GAS_API_URL !== 'string' || !GAS_API_URL.trim()) {
-    setApiIndicator(false, 'Missing API URL');
-    return false;
-  }
-
-  try {
-    // ลองเรียกแบบ GET (กรณี GAS doGet คืน {"status":"ok",...}) ก่อน แล้ว fallback เป็น POST action: 'ping'
-    let data = null;
-    try {
-      const getRes = await fetch(GAS_API_URL, { method: 'GET', cache: 'no-store' });
-      if (getRes.ok) {
-        data = await getRes.json();
-      }
-    } catch (_) {}
-
-    if (!data || String(data.status || '').toLowerCase() !== 'ok') {
-      const postRes = await fetch(GAS_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'ping' })
-      });
-      if (!postRes.ok) throw new Error(`HTTP ${postRes.status}`);
-      data = await postRes.json();
+      const label = isConnected ? 'API Connected' : 'API Disconnected';
+      box.classList.remove('connected', 'disconnected');
+      box.classList.add(isConnected ? 'connected' : 'disconnected');
+      box.setAttribute('data-tooltip', detailText ? `${label} (${detailText})` : label);
+      textEl.textContent = label;
     }
 
-    const ok = Boolean(data && String(data.status || '').toLowerCase() === 'ok');
-    setApiIndicator(ok, data?.timestamp || data?.message || '');
-    return ok;
-  } catch (err) {
-    setApiIndicator(false, err.message || 'Offline');
-    return false;
-  }
-}
+    async function checkApiHealthStatus() {
+      if (typeof GAS_API_URL !== 'string' || !GAS_API_URL.trim()) {
+        setApiIndicator(false, 'Missing API URL');
+        return false;
+      }
 
-function startApiHealthMonitor(intervalMs = 30000) {
-  checkApiHealthStatus();
-  if (apiHealthTimer) clearInterval(apiHealthTimer);
-  apiHealthTimer = setInterval(checkApiHealthStatus, intervalMs);
-}
+      try {
+        let data = null;
+        try {
+          const getRes = await fetch(GAS_API_URL, { method: 'GET', cache: 'no-store' });
+          if (getRes.ok) {
+            data = await getRes.json();
+          }
+        } catch (_) {}
 
-// เริ่มเช็กอัตโนมัติเมื่อหน้าพร้อมใช้งาน
-document.addEventListener('DOMContentLoaded', () => {
-  startApiHealthMonitor(30000);
-});
+        if (!data || String(data.status || '').toLowerCase() !== 'ok') {
+          const postRes = await fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'ping' })
+          });
+          if (!postRes.ok) throw new Error(`HTTP ${postRes.status}`);
+          data = await postRes.json();
+        }
+
+        const ok = Boolean(data && String(data.status || '').toLowerCase() === 'ok');
+        setApiIndicator(ok, data?.timestamp || data?.message || '');
+        return ok;
+      } catch (err) {
+        setApiIndicator(false, err.message || 'Offline');
+        return false;
+      }
+    }
+
+    function startApiHealthMonitor(intervalMs = 30000) {
+      checkApiHealthStatus();
+      if (apiHealthTimer) clearInterval(apiHealthTimer);
+      apiHealthTimer = setInterval(checkApiHealthStatus, intervalMs);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      startApiHealthMonitor(30000);
+    });
