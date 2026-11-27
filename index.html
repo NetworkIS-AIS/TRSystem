@@ -22,11 +22,11 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bulma.min.js"></script>
-
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.bulma.min.css">
   <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
   <script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.bulma.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
+
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -355,13 +355,13 @@
                 <span>รายการส่งซ่อมล่าสุด</span>
               </h3>
               <div class="table-responsive">
-                <table id="dashboard-recent-datatable" class="table is-fullwidth is-striped is-hoverable dt-responsive" style="width:100%;">
+                <table id="dashboard-recent-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
                   <thead>
                     <tr>
                       <th>เลขที่เอกสาร</th>
                       <th>วันที่แจ้ง</th>
                       <th>รหัสเครื่องมือ</th>
-                      <th class="none">รายละเอียดเครื่องมือ</th>
+                      <th>รายละเอียดเครื่องมือ</th>
                       <th>สถานะ</th>
                     </tr>
                   </thead>
@@ -611,7 +611,7 @@
             </div>
 
             <div class="table-responsive">
-              <table id="manage-repair-datatable" class="table is-fullwidth is-striped is-hoverable dt-responsive" style="width:100%;">
+              <table id="manage-repair-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
                 <thead>
                   <tr>
                     <th>เลขที่เอกสาร</th>
@@ -619,7 +619,7 @@
                     <th>รหัสเครื่องมือ</th>
                     <th>ประเภท-ยี่ห้อ-รุ่น / S/N</th>
                     <th>ผู้แจ้ง / ผู้ถือครอง</th>
-                    <th class="none">อาการชำรุด</th>
+                    <th>อาการชำรุด</th>
                     <th>สถานะ</th>
                     <th>จัดการ</th>
                   </tr>
@@ -742,7 +742,7 @@
               <span>ประวัติการเปลี่ยนแปลงผู้ถือครองทรัพย์สิน</span>
             </h3>
             <div class="table-responsive">
-              <table id="transfer-history-datatable" class="table is-fullwidth is-striped is-hoverable dt-responsive" style="width:100%;">
+              <table id="transfer-history-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
                 <thead>
                   <tr>
                     <th>เลขที่เอกสาร</th>
@@ -751,7 +751,7 @@
                     <th>รายละเอียดเครื่องมือ</th>
                     <th>ผู้ถือครองเดิม</th>
                     <th>ผู้ถือครองใหม่</th>
-                    <th class="none">เหตุผล</th>
+                    <th>เหตุผล</th>
                     <th>พิมพ์</th>
                   </tr>
                 </thead>
@@ -769,14 +769,14 @@
               <span>ทะเบียนเครื่องมือทั้งหมด</span>
             </h3>
             <div class="table-responsive">
-              <table id="asset-master-table" class="table is-fullwidth is-striped is-hoverable dt-responsive" style="width:100%;">
+              <table id="asset-master-table" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
                 <thead>
                   <tr>
                     <th>Asset ID</th>
                     <th>ประเภท</th>
                     <th>ยี่ห้อ</th>
                     <th>รุ่น</th>
-                    <th class="none">Serial No.</th>
+                    <th>Serial No.</th>
                     <th>ผู้ถือครอง (holder_id)</th>
                     <th>สถานะปัจจุบัน</th>
                   </tr>
@@ -895,7 +895,7 @@
               <span>รายการบันทึกการรื้อถอนอุปกรณ์</span>
             </h3>
             <div class="table-responsive">
-              <table id="dismantle-datatable" class="table is-fullwidth is-striped is-hoverable dt-responsive" style="width:100%;">
+              <table id="dismantle-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
                 <thead>
                   <tr>
                     <th>date</th>
@@ -908,7 +908,7 @@
                     <th>asset_tag</th>
                     <th>serial_no</th>
                     <th>aam_doc</th>
-                    <th class="none">remark</th>
+                    <th>remark</th>
                   </tr>
                 </thead>
                 <tbody id="dismantle-log-tbody"></tbody>
