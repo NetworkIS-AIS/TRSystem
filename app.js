@@ -33,7 +33,7 @@
         generateTransferDocNo: () => request('generateTransferDocNo'),
         saveRepairTransaction: (payload) => request('saveRepairTransaction', { payload }),
         saveHolderTransfer: (payload) => request('saveHolderTransfer', { payload }),
-        updateRepairStatus: (docNo, assetId, status, remark) => request('updateRepairStatus', { docNo, assetId, status, remark })
+        updateRepairStatus: (docNo, assetId, status, remark, aam_doc = '', updated_at = '') => request('updateRepairStatus', { docNo, assetId, status, remark, aam_doc, updated_at })
       };
     })();
 
@@ -184,12 +184,33 @@
       document.querySelectorAll('.remark-preset-cb').forEach(cb => { cb.checked = false; });
     }
 
+    function getThailandTimestamp() {
+      try {
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat('sv-SE', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).formatToParts(now);
+        const map = {};
+        parts.forEach(p => { map[p.type] = p.value; });
+        return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
+      } catch (e) {
+        const d = new Date(Date.now() + 7 * 60 * 60 * 1000);
+        return d.toISOString().slice(0, 16).replace('T', ' ');
+      }
+    }
+
     function checkAssetUnderRepair(assetId) {
       const cleanId = String(assetId || '').trim().toUpperCase();
       if (!cleanId) return { locked: false, reason: '' };
 
       const activeRepair = (MASTER_DATA.repairs || []).find(
-        r => String(r.asset_id || '').trim().toUpperCase() === cleanId && String(r.status || '').trim() === 'กำลังส่งซ่อม'
+        r => String(r.asset_id || '').trim().toUpperCase() === cleanId && ['รอส่งศูนย์ซ่อม', 'กำลังซ่อม', 'กำลังส่งซ่อม'].includes(String(r.status || '').trim())
       );
       if (activeRepair) {
         return { locked: true, doc_no: activeRepair.doc_no || '', reason: `เครื่องมือรหัส ${cleanId} กำลังส่งซ่อมอยู่ (เลขที่เอกสาร ${activeRepair.doc_no}) ไม่สามารถส่งซ่อมซ้ำหรือโอนย้ายได้จนกว่าจะรับคืนเสร็จสิ้น` };
@@ -661,7 +682,7 @@
     function updateDashboard() {
       const repairs = MASTER_DATA.repairs || [];
       const total = repairs.length;
-      const repairing = repairs.filter(r => r.status === 'กำลังส่งซ่อม').length;
+      const repairing = repairs.filter(r => r.status === 'รอส่งศูนย์ซ่อม' || r.status === 'กำลังซ่อม' || r.status === 'กำลังส่งซ่อม').length;
       const returned = repairs.filter(r => r.status === 'ได้รับคืนแล้ว').length;
       const scrapped = repairs.filter(r => r.status === 'ตัดจำหน่าย').length;
 
@@ -713,7 +734,7 @@
       statusChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['กำลังส่งซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
+          labels: ['รอส่งศูนย์ซ่อม / กำลังซ่อม', 'ได้รับคืนแล้ว', 'ตัดจำหน่าย'],
           datasets: [{
             data: [repairing, returned, scrapped],
             backgroundColor: ['#F16A1B', '#1AA053', '#C03221'],
@@ -742,9 +763,22 @@
       });
     }
 
+    function normalizeRepairRow(r) {
+      const otherEq = r.other_eq !== undefined && r.other_eq !== null ? String(r.other_eq) : (r.remark !== undefined && r.remark !== null ? String(r.remark) : '');
+      const updateRemark = r.update_remark !== undefined && r.update_remark !== null
+        ? String(r.update_remark)
+        : (r.status_remark !== undefined && r.status_remark !== null ? String(r.status_remark) : '');
+      return Object.assign({}, r, {
+        other_eq: otherEq,
+        remark: updateRemark,
+        aam_doc: r.aam_doc || r.AAM_Doc || '',
+        updated_at: r.updated_at || r.Updated_At || ''
+      });
+    }
+
     function getStatusBadge(status) {
       const s = String(status || '').trim();
-      if (s === 'กำลังส่งซ่อม' || s === 'ส่งซ่อม') return `<span class="badge badge-repair">${s}</span>`;
+      if (s === 'รอส่งศูนย์ซ่อม' || s === 'กำลังซ่อม' || s === 'กำลังส่งซ่อม' || s === 'ส่งซ่อม') return `<span class="badge badge-repair">${s}</span>`;
       if (s === 'ได้รับคืนแล้ว') return `<span class="badge badge-return">${s}</span>`;
       if (s === 'ตัดจำหน่าย') return `<span class="badge badge-scrap">${s}</span>`;
       return `<span class="badge badge-ready">${s || 'พร้อมใช้งาน'}</span>`;
@@ -904,6 +938,8 @@
       const holderDept = document.getElementById('f-holder-dept').value.trim();
       const assetDetail = document.getElementById('f-asset-detail').value.trim();
 
+      const otherEqVal = document.getElementById('f-remark').value.trim();
+      const updatedAtTh = getThailandTimestamp();
       const payload = {
         repair_date: document.getElementById('f-date').value,
         vendor: getSelectedVendor(),
@@ -924,7 +960,11 @@
         model: SELECTED_ASSET.model,
         serial_no: document.getElementById('f-serial-no').value,
         symptom: document.getElementById('f-symptom').value.trim(),
-        remark: document.getElementById('f-remark').value.trim()
+        other_eq: otherEqVal,
+        status: 'รอส่งศูนย์ซ่อม',
+        remark: '',
+        aam_doc: '',
+        updated_at: updatedAtTh
       };
 
       Swal.fire({ title: 'กำลังบันทึกข้อมูลส่งซ่อม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -932,8 +972,8 @@
         const res = await GasClient.saveRepairTransaction(payload);
         Swal.close();
         if (res && res.success) {
-          const printedDoc = Object.assign({}, payload, { doc_no: res.doc_no, status: 'กำลังส่งซ่อม' });
-          MASTER_DATA.repairs.unshift(res.record || printedDoc);
+          const printedDoc = normalizeRepairRow(Object.assign({}, payload, { doc_no: res.doc_no, status: 'รอส่งศูนย์ซ่อม' }));
+          MASTER_DATA.repairs.unshift(normalizeRepairRow(res.record || printedDoc));
           const targetAsset = (MASTER_DATA.assets || []).find(a => String(a.asset_id).trim().toUpperCase() === payload.asset_id);
           if (targetAsset) targetAsset.status = 'ส่งซ่อม';
 
@@ -1088,9 +1128,10 @@
       const keyword = document.getElementById('search-repair').value.toLowerCase();
       const statusFilter = document.getElementById('filter-status').value;
 
-      const filtered = (MASTER_DATA.repairs || []).filter(r => {
+      MASTER_DATA.repairs = (MASTER_DATA.repairs || []).map(normalizeRepairRow);
+      const filtered = MASTER_DATA.repairs.filter(r => {
         const matchStatus = statusFilter === 'ALL' || r.status === statusFilter;
-        const matchText = [r.doc_no, r.asset_id, r.asset_detail, r.reporter_name, r.holder_name, r.symptom].join(' ').toLowerCase().includes(keyword);
+        const matchText = [r.doc_no, r.asset_id, r.asset_detail, r.reporter_name, r.holder_name, r.symptom, r.other_eq, r.remark, r.aam_doc, r.updated_at].join(' ').toLowerCase().includes(keyword);
         return matchStatus && matchText;
       });
 
@@ -1101,21 +1142,30 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(r => `
+      tbody.innerHTML = filtered.map(r => {
+        const canUpdate = ['รอส่งศูนย์ซ่อม', 'กำลังซ่อม', 'กำลังส่งซ่อม'].includes(String(r.status || '').trim());
+        const metaSub = [
+          r.other_eq ? `อุปกรณ์ติดเครื่อง: ${r.other_eq}` : '',
+          r.aam_doc ? `AAM: ${r.aam_doc}` : '',
+          r.remark ? `หมายเหตุ: ${r.remark}` : '',
+          r.updated_at ? `อัปเดต: ${r.updated_at}` : ''
+        ].filter(Boolean).join(' • ');
+        return `
         <tr>
           <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
           <td>${r.repair_date}</td>
           <td>${r.asset_id}</td>
           <td>${r.asset_detail}<br><small style="color:var(--text-muted)">S/N: ${r.serial_no}</small></td>
           <td><small>แจ้ง: ${r.reporter_name}<br>ถือครอง: ${r.holder_name}</small></td>
-          <td>${r.symptom}</td>
+          <td>${r.symptom}${metaSub ? `<br><small style="color:var(--text-muted)">${metaSub}</small>` : ''}</td>
           <td>${getStatusBadge(r.status)}</td>
           <td style="white-space:nowrap;">
             <button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})' title="พิมพ์เอกสารส่งซ่อม"><i class="bi bi-printer"></i></button>
-            ${r.status === 'กำลังส่งซ่อม' ? `<button class="btn btn-ais btn-sm" onclick="openStatusModal('${r.doc_no}', '${r.asset_id}')" title="อัปเดตสถานะ"><i class="bi bi-pencil-square"></i> อัปเดต</button>` : ''}
+            ${canUpdate ? `<button class="btn btn-ais btn-sm" onclick="openStatusModal('${r.doc_no}', '${r.asset_id}')" title="อัปเดตสถานะ"><i class="bi bi-pencil-square"></i> อัปเดต</button>` : ''}
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
 
       manageRepairDataTable = new DataTable('#manage-repair-datatable', {
         responsive: {
@@ -1155,38 +1205,77 @@
 
     function openStatusModal(docNo, assetId) {
       const primaryColor = (COLOR_THEMES[CURRENT_COLOR_KEY] || COLOR_THEMES.blue).primary;
+      const existing = (MASTER_DATA.repairs || []).find(r => String(r.doc_no).trim() === String(docNo).trim()) || {};
       Swal.fire({
         title: `อัปเดตสถานะเอกสาร<br><span style="display:inline-block; margin-top:4px; font-size:16px; font-weight:700; color:${primaryColor}; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${docNo}</span>`,
         html: `
           <div style="text-align:left; margin-top:10px;">
             <label style="font-weight:600;">เลือกสถานะใหม่:</label>
             <select id="swal-new-status" class="swal2-input" style="width:100%; margin:8px 0;">
+              <option value="กำลังซ่อม">กำลังซ่อม (ส่งศูนย์ซ่อมภายนอก)</option>
               <option value="ได้รับคืนแล้ว">ได้รับคืนแล้ว (พร้อมใช้งาน)</option>
               <option value="ตัดจำหน่าย">ตัดจำหน่าย (ซ่อมไม่ได้)</option>
             </select>
-            <label style="font-weight:600;">หมายเหตุการรับคืน / ตัดจำหน่าย:</label>
-            <input id="swal-remark" class="swal2-input" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)" style="width:100%; margin:8px 0;">
+            <div id="swal-aam-wrap" style="display:none; margin-top:8px;">
+              <label style="font-weight:600;">เลขเอกสารส่งซ่อมภายนอก (aam_doc) <span style="color:#C03221;">*</span>:</label>
+              <input id="swal-aam-doc" class="swal2-input" placeholder="ระบุเลขเอกสารส่งซ่อมภายนอก (aam_doc)" value="${String(existing.aam_doc || '').replace(/"/g, '&quot;')}" style="width:100%; margin:6px 0;">
+            </div>
+            <div id="swal-remark-wrap" style="display:none; margin-top:8px;">
+              <label style="font-weight:600;">หมายเหตุการรับคืน / ตัดจำหน่าย (remark):</label>
+              <input id="swal-remark" class="swal2-input" placeholder="ระบุหมายเหตุเมื่อได้รับสินค้าแล้วหรือตัดจำหน่าย" value="${String(existing.remark || '').replace(/"/g, '&quot;')}" style="width:100%; margin:6px 0;">
+            </div>
           </div>
         `,
+        didOpen: () => {
+          const sel = document.getElementById('swal-new-status');
+          const aamWrap = document.getElementById('swal-aam-wrap');
+          const remWrap = document.getElementById('swal-remark-wrap');
+          const toggleFields = () => {
+            const val = sel.value;
+            aamWrap.style.display = val === 'กำลังซ่อม' ? 'block' : 'none';
+            remWrap.style.display = (val === 'ได้รับคืนแล้ว' || val === 'ตัดจำหน่าย') ? 'block' : 'none';
+          };
+          sel.addEventListener('change', toggleFields);
+          toggleFields();
+        },
         showCancelButton: true,
         confirmButtonColor: primaryColor,
         confirmButtonText: 'บันทึกสถานะ',
         cancelButtonText: 'ยกเลิก',
-        preConfirm: () => ({ status: document.getElementById('swal-new-status').value, remark: document.getElementById('swal-remark').value })
+        preConfirm: () => {
+          const status = document.getElementById('swal-new-status').value;
+          const aamDoc = (document.getElementById('swal-aam-doc')?.value || '').trim();
+          const remark = (document.getElementById('swal-remark')?.value || '').trim();
+          if (status === 'กำลังซ่อม' && !aamDoc) {
+            Swal.showValidationMessage('กรุณากรอกเลขเอกสารส่งซ่อมภายนอก (aam_doc)');
+            return false;
+          }
+          return { status, aam_doc: aamDoc, remark };
+        }
       }).then(async result => {
         if (result.isConfirmed) {
+          const updatedAtTh = getThailandTimestamp();
           Swal.fire({ title: 'กำลังอัปเดต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
           try {
-            const res = await GasClient.updateRepairStatus(docNo, assetId, result.value.status, result.value.remark);
+            const res = await GasClient.updateRepairStatus(docNo, assetId, result.value.status, result.value.remark, result.value.aam_doc, updatedAtTh);
             Swal.close();
             if (res && res.success) {
               const targetRepair = (MASTER_DATA.repairs || []).find(r => String(r.doc_no).trim() === String(docNo).trim());
               if (targetRepair) {
                 targetRepair.status = result.value.status;
-                if (result.value.remark) targetRepair.remark = result.value.remark;
+                if (result.value.status === 'กำลังซ่อม') {
+                  targetRepair.aam_doc = result.value.aam_doc;
+                } else {
+                  targetRepair.remark = result.value.remark;
+                }
+                targetRepair.updated_at = updatedAtTh;
               }
               const targetAsset = (MASTER_DATA.assets || []).find(a => String(a.asset_id).trim().toUpperCase() === String(assetId).trim().toUpperCase());
-              if (targetAsset) targetAsset.status = (result.value.status === 'ได้รับคืนแล้ว') ? 'พร้อมใช้งาน' : 'ตัดจำหน่าย';
+              if (targetAsset) {
+                if (result.value.status === 'ได้รับคืนแล้ว') targetAsset.status = 'พร้อมใช้งาน';
+                else if (result.value.status === 'ตัดจำหน่าย') targetAsset.status = 'ตัดจำหน่าย';
+                else if (result.value.status === 'กำลังซ่อม') targetAsset.status = 'ส่งซ่อม';
+              }
               updateDashboard(); renderRepairTable(); renderAssetTable();
               showToast(`อัปเดตสถานะ ${docNo} เป็น "${result.value.status}" เรียบร้อย`);
             } else {
