@@ -1693,7 +1693,7 @@
             display: DataTable.Responsive.display.modal({
               header: function(row) {
                 const data = row.data();
-                return 'รายละเอียดรื้อถอน ' + $('<div>').html(data[1]).text().trim();
+                return 'รายละเอียดอุปกรณ์รื้อถอน ' + $('<div>').html(data[2]).text().trim();
               }
             }),
             renderer: DataTable.Responsive.renderer.tableAll({
