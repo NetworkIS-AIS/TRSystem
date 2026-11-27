@@ -1094,9 +1094,27 @@
     /* Vibrant KPI Cards */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
       margin-bottom: 18px;
+    }
+
+    @media (max-width: 1199.98px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 479.98px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .kpi-card {
@@ -1128,9 +1146,15 @@
     }
 
     .kpi-card.kpi-total {
-      background: var(--hope-hero-gradient);
+      background: linear-gradient(135deg, #3A57E8 0%, #2563EB 55%, #08B1BA 100%);
       color: #FFFFFF;
-      box-shadow: var(--hope-primary-shadow);
+      box-shadow: 0 10px 24px rgba(58, 87, 232, 0.28);
+    }
+
+    .kpi-card.kpi-pending {
+      background: linear-gradient(135deg, #EAB308 0%, #FACC15 100%);
+      color: #FFFFFF;
+      box-shadow: 0 10px 24px rgba(234, 179, 8, 0.28);
     }
 
     .kpi-card.kpi-repairing {
@@ -2467,47 +2491,55 @@
     }
 
 
-/* Dynamic repair status badge & font colors */
+/* Dynamic repair status badge & font colors matching KPI cards */
 .badge.badge-pending-center {
-  background: rgba(234, 179, 8, 0.16);
-  color: #9A6700;
-  border: 1px solid rgba(234, 179, 8, 0.42);
+  background: linear-gradient(135deg, #EAB308 0%, #FACC15 100%);
+  color: #1F2937;
+  font-weight: 700;
+  border: 1px solid rgba(202, 138, 4, 0.45);
+  box-shadow: 0 2px 6px rgba(234, 179, 8, 0.25);
 }
 .badge.badge-repairing {
-  background: rgba(241, 106, 27, 0.15);
-  color: #C2410C;
-  border: 1px solid rgba(241, 106, 27, 0.40);
+  background: linear-gradient(135deg, #F16A1B 0%, #F59E0B 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border: 1px solid rgba(217, 119, 6, 0.45);
+  box-shadow: 0 2px 6px rgba(241, 106, 27, 0.25);
 }
 .badge.badge-returned {
-  background: rgba(26, 160, 83, 0.15);
-  color: #15803D;
-  border: 1px solid rgba(26, 160, 83, 0.38);
+  background: linear-gradient(135deg, #1AA053 0%, #10B981 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border: 1px solid rgba(5, 150, 105, 0.45);
+  box-shadow: 0 2px 6px rgba(26, 160, 83, 0.25);
 }
 .badge.badge-scrapped {
-  background: rgba(217, 45, 32, 0.15);
-  color: #B42318;
-  border: 1px solid rgba(217, 45, 32, 0.38);
+  background: linear-gradient(135deg, #C03221 0%, #EF4444 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border: 1px solid rgba(185, 28, 28, 0.45);
+  box-shadow: 0 2px 6px rgba(192, 50, 33, 0.25);
 }
 
 [data-theme="dark"] .badge.badge-pending-center {
-  background: rgba(250, 204, 21, 0.18);
-  color: #FDE047;
-  border-color: rgba(250, 204, 21, 0.40);
+  background: linear-gradient(135deg, #EAB308 0%, #FACC15 100%);
+  color: #111827;
+  border-color: rgba(250, 204, 21, 0.55);
 }
 [data-theme="dark"] .badge.badge-repairing {
-  background: rgba(251, 146, 60, 0.18);
-  color: #FDBA74;
-  border-color: rgba(251, 146, 60, 0.42);
+  background: linear-gradient(135deg, #F16A1B 0%, #F59E0B 100%);
+  color: #FFFFFF;
+  border-color: rgba(251, 146, 60, 0.55);
 }
 [data-theme="dark"] .badge.badge-returned {
-  background: rgba(74, 222, 128, 0.16);
-  color: #86EFAC;
-  border-color: rgba(74, 222, 128, 0.38);
+  background: linear-gradient(135deg, #1AA053 0%, #10B981 100%);
+  color: #FFFFFF;
+  border-color: rgba(52, 211, 153, 0.55);
 }
 [data-theme="dark"] .badge.badge-scrapped {
-  background: rgba(248, 113, 113, 0.18);
-  color: #FCA5A5;
-  border-color: rgba(248, 113, 113, 0.40);
+  background: linear-gradient(135deg, #C03221 0%, #EF4444 100%);
+  color: #FFFFFF;
+  border-color: rgba(248, 113, 113, 0.55);
 }
 
 .status-font-pending { color: #9A6700 !important; }
