@@ -772,7 +772,13 @@
       });
 
       // กราฟแท่งสถิติการส่งซ่อมรายเดือน
-      renderMonthlyRepairChart(repairs, isDark);
+      try {
+        if (typeof renderMonthlyRepairChart === 'function') {
+          renderMonthlyRepairChart(repairs, isDark);
+        }
+      } catch (chartErr) {
+        console.error('renderMonthlyRepairChart error:', chartErr);
+      }
 
 
 function parseRepairYearMonth(dateStr) {
