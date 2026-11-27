@@ -308,6 +308,7 @@
 
       <main class="content-area">
         <!-- SECTION 1: DASHBOARD -->
+<!-- SECTION 1: DASHBOARD -->
         <section id="sec-dashboard" class="page-section active">
           <div class="kpi-grid">
             <div class="kpi-card kpi-total">
@@ -357,37 +358,69 @@
             </div>
           </div>
 
-          <div class="dashboard-split-grid">
+          <!-- แถวบน: Chart ซ้าย + Bar Graph รายเดือน ขวา (เหมือนในรูปตัวอย่าง) -->
+          <div class="dashboard-charts-grid">
             <div class="card-box">
-              <h3 class="card-title">
-                <span class="card-title-icon"><i class="bi bi-clock-history"></i></span>
-                <span>รายการส่งซ่อมล่าสุด</span>
-              </h3>
-              <div class="table-responsive">
-                <table id="dashboard-recent-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
-                  <thead>
-                    <tr>
-                      <th>เลขที่เอกสาร</th>
-                      <th>วันที่แจ้ง</th>
-                      <th>รหัสเครื่องมือ</th>
-                      <th>รายละเอียดเครื่องมือ</th>
-                      <th>สถานะ</th>
-                    </tr>
-                  </thead>
-                  <tbody id="dashboard-recent-table"></tbody>
-                </table>
+              <div class="card-header-flex">
+                <div>
+                  <h3 class="card-title" style="margin-bottom:2px;">
+                    <span class="card-title-icon"><i class="bi bi-pie-chart-fill"></i></span>
+                    <span>สัดส่วนสถานะงานซ่อม</span>
+                  </h3>
+                  <div class="card-subtitle">จำแนกตามรอส่งศูนย์ซ่อม, กำลังซ่อม, ได้รับคืนแล้ว และตัดจำหน่าย</div>
+                </div>
               </div>
-            </div>
-            <div class="card-box">
-              <h3 class="card-title">
-                <span class="card-title-icon"><i class="bi bi-pie-chart"></i></span>
-                <span>สัดส่วนสถานะงานซ่อม</span>
-              </h3>
               <div class="chart-card-inner">
                 <div class="chart-canvas-wrap">
                   <canvas id="statusChart"></canvas>
                 </div>
               </div>
+            </div>
+
+            <div class="card-box">
+              <div class="card-header-flex">
+                <div>
+                  <h3 class="card-title" style="margin-bottom:2px;">
+                    <span class="card-title-icon"><i class="bi bi-bar-chart-line-fill"></i></span>
+                    <span>สถิติการส่งซ่อมรายเดือน</span>
+                  </h3>
+                  <div class="card-subtitle">จำนวนรายการส่งซ่อมเครื่องมือแต่ละเดือน</div>
+                </div>
+                <span class="year-pill-badge" id="monthly-chart-year-badge">ปีปัจจุบัน</span>
+              </div>
+              <div class="bar-chart-wrap">
+                <canvas id="monthlyRepairChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- แถวล่างเต็มความกว้าง: ตารางรายการส่งซ่อมล่าสุด (แสดง 10 รายการ) -->
+          <div class="card-box">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title" style="margin-bottom:2px;">
+                  <span class="card-title-icon"><i class="bi bi-clock-history"></i></span>
+                  <span>รายการส่งซ่อมล่าสุด</span>
+                </h3>
+                <div class="card-subtitle">รายการส่งซ่อม 10 รายการล่าสุดที่บันทึกในระบบ</div>
+              </div>
+              <button type="button" class="btn-link-all" onclick="switchPage('manage-repair')">
+                เปิดรายการทั้งหมด <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table id="dashboard-recent-datatable" class="table is-fullwidth is-striped is-hoverable nowrap" style="width:100%;">
+                <thead>
+                  <tr>
+                    <th>เลขที่เอกสาร</th>
+                    <th>วันที่แจ้ง</th>
+                    <th>รหัสเครื่องมือ</th>
+                    <th>รายละเอียดเครื่องมือ</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-recent-table"></tbody>
+              </table>
             </div>
           </div>
         </section>
