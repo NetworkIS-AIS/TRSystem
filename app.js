@@ -1705,8 +1705,8 @@
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 }
         ],
-        pageLength: 5,
-        lengthMenu: [5, 20, 50, 100],
+        pageLength: 10,
+        lengthMenu: [10, 20, 50, 100],
         autoWidth: false,
         order: [[0, 'desc']],
         deferRender: true,
