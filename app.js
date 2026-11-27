@@ -46,6 +46,7 @@
     let SELECTED_TRANSFER_ASSET = { category: '', brand: '', model: '', old_holder_id: '' };
     let CURRENT_USER = null;
     let statusChartInstance = null;
+    let monthlyRepairChartInstance = null;
     let dashboardDataTable = null;
     let manageRepairDataTable = null;
     let assetDataTable = null;
@@ -694,9 +695,10 @@
       document.getElementById('kpi-returned').innerText = returned;
       document.getElementById('kpi-scrapped').innerText = scrapped;
 
+// 2) ในฟังก์ชัน renderDashboard(): เปลี่ยนจาก slice(0, 6) เป็น slice(0, 10)
       if (dashboardDataTable) { dashboardDataTable.destroy(); dashboardDataTable = null; }
       const dashTbody = document.getElementById('dashboard-recent-table');
-      const recentList = repairs.slice(0, 6);
+      const recentList = repairs.slice(0, 10);
       if (recentList.length === 0) {
         dashTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">ยังไม่มีรายการส่งซ่อมล่าสุด</td></tr>`;
       } else {
@@ -734,6 +736,7 @@
         });
       }
 
+      // 3) วาด Doughnut Chart (ซ้าย) + Bar Chart รายเดือน (ขวา)
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const ctx = document.getElementById('statusChart').getContext('2d');
       if (statusChartInstance) statusChartInstance.destroy();
@@ -750,7 +753,7 @@
         },
         options: {
           maintainAspectRatio: true,
-          cutout: '66%',
+          cutout: '64%',
           plugins: {
             legend: {
               position: 'bottom',
@@ -760,7 +763,124 @@
                 color: isDark ? '#E2E8F0' : '#232D42',
                 font: {
                   family: `'${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`,
-                  size: 10
+                  size: 11
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // กราฟแท่งสถิติการส่งซ่อมรายเดือน
+      renderMonthlyRepairChart(repairs, isDark);
+
+
+function parseRepairYearMonth(dateStr) {
+      if (!dateStr) return null;
+      const s = String(dateStr).trim();
+      // รองรับ YYYY-MM-DD หรือ YYYY/MM/DD (ทั้ง ค.ศ. และ พ.ศ.)
+      let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+      if (m) {
+        let y = parseInt(m[1], 10);
+        if (y > 2400) y -= 543;
+        return { year: y, month: parseInt(m[2], 10) };
+      }
+      // รองรับ DD/MM/YYYY หรือ DD-MM-YYYY
+      m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+      if (m) {
+        let y = parseInt(m[3], 10);
+        if (y > 2400) y -= 543;
+        return { year: y, month: parseInt(m[2], 10) };
+      }
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        let y = d.getFullYear();
+        if (y > 2400) y -= 543;
+        return { year: y, month: d.getMonth() + 1 };
+      }
+      return null;
+    }
+
+    function renderMonthlyRepairChart(repairs, isDark) {
+      const canvas = document.getElementById('monthlyRepairChart');
+      if (!canvas) return;
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      const now = new Date();
+      let targetYear = now.getFullYear();
+
+      const parsedList = repairs.map(r => parseRepairYearMonth(r.repair_date)).filter(Boolean);
+      const hasCurrentYear = parsedList.some(item => item.year === targetYear);
+      if (!hasCurrentYear && parsedList.length > 0) {
+        targetYear = Math.max(...parsedList.map(item => item.year));
+      }
+
+      const yearBadge = document.getElementById('monthly-chart-year-badge');
+      if (yearBadge) {
+        yearBadge.textContent = targetYear === now.getFullYear()
+          ? `ปีปัจจุบัน (${targetYear + 543})`
+          : `ปี ${targetYear + 543}`;
+      }
+
+      const monthlyCounts = new Array(12).fill(0);
+      parsedList.forEach(item => {
+        if (item.year === targetYear && item.month >= 1 && item.month <= 12) {
+          monthlyCounts[item.month - 1] += 1;
+        }
+      });
+
+      const barCtx = canvas.getContext('2d');
+      if (monthlyRepairChartInstance) monthlyRepairChartInstance.destroy();
+      monthlyRepairChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: thaiMonths,
+          datasets: [{
+            label: 'จำนวนรายการส่งซ่อม',
+            data: monthlyCounts,
+            backgroundColor: '#2563EB',
+            hoverBackgroundColor: '#1D4ED8',
+            borderRadius: { topLeft: 8, topRight: 8, bottomLeft: 4, bottomRight: 4 },
+            borderSkipped: false,
+            barThickness: 22,
+            maxBarThickness: 28
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => ` ส่งซ่อม: ${context.parsed.y} รายการ`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { color: isDark ? '#2E3446' : '#E5E7EB' },
+              ticks: {
+                color: isDark ? '#94A3B8' : '#6B7280',
+                font: {
+                  family: `'${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`,
+                  size: 11.5
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              border: { display: false },
+              grid: {
+                color: isDark ? 'rgba(148, 163, 184, 0.12)' : '#F1F5F9'
+              },
+              ticks: {
+                stepSize: 1,
+                precision: 0,
+                color: isDark ? '#94A3B8' : '#6B7280',
+                font: {
+                  family: `'${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`,
+                  size: 11.5
                 }
               }
             }
@@ -768,7 +888,7 @@
         }
       });
     }
-
+           
     function normalizeRepairRow(r) {
       const otherEq = r.other_eq !== undefined && r.other_eq !== null ? String(r.other_eq) : (r.remark !== undefined && r.remark !== null ? String(r.remark) : '');
       const updateRemark = r.update_remark !== undefined && r.update_remark !== null
