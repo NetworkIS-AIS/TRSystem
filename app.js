@@ -663,6 +663,66 @@
     /* =====================================================================
        4. DASHBOARD & CHARTS
        ===================================================================== */
+const doughnutPercentPlugin = {
+      id: 'doughnutPercentPlugin',
+      afterDatasetsDraw(chart) {
+        if (chart.config.type !== 'doughnut') return;
+        const { ctx } = chart;
+        const dataset = chart.data.datasets[0];
+        if (!dataset || !Array.isArray(dataset.data)) return;
+
+        const total = dataset.data.reduce((sum, val) => sum + (Number(val) || 0), 0);
+        if (!total) return;
+
+        const meta = chart.getDatasetMeta(0);
+        ctx.save();
+        ctx.font = `700 11.5px '${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((arc, idx) => {
+          const val = Number(dataset.data[idx]) || 0;
+          if (val <= 0) return;
+          const pct = ((val / total) * 100).toFixed(1).replace(/\.0$/, '');
+          const pos = arc.tooltipPosition();
+
+          ctx.fillStyle = '#FFFFFF';
+          ctx.shadowColor = 'rgba(15, 23, 42, 0.45)';
+          ctx.shadowBlur = 3;
+          ctx.fillText(`${pct}%`, pos.x, pos.y);
+          ctx.shadowBlur = 0;
+        });
+
+        ctx.restore();
+      }
+    };
+
+    const barTopValuePlugin = {
+      id: 'barTopValuePlugin',
+      afterDatasetsDraw(chart) {
+        if (chart.config.type !== 'bar') return;
+        const { ctx } = chart;
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const dataset = chart.data.datasets[0];
+        if (!dataset || !Array.isArray(dataset.data)) return;
+
+        const meta = chart.getDatasetMeta(0);
+        ctx.save();
+        ctx.font = `700 11.5px '${CURRENT_FONT_FAMILY}', 'Inter', sans-serif`;
+        ctx.fillStyle = isDark ? '#E2E8F0' : '#1E293B';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        meta.data.forEach((bar, idx) => {
+          const val = Number(dataset.data[idx]) || 0;
+          if (val <= 0) return;
+          ctx.fillText(String(val), bar.x, bar.y - 4);
+        });
+
+        ctx.restore();
+      }
+    };
+
     function updateDashboard() {
       const repairs = MASTER_DATA.repairs || [];
       const total = repairs.length;
@@ -749,8 +809,10 @@
               }
             }
           }
-        }
+        },
+        plugins: [doughnutPercentPlugin]
       });
+      applyChartThemeColors();
 
       try {
         if (typeof renderMonthlyRepairChart === 'function') {
@@ -759,30 +821,6 @@
       } catch (chartErr) {
         console.error('renderMonthlyRepairChart error:', chartErr);
       }
-    }
-
-    function parseRepairYearMonth(dateStr) {
-      if (!dateStr) return null;
-      const s = String(dateStr).trim();
-      let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-      if (m) {
-        let y = parseInt(m[1], 10);
-        if (y > 2400) y -= 543;
-        return { year: y, month: parseInt(m[2], 10) };
-      }
-      m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
-      if (m) {
-        let y = parseInt(m[3], 10);
-        if (y > 2400) y -= 543;
-        return { year: y, month: parseInt(m[2], 10) };
-      }
-      const d = new Date(s);
-      if (!isNaN(d.getTime())) {
-        let y = d.getFullYear();
-        if (y > 2400) y -= 543;
-        return { year: y, month: d.getMonth() + 1 };
-      }
-      return null;
     }
 
     function renderMonthlyRepairChart(repairs, isDark) {
@@ -854,6 +892,7 @@
             },
             y: {
               beginAtZero: true,
+              suggestedMax: Math.max(...monthlyCounts, 1) + 1,
               border: { display: false },
               grid: {
                 color: isDark ? 'rgba(148, 163, 184, 0.12)' : '#F1F5F9'
@@ -869,7 +908,8 @@
               }
             }
           }
-        }
+        },
+        plugins: [barTopValuePlugin]
       });
     }
 
