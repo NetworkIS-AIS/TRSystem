@@ -1682,52 +1682,15 @@
     .badge-ready  { background: var(--hope-info-soft);    color: var(--hope-info); }
 
     /* ================= COMPACT FULL-WIDTH ASSET DATATABLE ================= */
-    #sec-asset-list .table-responsive {
-      overflow-x: hidden;
-      width: 100%;
-    }
 
     #sec-asset-list .table,
     #transfer-history-datatable.table {
       width: 100% !important;
-      table-layout: fixed;
       background-color: var(--bg-card);
       color: var(--text-main);
       margin-bottom: 0;
       font-size: 12.5px;
     }
-
-    #sec-asset-list .table th:nth-child(1),
-    #sec-asset-list .table td:nth-child(1) { width: 12%; }
-    #sec-asset-list .table th:nth-child(2),
-    #sec-asset-list .table td:nth-child(2) { width: 28%; }
-    #sec-asset-list .table th:nth-child(3),
-    #sec-asset-list .table td:nth-child(3) { width: 15%; }
-    #sec-asset-list .table th:nth-child(4),
-    #sec-asset-list .table td:nth-child(4) { width: 15%; }
-    #sec-asset-list .table th:nth-child(5),
-    #sec-asset-list .table td:nth-child(5) { width: 11%; }
-    #sec-asset-list .table th:nth-child(6),
-    #sec-asset-list .table td:nth-child(6) { width: 11%; }
-    #sec-asset-list .table th:nth-child(7),
-    #sec-asset-list .table td:nth-child(7) { width: 8%; text-align: center; }
-
-    #transfer-history-datatable.table th:nth-child(1),
-    #transfer-history-datatable.table td:nth-child(1) { width: 12%; }
-    #transfer-history-datatable.table th:nth-child(2),
-    #transfer-history-datatable.table td:nth-child(2) { width: 10%; }
-    #transfer-history-datatable.table th:nth-child(3),
-    #transfer-history-datatable.table td:nth-child(3) { width: 11%; }
-    #transfer-history-datatable.table th:nth-child(4),
-    #transfer-history-datatable.table td:nth-child(4) { width: 19%; }
-    #transfer-history-datatable.table th:nth-child(5),
-    #transfer-history-datatable.table td:nth-child(5) { width: 14%; }
-    #transfer-history-datatable.table th:nth-child(6),
-    #transfer-history-datatable.table td:nth-child(6) { width: 14%; }
-    #transfer-history-datatable.table th:nth-child(7),
-    #transfer-history-datatable.table td:nth-child(7) { width: 13%; }
-    #transfer-history-datatable.table th:nth-child(8),
-    #transfer-history-datatable.table td:nth-child(8) { width: 7%; text-align: center; }
 
     #sec-asset-list .table thead th,
     #sec-change-holder .dt-container table.dataTable thead th {
@@ -2389,73 +2352,116 @@
 }
 
 
-    /* ================= DATATABLES RESPONSIVE STYLING ================= */
-    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before,
-    table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
-      background-color: var(--hope-primary) !important;
-      border-color: var(--hope-primary) !important;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) !important;
-    }
 
-    table.dataTable > tbody > tr.child ul.dtr-details {
+
+
+
+    /* ================= DATATABLES BULMA RESPONSIVE MODAL STYLING ================= */
+    .table-responsive {
       width: 100%;
-      padding: 6px 10px;
-      background: var(--bg-body);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    table.dataTable > tbody > tr.child ul.dtr-details > li {
-      border-bottom: 1px dashed var(--border-color) !important;
-      padding: 6px 4px !important;
-      color: var(--text-main);
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+      background-color: var(--hope-primary) !important;
+      border: 2px solid #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25) !important;
+      color: #FFFFFF !important;
     }
 
-    table.dataTable > tbody > tr.child ul.dtr-details > li:last-child {
+    table.dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > th.dtr-control:before {
+      background-color: var(--hope-danger) !important;
+    }
+
+    div.dtr-modal {
+      z-index: 10060 !important;
+    }
+
+    div.dtr-modal div.dtr-modal-background {
+      background: rgba(15, 23, 42, 0.58) !important;
+      backdrop-filter: blur(3px);
+    }
+
+    div.dtr-modal div.dtr-modal-display {
+      background-color: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      border: 1px solid var(--border-color) !important;
+      border-top: 4px solid var(--hope-primary) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.32) !important;
+      max-width: 580px !important;
+      width: 92% !important;
+      overflow: hidden;
+    }
+
+    div.dtr-modal div.dtr-modal-content {
+      padding: 18px 20px !important;
+      color: var(--text-main) !important;
+    }
+
+    div.dtr-modal div.dtr-modal-content h2,
+    div.dtr-modal div.dtr-modal-content .modal-card-title {
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: var(--hope-primary) !important;
+      margin-bottom: 12px !important;
+      padding-bottom: 8px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    div.dtr-modal table.dtr-details {
+      width: 100% !important;
+      margin-bottom: 0 !important;
+      background: transparent !important;
+      color: var(--text-main) !important;
+    }
+
+    div.dtr-modal table.dtr-details tr {
+      border-bottom: 1px solid var(--border-color) !important;
+      background: transparent !important;
+    }
+
+    div.dtr-modal table.dtr-details tr:last-child {
       border-bottom: none !important;
     }
 
-    table.dataTable > tbody > tr.child span.dtr-title {
-      color: var(--hope-primary);
-      font-weight: 700;
-      min-width: 140px;
+    div.dtr-modal table.dtr-details td {
+      padding: 8px 10px !important;
+      color: var(--text-main) !important;
+      font-size: 13px !important;
+      vertical-align: top !important;
+      border: none !important;
+      white-space: normal !important;
     }
 
-    /* Reset fixed table layout where responsive recalculates column widths dynamically */
-    #sec-asset-list .table,
-    #transfer-history-datatable.table,
-    #dashboard-recent-datatable.table,
-    #manage-repair-datatable.table,
-    #dismantle-datatable.table {
-      table-layout: auto !important;
-      width: 100% !important;
-      background-color: var(--bg-card);
-      color: var(--text-main);
-      margin-bottom: 0;
-      font-size: 12.5px;
+    div.dtr-modal table.dtr-details td:first-child {
+      font-weight: 700 !important;
+      color: var(--hope-primary) !important;
+      width: 38% !important;
     }
 
-    #sec-dashboard .dt-container,
-    #sec-manage-repair .dt-container,
-    #sec-dismantle-log .dt-container {
-      color: var(--text-main);
-      font-size: 13px;
+    div.dtr-modal div.dtr-modal-close {
+      top: 12px !important;
+      right: 14px !important;
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--border-color) !important;
+      background-color: var(--bg-body) !important;
+      color: var(--text-muted) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 16px !important;
+      line-height: 1 !important;
+      transition: all 0.16s ease;
     }
 
-    #sec-manage-repair .dt-container .dt-length select,
-    #sec-dismantle-log .dt-container .dt-length select,
-    #sec-dismantle-log .dt-container .dt-input {
-      background-color: var(--input-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      min-height: 32px;
-    }
-
-    #sec-manage-repair .dt-container .dt-paging .dt-paging-button.current,
-    #sec-dismantle-log .dt-container .dt-paging .dt-paging-button.current {
-      background: var(--hope-primary) !important;
-      border-color: var(--hope-primary) !important;
-      color: #fff !important;
-      border-radius: 8px;
+    div.dtr-modal div.dtr-modal-close:hover {
+      background-color: var(--hope-danger-soft) !important;
+      border-color: var(--hope-danger) !important;
+      color: var(--hope-danger) !important;
     }
