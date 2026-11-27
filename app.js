@@ -1,3 +1,4 @@
+
 /* =====================================================================
        1. API CLIENT ADAPTER (Google Apps Script Web App Bridge)
        ===================================================================== */
@@ -685,7 +686,19 @@
           </tr>
         `).join('');
         dashboardDataTable = new DataTable('#dashboard-recent-datatable', {
-          responsive: true,
+          responsive: {
+            details: {
+              display: DataTable.Responsive.display.modal({
+                header: function(row) {
+                  const data = row.data();
+                  return 'รายละเอียดรายการส่งซ่อม ' + $('<div>').html(data[0]).text().trim();
+                }
+              }),
+              renderer: DataTable.Responsive.renderer.tableAll({
+                tableClass: 'table is-fullwidth is-striped'
+              })
+            }
+          },
           paging: false,
           searching: false,
           info: false,
@@ -709,7 +722,6 @@
           }]
         },
         options: {
-          responsive: true,
           maintainAspectRatio: true,
           cutout: '66%',
           plugins: {
@@ -1037,7 +1049,23 @@
       `).join('');
 
       transferDataTable = new DataTable('#transfer-history-datatable', {
-        responsive: true,
+        responsive: {
+          details: {
+            display: DataTable.Responsive.display.modal({
+              header: function(row) {
+                const data = row.data();
+                return 'รายละเอียดโอนย้าย ' + $('<div>').html(data[0]).text().trim();
+              }
+            }),
+            renderer: DataTable.Responsive.renderer.tableAll({
+              tableClass: 'table is-fullwidth is-striped'
+            })
+          }
+        },
+        columnDefs: [
+          { responsivePriority: 1, targets: 0 },
+          { responsivePriority: 2, targets: -1 }
+        ],
         pageLength: 5,
         lengthMenu: [5, 20, 50, 100],
         autoWidth: false,
@@ -1090,7 +1118,24 @@
       `).join('');
 
       manageRepairDataTable = new DataTable('#manage-repair-datatable', {
-        responsive: true,
+        responsive: {
+          details: {
+            display: DataTable.Responsive.display.modal({
+              header: function(row) {
+                const data = row.data();
+                return 'รายละเอียดงานซ่อม ' + $('<div>').html(data[0]).text().trim();
+              }
+            }),
+            renderer: DataTable.Responsive.renderer.tableAll({
+              tableClass: 'table is-fullwidth is-striped'
+            })
+          }
+        },
+        columnDefs: [
+          { responsivePriority: 1, targets: 0 },
+          { responsivePriority: 2, targets: -1 },
+          { responsivePriority: 3, targets: -2 }
+        ],
         searching: false,
         pageLength: 10,
         lengthMenu: [10, 25, 50, 100],
@@ -1180,7 +1225,23 @@
       }).join('');
 
       assetDataTable = new DataTable('#asset-master-table', {
-        responsive: true,
+        responsive: {
+          details: {
+            display: DataTable.Responsive.display.modal({
+              header: function(row) {
+                const data = row.data();
+                return 'รายละเอียดเครื่องมือ ' + $('<div>').html(data[0]).text().trim();
+              }
+            }),
+            renderer: DataTable.Responsive.renderer.tableAll({
+              tableClass: 'table is-fullwidth is-striped'
+            })
+          }
+        },
+        columnDefs: [
+          { responsivePriority: 1, targets: 0 },
+          { responsivePriority: 2, targets: -1 }
+        ],
         pageLength: 10,
         lengthMenu: [10, 25, 50, 100],
         autoWidth: false,
@@ -1494,10 +1555,26 @@
       `).join('');
 
       dismantleDataTable = new DataTable('#dismantle-datatable', {
-        responsive: true,
+        responsive: {
+          details: {
+            display: DataTable.Responsive.display.modal({
+              header: function(row) {
+                const data = row.data();
+                return 'รายละเอียดรื้อถอน ' + $('<div>').html(data[1]).text().trim();
+              }
+            }),
+            renderer: DataTable.Responsive.renderer.tableAll({
+              tableClass: 'table is-fullwidth is-striped'
+            })
+          }
+        },
+        columnDefs: [
+          { responsivePriority: 1, targets: 0 },
+          { responsivePriority: 2, targets: 1 }
+        ],
         pageLength: 5,
         lengthMenu: [5, 20, 50, 100],
-        autoWidth: true,
+        autoWidth: false,
         order: [[0, 'desc']],
         deferRender: true,
         language: {
