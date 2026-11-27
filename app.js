@@ -697,15 +697,18 @@
       if (recentList.length === 0) {
         dashTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">ยังไม่มีรายการส่งซ่อมล่าสุด</td></tr>`;
       } else {
-        dashTbody.innerHTML = recentList.map(r => `
-          <tr>
-            <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
+        dashTbody.innerHTML = recentList.map(r => {
+          const stMeta = getStatusStyleMeta(r.status);
+          return `
+          <tr class="${stMeta.rowClass}">
+            <td><strong class="${stMeta.fontClass}">${r.doc_no}</strong></td>
             <td>${r.repair_date}</td>
             <td>${r.asset_id}</td>
             <td>${r.asset_detail}</td>
             <td>${getStatusBadge(r.status)}</td>
           </tr>
-        `).join('');
+        `;
+        }).join('');
         dashboardDataTable = new DataTable('#dashboard-recent-datatable', {
           responsive: {
             details: {
@@ -776,12 +779,47 @@
       });
     }
 
+    function getStatusStyleMeta(status) {
+      const s = String(status || '').trim();
+      if (s === 'รอส่งศูนย์ซ่อม') {
+        return {
+          badgeClass: 'badge-pending-center',
+          fontClass: 'status-font-pending',
+          rowClass: 'repair-row-pending'
+        };
+      }
+      if (s === 'กำลังซ่อม' || s === 'กำลังส่งซ่อม' || s === 'ส่งซ่อม') {
+        return {
+          badgeClass: 'badge-repairing',
+          fontClass: 'status-font-repairing',
+          rowClass: 'repair-row-repairing'
+        };
+      }
+      if (s === 'ได้รับคืนแล้ว') {
+        return {
+          badgeClass: 'badge-returned',
+          fontClass: 'status-font-returned',
+          rowClass: 'repair-row-returned'
+        };
+      }
+      if (s === 'ตัดจำหน่าย') {
+        return {
+          badgeClass: 'badge-scrapped',
+          fontClass: 'status-font-scrapped',
+          rowClass: 'repair-row-scrapped'
+        };
+      }
+      return {
+        badgeClass: 'badge-ready',
+        fontClass: '',
+        rowClass: ''
+      };
+    }
+
     function getStatusBadge(status) {
       const s = String(status || '').trim();
-      if (s === 'รอส่งศูนย์ซ่อม' || s === 'กำลังซ่อม' || s === 'กำลังส่งซ่อม' || s === 'ส่งซ่อม') return `<span class="badge badge-repair">${s}</span>`;
-      if (s === 'ได้รับคืนแล้ว') return `<span class="badge badge-return">${s}</span>`;
-      if (s === 'ตัดจำหน่าย') return `<span class="badge badge-scrap">${s}</span>`;
-      return `<span class="badge badge-ready">${s || 'พร้อมใช้งาน'}</span>`;
+      const meta = getStatusStyleMeta(s);
+      return `<span class="badge ${meta.badgeClass}">${s || 'พร้อมใช้งาน'}</span>`;
     }
 
     /* =====================================================================
@@ -1150,14 +1188,15 @@
           r.remark ? `หมายเหตุ: ${r.remark}` : '',
           r.updated_at ? `อัปเดต: ${r.updated_at}` : ''
         ].filter(Boolean).join(' • ');
+        const stMeta = getStatusStyleMeta(r.status);
         return `
-        <tr>
-          <td><strong style="color:var(--hope-primary);">${r.doc_no}</strong></td>
+        <tr class="${stMeta.rowClass}">
+          <td><strong class="${stMeta.fontClass}">${r.doc_no}</strong></td>
           <td>${r.repair_date}</td>
           <td>${r.asset_id}</td>
-          <td>${r.asset_detail}<br><small style="color:var(--text-muted)">S/N: ${r.serial_no}</small></td>
+          <td>${r.asset_detail}<br><small class="${stMeta.fontClass}" style="opacity:0.85;">S/N: ${r.serial_no}</small></td>
           <td><small>แจ้ง: ${r.reporter_name}<br>ถือครอง: ${r.holder_name}</small></td>
-          <td>${r.symptom}${metaSub ? `<br><small style="color:var(--text-muted)">${metaSub}</small>` : ''}</td>
+          <td><span class="${stMeta.fontClass}">${r.symptom}</span>${metaSub ? `<br><small class="${stMeta.fontClass}" style="opacity:0.85;">${metaSub}</small>` : ''}</td>
           <td>${getStatusBadge(r.status)}</td>
           <td style="white-space:nowrap;">
             <button class="btn btn-outline btn-sm" onclick='printRepairDoc(${JSON.stringify(r)})' title="พิมพ์เอกสารส่งซ่อม"><i class="bi bi-printer"></i></button>
@@ -1230,10 +1269,15 @@
           const sel = document.getElementById('swal-new-status');
           const aamWrap = document.getElementById('swal-aam-wrap');
           const remWrap = document.getElementById('swal-remark-wrap');
+          const fontClasses = ['status-font-pending', 'status-font-repairing', 'status-font-returned', 'status-font-scrapped'];
           const toggleFields = () => {
             const val = sel.value;
             aamWrap.style.display = val === 'กำลังซ่อม' ? 'block' : 'none';
             remWrap.style.display = (val === 'ได้รับคืนแล้ว' || val === 'ตัดจำหน่าย') ? 'block' : 'none';
+            sel.classList.remove(...fontClasses);
+            const meta = getStatusStyleMeta(val);
+            if (meta.fontClass) sel.classList.add(meta.fontClass);
+            sel.style.fontWeight = '700';
           };
           sel.addEventListener('change', toggleFields);
           toggleFields();
